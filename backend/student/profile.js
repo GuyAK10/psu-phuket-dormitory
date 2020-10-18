@@ -1,7 +1,7 @@
 const express = require('express');
 const firestore = require('../configs/firebase')
 const multer = require('multer');
-const checkType = require('../configs/type')
+const {studentType} = require('../configs/type')
 
 const router = express.Router()
 const db = firestore.firestore()
@@ -13,11 +13,12 @@ const uploader = multer({
   }
 });
 
-router.post('/student/profile/upload/:id' , checkType.studentType , uploader.single('img'), (req, res) => {
+router.post('/student/profile/upload/:id' , studentType , uploader.single('img'), (req, res) => {
   try {
     const id = req.params.id
-    const fileName = `${Date.now()}_${req.file.originalname}`
-    const fileUpload = bucket.file(`profile/${id}/` + fileName);
+    const folder = 'profile'
+    const fileName = `${id}`
+    const fileUpload = bucket.file(`${folder}/` + fileName);
     const blobStream = fileUpload.createWriteStream({
       metadata: {
         contentType: req.file.mimetype
@@ -39,7 +40,7 @@ router.post('/student/profile/upload/:id' , checkType.studentType , uploader.sin
 
 });
 
-router.get('/student/profile/picture/:id' , checkType.studentType , (req, res) => {
+router.get('/student/profile/picture/:id' , studentType , (req, res) => {
   try {
 
     const file = bucket.file(`profile/${req.params.id}`);
@@ -52,7 +53,7 @@ router.get('/student/profile/picture/:id' , checkType.studentType , (req, res) =
   }
 });
 
-router.get('/student/profile/:studentId', checkType.studentType , async (req, res) => {
+router.get('/student/profile/:studentId', studentType , async (req, res) => {
   try {
     const studentId = req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
@@ -64,7 +65,7 @@ router.get('/student/profile/:studentId', checkType.studentType , async (req, re
   }
 });
 
-router.post('/student/profile/:studentId',  checkType.studentType , (req, res) => {
+router.post('/student/profile/:studentId',  studentType , (req, res) => {
   try {
     const user = {
       profile: {

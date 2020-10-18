@@ -1,11 +1,11 @@
 const express = require('express');
 const firestore = require('../configs/firebase')
-const checkType = require('../configs/type')
+const {staffType} = require('../configs/type')
 
 const router = express.Router()
 const db = firestore.firestore()
 
-router.post('/staff/room/', checkType.staffType, (req, res) => {
+router.post('/staff/room/', staffType, (req, res) => {
       try {
             const statusDormitory = {
                   system: req.body.system,
@@ -20,7 +20,7 @@ router.post('/staff/room/', checkType.staffType, (req, res) => {
       }
 });
 
-router.get('/staff/room/:floorId/', checkType.staffType, async (req, res) => {
+router.get('/staff/room/:floorId/', staffType, async (req, res) => {
       try {
             const floorId = req.params.floorId;
             const docRef = db.collection(`${floorId}`);
@@ -45,7 +45,7 @@ router.get('/staff/room/:floorId/', checkType.staffType, async (req, res) => {
       }
 })
 
-router.post('/staff/room/:floorId/:roomId', checkType.staffType, async (req, res) => {
+router.post('/staff/room/:floorId/:roomId', staffType, async (req, res) => {
       try {
             const statusRoom = {
                   roomStatus: req.body.roomStatus
@@ -62,7 +62,7 @@ router.post('/staff/room/:floorId/:roomId', checkType.staffType, async (req, res
       }
 });
 
-router.delete('/staff/room/:floorId/:roomId/:studentId' , checkType.staffType, (req, res) => {
+router.delete('/staff/room/:floorId/:roomId/:studentId' ,staffType , (req, res) => {
       try {
             const floorId = req.params.floorId;
             const roomId = req.params.roomId;

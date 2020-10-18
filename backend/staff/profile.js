@@ -1,12 +1,12 @@
 const express = require('express');
 const firestore = require('../configs/firebase')
-const checkType = require('../configs/type')
+const {staffType} = require('../configs/type')
 
 const router = express.Router()
 const db = firestore.firestore()
 const bucket = firestore.storage().bucket()
 
-router.get('/staff/profile/', checkType.staffType, async (req, res) => {
+router.get('/staff/profile/', staffType, async (req, res) => {
     try {
         let studentList = []
         const docRef = db.collection('students')
@@ -26,7 +26,7 @@ router.get('/staff/profile/', checkType.staffType, async (req, res) => {
     }
 });
 
-router.get('/staff/profile/picture/:id' ,checkType.staffType,(req, res) => {
+router.get('/staff/profile/picture/:id' ,staffType,(req, res) => {
     try {
   
       const file = bucket.file(`profile/${req.params.id}`);

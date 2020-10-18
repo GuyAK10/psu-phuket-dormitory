@@ -23,6 +23,7 @@ router.delete('/logout/:token', async (req, res) => {
             find.forEach(res => deleteId = { ...res.data() })
         }
         docRef.doc(deleteId.id).delete()
+        res.send("Logout");
     } catch (e) {
         res.sendStatus(500)
     }
@@ -39,7 +40,7 @@ router.post('/', (req, res) => {
             user.type = req.body.type
             client.GetUserDetails(user, async function (err, response) {
                 try {
-
+                    console.log(response)
                     const responseData = {
 
                         userId: userUsecase.getStudentId(response),
