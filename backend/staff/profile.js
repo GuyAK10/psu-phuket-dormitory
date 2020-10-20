@@ -6,7 +6,8 @@ const router = express.Router()
 const db = firestore.firestore()
 const bucket = firestore.storage().bucket()
 
-router.get('/staff/profile/', staffType, async (req, res) => {
+// router.get('/staff/profile/', staffType, async (req, res) => {
+router.get('/staff/profile/', async (req, res) => {
     try {
         let studentList = []
         const docRef = db.collection('students')
@@ -26,7 +27,7 @@ router.get('/staff/profile/', staffType, async (req, res) => {
     }
 });
 
-router.get('/staff/profile/picture/:id' ,staffType,(req, res) => {
+router.get('/staff/profile/picture/:id' ,(req, res) => {
     try {
   
       const file = bucket.file(`profile/${req.params.id}`);

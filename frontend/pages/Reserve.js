@@ -3,6 +3,7 @@ import axios from 'axios'
 import { LoginState } from '../utils/context'
 import Router from 'next/router'
 import Loading from '../component/Loading'
+const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const Reserve = () => {
 
@@ -68,13 +69,13 @@ const Reserve = () => {
         setIsLoading(false)
         try {
 
-            const roomList = await axios.get(`http://localhost/student/room/floor${floor[0]}`, axiosConfig)
+            const roomList = await axios.get(`${Endpoint}/student/room/floor${floor[0]}`, axiosConfig)
                 .catch(e => {
                     console.log(e.response.data)
                     Logout()
                 })
             floorDetails[0] = { ...roomList.data.result }
-            const roomList2 = await axios.get(`http://localhost/student/room/floor${floor[1]}`, axiosConfig)
+            const roomList2 = await axios.get(`${Endpoint}/student/room/floor${floor[1]}`, axiosConfig)
                 .catch(e => {
                     console.log(e.response.data)
                     Logout()

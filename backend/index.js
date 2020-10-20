@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use(accessControl)
-app.use('/staff', verifyHeader)
+// app.use('/staff', verifyHeader)
 app.use(staffProfile);
 app.use(staffRoom);
 app.use('/student', verifyHeader)

@@ -427,7 +427,7 @@ img.hamburger {
     }
 }
 
-.profile-container {
+/* .profile-container {
     min-height: 85vh;
     display: grid;
     grid-template-columns: repeat(4, 25vw);
@@ -440,7 +440,7 @@ img.hamburger {
 .profile-container>div>div {
     display: flex;
     flex-direction: column;
-}
+} */
 
 .footer-container {
     z-index: -1;

@@ -9,7 +9,9 @@
     "next": "^9.5.2",
     "qs": "^6.9.4",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "recoil": "^0.0.13",
+    "tailwindcss": "^1.9.5"
   },
   "scripts": {
     "dev": "next dev",

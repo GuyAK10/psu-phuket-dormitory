@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
-import { LoginState } from '../utils/context'
+import { LoginState } from '../../utils/context'
 import axios from 'axios'
+import Router from 'next/router'
+import { students as stds } from '../../utils/recoil'
+import { useRecoilState } from 'recoil'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const Profile = () => {
-
+    const [students, setStudents] = useRecoilState(stds)
     const { AxiosConfig, Token } = React.useContext(LoginState)
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
@@ -249,11 +252,12 @@ const Profile = () => {
     React.useEffect(() => {
         verifyLogin()
         getHeader()
+        getStudent()
     }, [])
 
     const ProfileForm = () => {
         return <div>
-            {Step()}
+
             <h2>ข้อมูลเบื้องต้น</h2>
             <label>รหัสนักศึกษา</label>
             <input value={form.profile.id} name="id" onChange={handleFormProfile} />
@@ -286,7 +290,6 @@ const Profile = () => {
 
     const Contact = () => {
         return <div>
-            {Step()}
             <h2>ข้อมูลติดต่อ</h2>
             <label>เบอร์โทรศัพท์</label>
             <input name="tel" onChange={handleFormContact} />
@@ -325,7 +328,7 @@ const Profile = () => {
 
     const Information = () => {
         return <div>
-            {Step()}
+
             <h2>ข้อมูลการศึกษา</h2>
             <label>จบจากโรงเรียน</label>
             <input name="school" onChange={handleFormInformation} />
@@ -358,7 +361,7 @@ const Profile = () => {
 
     const Friend = () => {
         return <div>
-            {Step()}
+
             <h2>เพื่อนสนิท</h2>
             <label>ชื่อจริง</label>
             <input name="name" onChange={handleFormFriend} />
@@ -385,7 +388,7 @@ const Profile = () => {
 
     const Family = () => {
         return <div>
-            {Step()}
+
             <h2>ข้อมูลเกี่ยวกับครอบครัว</h2>
             <label>ชื่อจริงบิดา</label>
             <input name="name" onChange={handleFormFamily.dad} />
@@ -453,7 +456,7 @@ const Profile = () => {
 
     const Other = () => {
         return <div>
-            {Step()}
+
             <h2>ข้อมูลอื่น ๆ</h2>
             <label>ความสามารถพิเศษ</label>
             <input name="talent" onChange={handleFormOther} />
@@ -469,63 +472,56 @@ const Profile = () => {
         </div>
     }
 
-    const setStep = (section) => {
-        setStepBackground({ ...stepBackground, [section]: "red" })
+    const getStudent = async () => {
+        try {
+            const result = await axios.get(`${Endpoint}/staff/profile/`)
+            console.log(result.data)
+            setStudents(result.data)
+        } catch (e) {
+            console.error(e)
+        }
     }
 
-    const Step = () => {
-        return (
-            <div>
-                <span style={{ background: stepBackground[1] }}>1</span>
-                <span style={{ background: stepBackground[2] }}>2</span>
-                <span style={{ background: stepBackground[3] }}>3</span>
-                <span style={{ background: stepBackground[4] }}>4</span>
-                <span style={{ background: stepBackground[5] }}>5</span>
-                <style jsx>{`
-                    div {
-                        overflow-wrap: break-word;
-                        text-align: center;
-                        margin: 2em 0 2em 1em;
-                    }
-
-                    div > span {
-                        position: relative;
-                        border: 4px solid #1D3CE0;
-                        border-radius: 50%;
-                        margin: .8rem;
-                        padding: .8em;
-                        background: #1D3CE0;
-                    }
-
-                    div > span::after {
-                        position: absolute;
-                        content: "";
-                        background: #1D3CE0;
-                        width: 1.5em;
-                        height: 4px;
-                        top:22.5px;
-                        left:39.5px;
-                    }
-
-                    div > span:last-child::after {
-                        display: none;
-                    }
-                `}</style>
-            </div>
-        )
+    const gotoShowMore = (profileId) => {
+        Router.push(`Profile/${profileId}`)
     }
 
     return (
-        <div className="profile-container">
-            {section === 1 ? <div className="profile-form"> {ProfileForm()}</div> : null}
-            {section === 2 ? <div className="profile-form">{Contact()} </div> : null}
-            {section === 3 ? <div className="profile-form">{Information()} </div> : null}
-            {section === 4 ? <div className="profile-form">{Friend()} </div> : null}
-            {section === 5 ? <div className="profile-form">{Family()} </div> : null}
-            {section === 6 ? <div className="profile-form">{Other()} </div> : null}
-            <style global jsx>{`
+        <div className="profile-container h-screen">
+            <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">PSU PassportID</th>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Surname</th>
+                        <th class="px-4 py-2">ห้อง</th>
+                        <th class="px-4 py-2">สถานะจ่ายเงิน</th>
+                        <th class="px-4 py-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {students ? students.map((item, key) => {
+                        return (
+                            <tr key={key}>
+                                <td class="border px-4 py-2">{item.studentId}</td>
+                                <td class="border px-4 py-2">{item.profile.name}</td>
+                                <td class="border px-4 py-2">{item.profile.surname}</td>
+                                <td class="border px-4 py-2">E01</td>
+                                <td class="border px-4 py-2">จ่ายแล้ว</td>
+                                <td class="border px-4 py-2">
+                                    <button onClick={
+                                        () => gotoShowMore(item.studentId)
+                                    }>Show More</button>
+                                </td>
+                            </tr>
+                        )
+                    }) : null}
+
+                </tbody>
+            </table>
+            {/* <style global jsx>{`
                 .profile-container{
-                    background-color: #69B7DB;
+                    background-color: #69B7DB; 
                 }
                 .profile-form {
                     min-width: 550px;
@@ -553,7 +549,7 @@ const Profile = () => {
                     font-size: 25px;
                     text-align: center;
                 }
-            `}</style>
+            `}</style> */}
         </div>
     )
 }
