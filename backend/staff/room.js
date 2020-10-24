@@ -62,14 +62,14 @@ router.post('/staff/room/:floorId/:roomId', staffType, async (req, res) => {
       }
 });
 
-router.delete('/staff/room/:floorId/:roomId/:studentId' ,staffType , (req, res) => {
+router.delete('/staff/room/:floorId/:roomId/:orderId' ,staffType , (req, res) => {
       try {
             const floorId = req.params.floorId;
             const roomId = req.params.roomId;
-            const studentId = req.params.studentId;
+            const orderId = req.params.orderId;
             const FieldValue = firestore.firestore.FieldValue;
             const docRef = db.doc(`/${floorId}/${roomId}`)
-            const value = `${studentId}`
+            const value = `${orderId}`
 
             if (value == "student1") {
                   docRef.update({

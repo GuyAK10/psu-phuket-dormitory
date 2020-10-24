@@ -40,12 +40,9 @@ router.post('/', (req, res) => {
             user.type = req.body.type
             client.GetUserDetails(user, async function (err, response) {
                 try {
-                    console.log(response)
                     const responseData = {
-
                         userId: userUsecase.getStudentId(response),
                         role: userUsecase.getRole(response)
-                        
                     }
                     createToken(user, responseData, req, res)
                 } catch (error) {

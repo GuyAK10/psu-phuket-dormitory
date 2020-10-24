@@ -16,7 +16,7 @@ const createToken = async (user, responseData, _req, res) => {
                   const payload = {
                         id: responseData.userId,
                         type: responseData.role,
-                        exp: Date.now() + (1000 * 60 * 10)
+                        exp: Date.now() + (1000 * 60 * 60)
                   }
                   let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
                   const docRef = db.collection('token');
