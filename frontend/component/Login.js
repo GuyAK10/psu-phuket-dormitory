@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 import qs from 'qs'
 import { LoginState } from '../utils/context'
+const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const Login = ({ children }) => {
     const { MenuBar, Token, Modal, AxiosConfig } = React.useContext(LoginState)
@@ -25,7 +26,7 @@ const Login = ({ children }) => {
 
     const getAuthen = async () => {
         try {
-            const result = await axios.post('http://localhost', qs.stringify(form), {
+            const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }

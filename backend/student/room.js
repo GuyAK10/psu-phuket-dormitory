@@ -1,6 +1,5 @@
 const express = require('express');
 const firestore = require('../configs/firebase')
-const { studentType } = require('../configs/type')
 
 const router = express.Router()
 const db = firestore.firestore()
@@ -65,7 +64,7 @@ const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
 
 }
 
-router.get('/student/room/:floorId/', studentType, async (req, res) => {
+router.get('/student/room/:floorId/',  async (req, res) => {
     try {
         const floorId = req.params.floorId;
         const checkRef = db.collection('dormitory').doc('status');
@@ -102,7 +101,7 @@ router.get('/student/room/:floorId/', studentType, async (req, res) => {
 
 });
 
-router.post('/student/room/:floorId/:roomId/:studentId/:orderId', studentType, async (req, res) => {
+router.post('/student/room/:floorId/:roomId/:studentId/:orderId', async (req, res) => {
     try {
 
         const floorId = req.params.floorId;
