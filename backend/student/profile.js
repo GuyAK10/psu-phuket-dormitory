@@ -1,7 +1,6 @@
 const express = require('express');
 const firestore = require('../configs/firebase')
 const multer = require('multer');
-const {studentType} = require('../configs/type')
 
 const router = express.Router()
 const db = firestore.firestore()
@@ -13,9 +12,9 @@ const uploader = multer({
   }
 });
 
-router.post('/student/profile/upload/:id' , studentType , uploader.single('img'), (req, res) => {
+router.post('/student/profile/upload/:studentId' , uploader.single('img'), (req, res) => {
   try {
-    const id = req.params.id
+    const id = req.params.studentId
     const folder = 'profile'
     const fileName = `${id}`
     const fileUpload = bucket.file(`${folder}/` + fileName);
@@ -40,10 +39,10 @@ router.post('/student/profile/upload/:id' , studentType , uploader.single('img')
 
 });
 
-router.get('/student/profile/picture/:id' , studentType , (req, res) => {
+router.get('/student/profile/picture/studentId' , (req, res) => {
   try {
 
-    const file = bucket.file(`profile/${req.params.id}`);
+    const file = bucket.file(`profile/${req.params.studentId}`);
     file.download().then(downloadResponse => {
       res.status(200).send(downloadResponse[0]);
     });
@@ -53,7 +52,7 @@ router.get('/student/profile/picture/:id' , studentType , (req, res) => {
   }
 });
 
-router.get('/student/profile/:studentId', studentType , async (req, res) => {
+router.get('/student/profile/:studentId', async (req, res) => {
   try {
     const studentId = req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
@@ -65,7 +64,7 @@ router.get('/student/profile/:studentId', studentType , async (req, res) => {
   }
 });
 
-router.post('/student/profile/:studentId',  studentType , (req, res) => {
+router.post('/student/profile/:studentId',  (req, res) => {
   try {
     const user = {
       profile: {

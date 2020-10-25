@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors')
+
+const PORT = process.env.PORT || 80
 const { verifyHeader } = require("./configs/jwt");
 const { staffType , studentType} = require("./configs/type")
 const accessControl = require('./access')
@@ -21,4 +23,5 @@ app.use(staffRoom);
 app.use('/student', verifyHeader ,studentType)
 app.use(studentProfile);
 app.use(studentRoom);
-app.listen(80, () => console.log('Server is ready!'))
+
+app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))

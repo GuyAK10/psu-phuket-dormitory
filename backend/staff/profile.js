@@ -17,10 +17,10 @@ router.get('/staff/profile/:studentId', async (req, res) => {
   }
 });
 
-router.get('/staff/profile/picture/:id' ,(req, res) => {
+router.get('/staff/profile/picture/:studentId' ,(req, res) => {
     try {
   
-      const file = bucket.file(`profile/${req.params.id}`);
+      const file = bucket.file(`profile/${req.params.studentId}`);
       file.download().then(downloadResponse => {
         res.status(200).send(downloadResponse[0]);
       });
