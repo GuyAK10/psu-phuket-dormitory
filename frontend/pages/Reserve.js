@@ -5,7 +5,7 @@ import Router from 'next/router'
 import Loading from '../component/Loading'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
-const Reserve = () => {
+const reserve = () => {
 
     const { Modal, Token, AxiosConfig, MenuBar } = useContext(LoginState)
     const [menuBar, setMenuBar] = MenuBar
@@ -16,10 +16,10 @@ const Reserve = () => {
     const [isLoading, setIsLoading] = React.useState(false)
 
     const floorList = [
-        { 1: ["A", "E"] },
-        { 2: ["B", "F"] },
-        { 3: ["C", "G"] },
-        { 4: ["D", "H"] }
+        { 1: ["E", "A"] },
+        { 2: ["F", "B"] },
+        { 3: ["G", "C"] },
+        { 4: ["H", "D"] }
     ]
 
     const [focusRoomList, setFocusListRoom] = useState([])
@@ -44,7 +44,7 @@ const Reserve = () => {
         sessionStorage.removeItem('token')
         setShowModal(false)
         setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('Login')
+        Router.push('login')
     }
 
     const getHeader = () => {
@@ -59,7 +59,7 @@ const Reserve = () => {
             setToken(null)
             setShowModal(false)
             setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('Login')
+            Router.push('login')
         }
     }
 
@@ -201,23 +201,16 @@ const Reserve = () => {
 
     useEffect(() => {
         getHeader()
-        setShowBuilding(["A", "E"])
+        setShowBuilding(["E", "A"])
         verifyLogin()
         if (token) {
-            handleSelectFloor(["A", "E"])
-        }
-        return () => {
-            setShowBuilding(["A", "E"])
-            if (token) {
-                handleSelectFloor(["A", "E"])
-            }
+            handleSelectFloor(["E", "A"])
         }
     }, [])
 
     return (
         <div className="reserve-container">
             <div className="floor-select-container">
-                <button onClick={() => console.log(modalFloor)}>Debug</button>
                 {floorList.map((floor, key) =>
                     <div
                         value={floor}
@@ -231,10 +224,7 @@ const Reserve = () => {
             </div>
             <Building />
             {showRoomSelect && <FocusFloor />}
-            <button onClick={() => console.log(axiosConfig)}>AxiosConf</button>
-            <button onClick={() => console.log(focusRoomList)}>LogRoom</button>
-            <button onClick={() => console.log(axiosConfig)}>log</button>
         </div>
     )
 }
-export default Reserve
+export default reserve

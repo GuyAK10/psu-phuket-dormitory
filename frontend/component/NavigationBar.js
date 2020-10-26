@@ -27,12 +27,12 @@ const NavigationBar = () => {
 
     const handleRoute = (url) => {
         const session = sessionStorage.getItem('token')
-        if (url === "Reserve" || url === "Profile") {
+        if (url === "reserve" || url === "profile") {
             setPreviousRoute(url)
             if (session)
                 Router.push(url)
             else {
-                Router.push("Login")
+                Router.push("login")
             }
         }
         else Router.push(url)
@@ -74,9 +74,9 @@ const NavigationBar = () => {
             {
                 <div ref={ref} onClick={hamburgerToggle} className="navbar-container">
                     <span onClick={() => handleRoute('/')}>หน้าแรก</span>
-                    <span onClick={() => handleRoute('Reserve')}>จองห้อง</span>
-                    <span onClick={() => handleRoute('/')}>แจ้งซ่อม</span>
-                    <span onClick={() => handleRoute('Profile')}>ข้อมูลส่วนตัว</span>
+                    <span onClick={() => handleRoute('reserve')}>จองห้อง</span>
+                    <span onClick={() => handleRoute('support')}>แจ้งซ่อม</span>
+                    <span onClick={() => handleRoute('profile')}>ข้อมูลส่วนตัว</span>
                     <span onClick={handleLogin}>{menuBar}</span>
                 </div>
             }

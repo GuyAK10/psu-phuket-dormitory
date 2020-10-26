@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Reserve = () => {
+const reserve = () => {
     const Building = () => {
         return (
             <div className="building-container">
@@ -21,4 +21,4 @@ const Reserve = () => {
         </div>
     )
 }
-export default Reserve
+export default reserve

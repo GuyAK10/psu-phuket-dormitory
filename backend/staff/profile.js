@@ -5,15 +5,23 @@ const router = express.Router()
 const db = firestore.firestore()
 const bucket = firestore.storage().bucket()
 
-router.get('/staff/profile', async (req, res) => {
+router.get('/staff/profile/',  async (req, res) => {
   try {
-    let students = []
-    const docRef = await db.collection('students').get()
-    docRef.forEach(item => student.push(item.data()))
-    res.status(200).send(students);
+      let studentList = []
+      const docRef = db.collection('students')
+      const profile = await docRef.get();
+      profile.forEach(list => {
+          let studentData = {
+              studentId: '',
+          }
+          studentData.studentId = list.id
+          Object.assign(studentData, list.data())
+          studentList.push(studentData)
+      })
+      res.status(200).send(studentList);
   }
   catch (error) {
-    res.sendStatus(400);
+      res.sendStatus(500);
   }
 });
 

@@ -1,19 +1,17 @@
-import React, { useState } from 'react'
-import { LoginState } from '../../utils/context'
+import React, { useState, useContext } from 'react'
+import { LoginState } from '../../../utils/context'
 import axios from 'axios'
 import Router from 'next/router'
-import { students as stds } from '../../utils/recoil'
-import { useRecoilState } from 'recoil'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
-const Profile = () => {
-    const [students, setStudents] = useRecoilState(stds)
-    const { AxiosConfig, Token } = React.useContext(LoginState)
+const profile = () => {
+    const { AxiosConfig, Token, Students } = useContext(LoginState)
+    const [students, setStudents] = Students
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
-    const [section, setSection] = React.useState(1)
+    const [section, setSection] = useState(1)
     const [stepBackground, setStepBackground] = useState({ 1: "", 2: "", 3: "", 4: "", 5: "" })
-    const [form, setForm] = React.useState({
+    const [student, setStudent] = useState({
         profile: {
             id: "",
             name: "",
@@ -102,7 +100,7 @@ const Profile = () => {
         }
     })
 
-    const handleFormProfile = (e) => {
+    const handleFormprofile = (e) => {
         setForm({
             ...form,
             profile: {
@@ -222,7 +220,7 @@ const Profile = () => {
         sessionStorage.removeItem('token')
         setShowModal(false)
         setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('Login')
+        Router.push('login')
     }
 
     const getHeader = () => {
@@ -245,7 +243,7 @@ const Profile = () => {
             setToken(null)
             setShowModal(false)
             setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('Login')
+            Router.push('login')
         }
     }
 
@@ -255,32 +253,32 @@ const Profile = () => {
         getStudent()
     }, [])
 
-    const ProfileForm = () => {
+    const profileForm = () => {
         return <div>
 
             <h2>ข้อมูลเบื้องต้น</h2>
             <label>รหัสนักศึกษา</label>
-            <input value={form.profile.id} name="id" onChange={handleFormProfile} />
+            <input value={form.profile.id} name="id" onChange={handleFormprofile} />
             <label>ชื่อจริง</label>
-            <input value={form.profile.name} name="name" onChange={handleFormProfile} />
+            <input value={form.profile.name} name="name" onChange={handleFormprofile} />
             <label>นามสกุล</label>
-            <input value={form.profile.surname} name="surname" onChange={handleFormProfile} />
+            <input value={form.profile.surname} name="surname" onChange={handleFormprofile} />
             <label>ชื่อเล่น</label>
-            <input value={form.profile.nickname} name="nickname" onChange={handleFormProfile} />
+            <input value={form.profile.nickname} name="nickname" onChange={handleFormprofile} />
             <label>ศาสนา</label>
-            <input value={form.profile.religion} name="religion" onChange={handleFormProfile} />
+            <input value={form.profile.religion} name="religion" onChange={handleFormprofile} />
             <label>สัญชาติ</label>
-            <input value={form.profile.race} name="race" onChange={handleFormProfile} />
+            <input value={form.profile.race} name="race" onChange={handleFormprofile} />
             <label>เชื่อชาติ</label>
-            <input value={form.profile.nationality} name="nationality" onChange={handleFormProfile} />
+            <input value={form.profile.nationality} name="nationality" onChange={handleFormprofile} />
             <label>วัน/เดือน/ปีเกิด</label>
-            <input value={form.profile.birthday} name="birthday" onChange={handleFormProfile} />
+            <input value={form.profile.birthday} name="birthday" onChange={handleFormprofile} />
             <label>คณะ</label>
-            <input value={form.profile.faculty} name="faculty" onChange={handleFormProfile} />
+            <input value={form.profile.faculty} name="faculty" onChange={handleFormprofile} />
             <label>สาขา/ภาควิชา</label>
-            <input value={form.profile.department} name="department" onChange={handleFormProfile} />
+            <input value={form.profile.department} name="department" onChange={handleFormprofile} />
             <label>Line ID</label>
-            <input value={form.profile.line} name="line" onChange={handleFormProfile} />
+            <input value={form.profile.line} name="line" onChange={handleFormprofile} />
             <button onClick={() => {
                 setSection(prev => prev + 1)
                 setStep(section)
@@ -483,32 +481,33 @@ const Profile = () => {
     }
 
     const gotoShowMore = (profileId) => {
-        Router.push(`Profile/${profileId}`)
+        Router.push({ pathname: "profiles/student", query: { profileId } })
     }
 
     return (
         <div className="profile-container h-screen">
-            <table class="table-auto w-full">
+            <button onClick={() => console.log(students)}>Students</button>
+            <table className="table-auto w-full">
                 <thead>
                     <tr>
-                        <th class="px-4 py-2">PSU PassportID</th>
-                        <th class="px-4 py-2">Name</th>
-                        <th class="px-4 py-2">Surname</th>
-                        <th class="px-4 py-2">ห้อง</th>
-                        <th class="px-4 py-2">สถานะจ่ายเงิน</th>
-                        <th class="px-4 py-2">Action</th>
+                        <th className="px-4 py-2">PSU PassportID</th>
+                        <th className="px-4 py-2">Name</th>
+                        <th className="px-4 py-2">Surname</th>
+                        <th className="px-4 py-2">ห้อง</th>
+                        <th className="px-4 py-2">สถานะจ่ายเงิน</th>
+                        <th className="px-4 py-2">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {students ? students.map((item, key) => {
                         return (
                             <tr key={key}>
-                                <td class="border px-4 py-2">{item.studentId}</td>
-                                <td class="border px-4 py-2">{item.profile.name}</td>
-                                <td class="border px-4 py-2">{item.profile.surname}</td>
-                                <td class="border px-4 py-2">E01</td>
-                                <td class="border px-4 py-2">จ่ายแล้ว</td>
-                                <td class="border px-4 py-2">
+                                <td className="border px-4 py-2">{item.studentId}</td>
+                                <td className="border px-4 py-2">{item.profile.name}</td>
+                                <td className="border px-4 py-2">{item.profile.surname}</td>
+                                <td className="border px-4 py-2">E01</td>
+                                <td className="border px-4 py-2">จ่ายแล้ว</td>
+                                <td className="border px-4 py-2">
                                     <button onClick={
                                         () => gotoShowMore(item.studentId)
                                     }>Show More</button>
@@ -519,39 +518,8 @@ const Profile = () => {
 
                 </tbody>
             </table>
-            {/* <style global jsx>{`
-                .profile-container{
-                    background-color: #69B7DB; 
-                }
-                .profile-form {
-                    min-width: 550px;
-                    background: #269CD4;
-                    padding: 2em 5em 2em 5em;
-                    color: #FFF;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                    margin: 2em 0 2em 0;
-                }
-                .profile-form > div > input, button, h2 {
-                    margin: 0 0 1em 0;
-                    border-radius: 5px;
-                }
-                .profile-form > div > input {
-                    height: 2em;
-                }
-                .profile-form > div > button {
-                    height: 2em;
-                    background: #D48526;
-                    color: #FFF;
-                    font-size: 18px;
-                }
-                .profile-form > div > h2 {
-                    font-size: 25px;
-                    text-align: center;
-                }
-            `}</style> */}
         </div>
     )
 }
 
-export default Profile
+export default profile

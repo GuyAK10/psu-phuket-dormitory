@@ -5,9 +5,11 @@ module.exports = {
     ) {
         return {
             '/': { page: '/' },
-            '/Login': { page: '/Login' },
-            '/Profile': { page: '/Profile' },
-            '/Reserve': { page: '/Reserve' },
+            '/login': { page: '/login' },
+            '/profile': { page: '/profile' },
+            '/reserve': { page: '/reserve' },
+            '/admin/profile': { page: '/admin/profile' },
+            '/admin/reserve': { page: '/admin/reserve' },
         }
     },
     env: {
