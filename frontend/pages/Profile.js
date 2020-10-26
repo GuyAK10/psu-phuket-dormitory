@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { LoginState } from '../utils/context'
 import axios from 'axios'
 import { message, Button, Space } from 'antd';
+import { Router } from 'next/router';
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const profile = () => {
@@ -217,6 +218,7 @@ const profile = () => {
                 if (res.status === 200) {
                     console.log("Submit success")
                     success()
+                    Router.push('/')
                 }
                 else {
                     error()
