@@ -74,9 +74,9 @@ const NavigationBar = () => {
             {
                 <div ref={ref} onClick={hamburgerToggle} className="navbar-container">
                     <span onClick={() => handleRoute('/')}>หน้าแรก</span>
-                    <span onClick={() => handleRoute('reserve')}>จองห้อง</span>
-                    <span onClick={() => handleRoute('support')}>แจ้งซ่อม</span>
-                    <span onClick={() => handleRoute('profile')}>ข้อมูลส่วนตัว</span>
+                    <span onClick={() => handleRoute('/reserve')}>จองห้อง</span>
+                    <span onClick={() => handleRoute('/support')}>แจ้งซ่อม</span>
+                    <span onClick={() => handleRoute('/profile')}>ข้อมูลส่วนตัว</span>
                     <span onClick={handleLogin}>{menuBar}</span>
                 </div>
             }
