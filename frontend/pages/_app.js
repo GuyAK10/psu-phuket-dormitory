@@ -3,7 +3,7 @@ import '../style.css'
 import '../component/NavigationBar'
 import NavigationBar from '../component/NavigationBar'
 import Footer from '../component/Footer'
-import { LoginState } from '../utils/context'
+import { GlobalState } from '../utils/context'
 import LoginModal from '../component/login'
 import { RecoilRoot } from 'recoil'
 import React, { useState } from 'react'
@@ -17,7 +17,7 @@ const MyApp = ({ Component, pageProps }) => {
     const [students, setStudents] = useState(null)
 
     return (
-        <LoginState.Provider
+        <GlobalState.Provider
             value={{
                 Token: [token, setToken],
                 Modal: [showModal, setShowModal],
@@ -44,7 +44,7 @@ const MyApp = ({ Component, pageProps }) => {
                     <Footer />
                 </LoginModal >
             </div>
-        </LoginState.Provider>
+        </GlobalState.Provider>
     )
 }
 

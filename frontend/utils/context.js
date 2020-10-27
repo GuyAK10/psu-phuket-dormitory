@@ -1,3 +1,3 @@
 import React from 'react'
-export const LoginState = React.createContext()
+export const GlobalState = React.createContext()
 

@@ -1,11 +1,11 @@
 import React, { useEffect, useContext, useState } from 'react'
-import { LoginState } from '../../../utils/context'
+import { GlobalState } from '../../../utils/context'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const profile = () => {
-    const { Students } = useContext(LoginState)
+    const { Students } = useContext(GlobalState)
     const [students, setStudents] = Students
     const [student, setStudent] = useState({
         profile: {

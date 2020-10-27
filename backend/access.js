@@ -10,7 +10,6 @@ const firestore = require('./configs/firebase')
 const db = firestore.firestore()
 const { createToken } = require('./configs/jwt')
 
-
 //remove token
 router.delete('/logout/:token', async (req, res) => {
     const token = req.params.token
@@ -23,7 +22,7 @@ router.delete('/logout/:token', async (req, res) => {
             find.forEach(res => deleteId = { ...res.data() })
         }
         docRef.doc(deleteId.id).delete()
-        res.send("Logout");
+        res.status(200).send({ code: 401, status: "Logout", message: "Logout" });
     } catch (e) {
         res.sendStatus(500)
     }
@@ -48,7 +47,7 @@ router.post('/', (req, res) => {
                 } catch (error) {
                     res.sendStatus(501)
                 }
-                
+
             });
         });
     } catch (error) {

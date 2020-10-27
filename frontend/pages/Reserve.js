@@ -1,19 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
-import { LoginState } from '../utils/context'
+import { GlobalState } from '../utils/context'
 import Router from 'next/router'
 import Loading from '../component/Loading'
+import { message } from 'antd';
+
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const reserve = () => {
-
-    const { Modal, Token, AxiosConfig, MenuBar } = useContext(LoginState)
+    const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
     const [menuBar, setMenuBar] = MenuBar
     const [axiosConfig] = AxiosConfig
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
+    // const [oddRoom, setOddRoom] = useState([])
+    // const [evenRoom, setEvenRoom] = useState([])
+    const [_, forceUpdate] = useState(0)
 
     const floorList = [
         { 1: ["E", "A"] },
@@ -22,21 +26,9 @@ const reserve = () => {
         { 4: ["H", "D"] }
     ]
 
-    const [focusRoomList, setFocusListRoom] = useState([])
+    const [focusRoomList, setFocusListRoom] = useState([[{ profileId: "E01" }], [{ profileId: "A01" }]])
     const [showbuilding, setShowBuilding] = useState([])
-    const [modalFloor, setModalFloor] = useState([
-        {
-            profileId: null,
-            student1: {
-                id: 1,
-                name: "",
-                surname: "",
-                tel: "",
-                nickname: ""
-            },
-        },
-    ])
-
+    const [modalFloor, setModalFloor] = useState([])
 
     const Logout = () => {
         console.log("Logout")
@@ -68,19 +60,23 @@ const reserve = () => {
         let floorDetails = []
         setIsLoading(false)
         try {
+            await axios.get(`${Endpoint}/student/room/floor${floor[0]}`, axiosConfig)
+                .then(res => {
+                    floorDetails[0] = { ...res.data.result }
+                })
+                .catch(e => {
+                    console.log(e)
+                    Logout()
+                })
 
-            const roomList = await axios.get(`${Endpoint}/student/room/floor${floor[0]}`, axiosConfig)
+            await axios.get(`${Endpoint}/student/room/floor${floor[1]}`, axiosConfig)
+                .then(res => {
+                    floorDetails[1] = { ...res.data.result }
+                })
                 .catch(e => {
-                    console.log(e.response.data)
+                    console.log(e)
                     Logout()
                 })
-            floorDetails[0] = { ...roomList.data.result }
-            const roomList2 = await axios.get(`${Endpoint}/student/room/floor${floor[1]}`, axiosConfig)
-                .catch(e => {
-                    console.log(e.response.data)
-                    Logout()
-                })
-            floorDetails[1] = { ...roomList2.data.result }
 
             setFocusListRoom(floorDetails)
             setIsLoading(true)
@@ -156,56 +152,156 @@ const reserve = () => {
 
     const FocusFloor = () => {
 
+        const onSelectedRoom = () => {
+            message.success('จองห้องแล้ว')
+        }
+
+        const onDeletedRoom = () => {
+            message.warn('ยกเลิกการจองแล้ว')
+        }
+
         const oddRoom = modalFloor.filter((_item, key) => key % 2 !== 0)
         const evenRoom = modalFloor.filter((_item, key) => key % 2 === 0)
+        const selectRoom = async (item, student) => {
+            try {
+                const { id } = await JSON.parse(sessionStorage.getItem('token'))
+                const body = {
+                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
+                    roomId: item.profileId,
+                    studentId: id,
+                    orderId: student
+                }
+                const reserve = await axios.post(`${Endpoint}/student/room`, body)
+
+                if (reserve.data.success) {
+                    let changeStatusReserve = modalFloor
+                    changeStatusReserve.map(room => {
+                        let temp = room
+                        if (temp.profileId === item.profileId) {
+                            temp[`${student}`] = id
+                            return temp
+                        } else return temp
+                    })
+                    onSelectedRoom()
+                    forceUpdate(Math.random())
+                }
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+
+        const removeRoom = async (item, student) => {
+            try {
+                const { id } = await JSON.parse(sessionStorage.getItem('token'))
+                const body = {
+                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
+                    roomId: item.profileId,
+                    studentId: id,
+                    orderId: student
+                }
+
+                const reserve = await axios.post(`${Endpoint}/student/room/remove`, body)
+                console.log(reserve.data)
+                if (reserve.data.success) {
+                    let changeStatusReserve = modalFloor
+                    changeStatusReserve.map(room => {
+                        let temp = room
+                        if (temp.profileId === item.profileId) {
+                            temp[`${student}`] = undefined
+                            return temp
+                        } else return temp
+                    })
+                    onDeletedRoom()
+                    forceUpdate(Math.random())
+                }
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
 
         return (
             <div className="focus-floor">
                 <img src="icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
                 <div className="modal-content">
                     <div className="even-room">
-                        {oddRoom.map((room, key) =>
-                            <div className="room-container" key={key}>
+                        {oddRoom ? oddRoom.map((room, key) => {
+
+                            return <div className="room-container" key={key}>
                                 <span className="even-room-item" >
                                     <span className="student1">
-                                        <img src="/icon/male.svg" alt="person" className="person" />
+                                        <img
+                                            style={room.student1 ? { filter: "grayscale(100%)" } : null}
+                                            src="/icon/male.svg" alt="person" className="person"
+                                            onClick={() => {
+                                                if (room.student1) removeRoom(room, "student1")
+                                                else selectRoom(room, "student1")
+                                            }}
+                                        />
                                     </span>
                                     <span className="student2">
-                                        <img src="/icon/male.svg" alt="person" className="person" />
+                                        <img
+                                            style={room.student2 ? { filter: "grayscale(100%)" } : null}
+                                            src="/icon/male.svg" alt="person" className="person"
+                                            onClick={() => {
+                                                if (room.student2) removeRoom(room, "student2")
+                                                else selectRoom(room, "student2")
+                                            }}
+                                        />
                                     </span>
                                 </span>
                                 {room.profileId}
                             </div>
-                        )}
+                        }
+                        ) : null}
                     </div>
-                    <span className="space" >ทางเดิน</span>
+
+                    <span className="space">ทางเดิน</span>
+
                     <div className="odd-room">
-                        {evenRoom.map((room, key) =>
-                            <div className="room-container" key={key}>
+                        {evenRoom ? evenRoom.map((room, key) => {
+
+                            return <div className="room-container" key={key} >
                                 <span className="odd-room-item">
                                     <span className="student1">
-                                        <img src="/icon/male.svg" alt="person" className="person" />
+                                        <img style={room.student1 ? { filter: "grayscale(100%)" } : null}
+                                            src="/icon/male.svg"
+                                            alt="person"
+                                            className="person"
+                                            onClick={() => {
+                                                if (room.student1) removeRoom(room, "student1")
+                                                else selectRoom(room, "student1")
+                                            }}
+                                        />
                                     </span>
                                     <span className="student2">
-                                        <img src="/icon/male.svg" alt="person" className="person" />
+                                        <img style={room.student2 ? { filter: "grayscale(100%)" } : null}
+                                            src="/icon/male.svg"
+                                            alt="person"
+                                            className="person"
+                                            onClick={() => {
+                                                if (room.student2) removeRoom(room, "student2")
+                                                else selectRoom(room, "student2")
+                                            }}
+                                        />
                                     </span>
                                 </span>
                                 {room.profileId}
                             </div>
-                        )}
+                        }) : null}
+
                     </div>
                 </div>
-            </div>
+            </div >
         )
     }
 
     useEffect(() => {
         getHeader()
-        setShowBuilding(["E", "A"])
         verifyLogin()
-        if (token) {
-            handleSelectFloor(["E", "A"])
-        }
+        setShowBuilding(["E", "A"])
+        handleSelectFloor(["E", "A"])
     }, [])
 
     return (

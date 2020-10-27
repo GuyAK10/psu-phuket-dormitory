@@ -11,7 +11,7 @@ const checkType = {
     },
     staffType: function (req, res, next) {
         try {
-            if (req.headers.type.type === "Staff") {
+            if (req.headers.type === "Staff") {
                 next();
             }
         } catch (error) {

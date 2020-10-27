@@ -1,11 +1,12 @@
 import React from 'react'
 import Router from 'next/router'
-import { LoginState } from '../utils/context'
+import { GlobalState } from '../utils/context'
 import axios from 'axios'
+import { message, Button, Space } from 'antd';
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const NavigationBar = () => {
-    const { MenuBar, Token, Modal, PreviousRoute } = React.useContext(LoginState)
+    const { MenuBar, Token, Modal, PreviousRoute } = React.useContext(GlobalState)
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar
@@ -27,7 +28,7 @@ const NavigationBar = () => {
 
     const handleRoute = (url) => {
         const session = sessionStorage.getItem('token')
-        if (url === "reserve" || url === "profile") {
+        if (url === "/reserve" || url === "/profile") {
             setPreviousRoute(url)
             if (session)
                 Router.push(url)
@@ -39,6 +40,10 @@ const NavigationBar = () => {
     }
 
     const handleLogin = () => {
+        const logout = () => {
+            message.success('ออกจากระบบเรียบร้อย')
+        }
+
         if (menuBar === "ลงชื่อเข้าใช้") setShowModal(true)
         if (menuBar === "ออกจากระบบ") {
             const { token } = JSON.parse(sessionStorage.getItem("token"))
@@ -47,6 +52,9 @@ const NavigationBar = () => {
             setMenuBar('ลงชื่อเข้าใช้')
             try {
                 axios.delete(`${Endpoint}/logout/${token}`)
+                    .then((res) => {
+                        logout()
+                    })
             } catch (e) {
                 console.error(e)
             }

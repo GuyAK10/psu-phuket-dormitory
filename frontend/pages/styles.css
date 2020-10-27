@@ -301,12 +301,6 @@ img.hamburger {
     filter: invert(100%);
 }
 
-.person:hover {
-    height: 2vw;
-    width: 2vw;
-    filter: invert(36%) sepia(60%) saturate(5593%) hue-rotate(182deg) brightness(92%) contrast(90%);
-}
-
 .student2 {
     flex: 1;
     display: flex;
@@ -398,11 +392,6 @@ img.hamburger {
         height: 4vw;
         width: 4vw;
         filter: invert(100%);
-    }
-    .person:hover {
-        height: 4vw;
-        width: 4vw;
-        filter: invert(36%) sepia(60%) saturate(5593%) hue-rotate(182deg) brightness(92%) contrast(90%);
     }
     .student2 {
         flex: 1;

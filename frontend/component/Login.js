@@ -1,11 +1,12 @@
 import React from 'react'
 import axios from 'axios'
 import qs from 'qs'
-import { LoginState } from '../utils/context'
+import { message, Button, Space } from 'antd';
+import { GlobalState } from '../utils/context'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const Login = ({ children }) => {
-    const { MenuBar, Token, Modal, AxiosConfig } = React.useContext(LoginState)
+    const { MenuBar, Token, Modal, AxiosConfig } = React.useContext(GlobalState)
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar
@@ -26,6 +27,9 @@ const Login = ({ children }) => {
 
     const getAuthen = async () => {
         try {
+            const success = () => {
+                message.success('เข้าสู้ระบบแล้ว')
+            }
             const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -42,6 +46,7 @@ const Login = ({ children }) => {
                     }
                 })
                 setMenuBar('ออกจากระบบ')
+                success()
             }
             else if (result.status === 401) {
                 setToken(null)
@@ -54,10 +59,6 @@ const Login = ({ children }) => {
         if (e.key === "Enter")
             getAuthen()
     }
-
-    React.useEffect(() => {
-
-    }, [])
 
     if (showModal) return (
         <>
@@ -76,8 +77,7 @@ const Login = ({ children }) => {
                     <label htmlFor="สถานะ" className="status">สถานะ</label>
                     <select name="type" onChange={handleForm}>
                         <option value="Students">นักศึกษา</option>
-                        <option value="Staff">เจ้าหน้าที่</option>
-                        <option value="อาจารย์">อาจารย์</option>
+                        <option value="Staff">เจ้าหน้าที่/อาจารย์</option>
                     </select>
                     <button onClick={getAuthen}>Login</button>
                 </div>

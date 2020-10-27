@@ -1,12 +1,13 @@
 import React from 'react'
 import axios from 'axios'
 import qs from 'qs'
-import { LoginState } from '../utils/context'
+import { GlobalState } from '../utils/context'
+import { message, Button, Space } from 'antd';
 import Router from 'next/router'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const Login = () => {
-    const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute } = React.useContext(LoginState)
+    const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute } = React.useContext(GlobalState)
     const [previousRoute] = PreviousRoute
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
@@ -28,11 +29,16 @@ const Login = () => {
 
     const getAuthen = async () => {
         try {
+            const success = () => {
+                message.success('เข้าสู้ระบบแล้ว')
+            }
+            
             const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
+
             if (result.status === 200 && result.data.token) {
                 sessionStorage.setItem('token', JSON.stringify(result.data))
                 setShowModal(false)
@@ -44,12 +50,13 @@ const Login = () => {
                     }
                 })
                 setMenuBar('ออกจากระบบ')
-                if (previousRoute !== null) Router.push(previousRoute)
+                if (previousRoute) {
+                    Router.push(previousRoute)
+                }
+                success()
             }
             else if (result.status === 401) {
                 setToken(null)
-                // sessionStorage.removeItem("token")
-                // setMenuBar('ลงชื่อเข้าใช้')
             }
         } catch (e) {
             console.log(e)
@@ -87,7 +94,7 @@ const Login = () => {
                     <option value="Students">นักศึกษา</option>
                     <option value="Staff">เจ้าหน้าที่/อาจารย์</option>
                 </select>
-                <button onClick={getAuthen}>Login</button>
+                <button className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-5" onClick={getAuthen}>Login</button>
             </div>
             <style jsx>{`
                     .login-page-container {
@@ -122,12 +129,9 @@ const Login = () => {
                     .login-form > input, select {
                         width: 30em;
                     }
-                    .login-form > input, select, button {
+                    .login-form > input, select {
                         border-radius: 5px;
                         height: 2em;
-                    }
-                    .login-form > button {
-                        margin: 2em 0 0 0;
                     }
             `}</style>
         </div>

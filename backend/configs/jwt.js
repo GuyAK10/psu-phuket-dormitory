@@ -6,37 +6,40 @@ const db = firebase.firestore()
 const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 
 const createToken = async (user, responseData, _req, res) => {
+      try {
+            if (responseData.userId === null && responseData.role === null) {
 
-      if (responseData.userId === null && responseData.role === null) {
+                  res.status(401).send("ID หรือ Password ผิด");
+            } else {
+                  if (user.type == responseData.role) {
 
-            res.status(401).send("ID หรือ Password ผิด");
-      } else {
-            if (user.type == responseData.role) {
-
-                  const payload = {
-                        id: responseData.userId,
-                        type: responseData.role,
-                        exp: Date.now() + (1000 * 60 * 60)
+                        const payload = {
+                              id: responseData.userId,
+                              type: responseData.role,
+                              exp: Date.now() + (1000 * 60 * 60)
+                        }
+                        let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
+                        const docRef = db.collection('token');
+                        const register = docRef.doc(`${responseData.userId}`)
+                        await register.set({
+                              login: true,
+                              id: responseData.userId,
+                              type: responseData.role,
+                              token: encoded
+                        });
+                        res.status(200).send({
+                              login: true,
+                              id: responseData.userId,
+                              type: responseData.role,
+                              token: encoded
+                        })
                   }
-                  let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
-                  const docRef = db.collection('token');
-                  const register = docRef.doc(`${responseData.userId}`)
-                  await register.set({
-                        login: true,
-                        id: responseData.userId,
-                        type: responseData.role,
-                        token: encoded
-                  });
-                  res.status(200).send({
-                        login: true,
-                        id: responseData.userId,
-                        type: responseData.role,
-                        token: encoded
-                  })
+                  else {
+                        res.status(400).send("สถานะไม่ถูกต้อง")
+                  }
             }
-            else {
-                  res.status(400).send(สถานะไม่ถูกต้อง)
-            }
+      } catch (e) {
+            console.error(e)
       }
 }
 
@@ -53,17 +56,17 @@ const verifyHeader = async (req, res, next) => {
                   }
                   if (isExpToken.token !== token) {
                         console.log("Not authorization")
-                        res.status(401).send('Not authorization')
+                        res.status(401).send({ code: 401, status: "logout", message: "Not Authorization" })
                   }
                   if (+decode.exp < Date.now()) {
-                        console.log("token expired")
-                        res.status(401).send('Token expired')
+                        console.log("Token expired")
+                        res.status(401).send({ code: 401, status: "logout", message: "Token expired" })
                   }
                   else next()
 
             } else {
                   console.log("Please Login")
-                  res.status(401).send('Please Login')
+                  res.status(401).send({ code: 401, status: "logout", message: "Please login" })
             }
       } catch (e) {
             res.sendStatus(400);

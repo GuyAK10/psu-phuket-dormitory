@@ -7,12 +7,14 @@
     "antd": "^4.7.3",
     "axios": "^0.20.0",
     "firebase": "^7.20.0",
+    "gsap": "^3.5.1",
     "next": "^9.5.2",
     "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "recoil": "^0.0.13",
-    "tailwindcss": "^1.9.5"
+    "tailwindcss": "^1.9.5",
+    "use-http": "^1.0.15"
   },
   "scripts": {
     "dev": "next dev",
