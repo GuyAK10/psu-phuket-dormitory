@@ -12,7 +12,7 @@ const uploader = multer({
   }
 });
 
-router.post('/student/profile/upload/:studentId' , uploader.single('img'), (req, res) => {
+router.post('/student/profile/upload/:studentId', uploader.single('img'), (req, res) => {
   try {
     const id = req.params.studentId
     const folder = 'profile'
@@ -39,14 +39,12 @@ router.post('/student/profile/upload/:studentId' , uploader.single('img'), (req,
 
 });
 
-router.get('/student/profile/picture/studentId' , (req, res) => {
+router.get('/student/profile/picture/studentId', (req, res) => {
   try {
-
     const file = bucket.file(`profile/${req.params.studentId}`);
     file.download().then(downloadResponse => {
       res.status(200).send(downloadResponse[0]);
     });
-
   } catch (error) {
     res.sendStatus(400);
   }
@@ -64,7 +62,7 @@ router.get('/student/profile/:studentId', async (req, res) => {
   }
 });
 
-router.post('/student/profile/:studentId',  (req, res) => {
+router.post('/student/profile/:studentId', (req, res) => {
   try {
     const user = {
       profile: {

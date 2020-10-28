@@ -5,7 +5,6 @@ import NavigationBar from '../component/NavigationBar'
 import Footer from '../component/Footer'
 import { GlobalState } from '../utils/context'
 import LoginModal from '../component/login'
-import { RecoilRoot } from 'recoil'
 import React, { useState } from 'react'
 
 const MyApp = ({ Component, pageProps }) => {
@@ -26,18 +25,16 @@ const MyApp = ({ Component, pageProps }) => {
                 PreviousRoute: [previousRoute, setPreviousRoute],
                 Students: [students, setStudents]
             }}>
-            <div className="root-container">
+            <div className="root-container h-screen">
                 <NavigationBar />
                 <LoginModal>
-                    <RecoilRoot>
-                        <Component {...pageProps} />
-                    </RecoilRoot>
+                    <Component {...pageProps} />
                     <style jsx global>{`
                             html, body{
                                 margin:0;
                                 padding:0;
                                 /*background: hsla(0, 0%, 80%, .65);*/
-                                width:100vw;
+                                min-width:100vw;
                                 font-size: 16px;
                             }
                       `}</style>

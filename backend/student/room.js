@@ -120,7 +120,7 @@ router.post('/student/room', async (req, res) => {
 
             const isBooked = await bookInfomation(profileData, res)
             if (isBooked) {
-                res.status(200).send("จองแล้ว")
+                res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใข้ก่อน" })
             } else if (!isBooked) {
                 bookingRoom(bookRoom, floorId, roomId, orderId, res)
             }
@@ -141,13 +141,13 @@ router.post('/student/room/remove', async (req, res) => {
                 res.status(200).send({ code: 200, success: true, message: "deleted" })
             }
             else {
-                console.log("ลบไม่ได้")
-                res.status(200).send({ code: 200, success: false, message: "ผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
+                res.status(200).send({ code: 200, success: false, message: "ไม่สามารถยกเลิกการจองของผู้อื่นได้" })
             }
         })
     } catch (error) {
         console.log(error)
-        res.sendStatus(400);
+        res.status(200).send({ code: 200, success: false, message: "ผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
+
     }
 })
 

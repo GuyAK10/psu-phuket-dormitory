@@ -14,9 +14,9 @@ const Index = () => {
         <div className="index-container">
             <img className="index-background" src='background/cover.jpg' alt="cover" />
             <div className="Card-container">
-                {news.map((item, key) =>
+                {/* {news.map((item, key) =>
                     <Card key={key} item={item} />
-                )}
+                )} */}
             </div>
             <style jsx>{`
                     .Card-container{
