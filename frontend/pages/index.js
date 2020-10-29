@@ -25,16 +25,10 @@ const Index = () => {
                         display: flex;
                         flex-direction: row;
                         flex-wrap: wrap;
-                        /*background: rgb(26, 62, 112);
-                        background: linear-gradient(180deg, rgba(26, 62, 112, 1) 0%, rgba(22, 119, 125, 1) 120%);*/
                     }
             `}</style>
         </div>
     )
 }
 
-// Index.getInitialProps = async (ctx) => {
-
-//     return { result: "Test" }
-// }
 export default Index

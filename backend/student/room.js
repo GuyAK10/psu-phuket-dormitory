@@ -106,7 +106,7 @@ router.post('/student/room', async (req, res) => {
 
         const studentRef = await profileRef.get()
         if (!studentRef.exists) {
-            res.status(200).send({ code: 200, success: true, message: "กรุณาบันทึกข้อมูลผู้ใข้ก่อน" })
+            res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใข้ก่อน" })
         }
         else {
             const profileData = studentRef.data()
@@ -120,7 +120,7 @@ router.post('/student/room', async (req, res) => {
 
             const isBooked = await bookInfomation(profileData, res)
             if (isBooked) {
-                res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใข้ก่อน" })
+                res.status(200).send({ code: 200, success: false, message: "ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง" })
             } else if (!isBooked) {
                 bookingRoom(bookRoom, floorId, roomId, orderId, res)
             }

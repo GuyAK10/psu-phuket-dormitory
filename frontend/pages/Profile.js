@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import axios from 'axios'
 import { message, Steps, Button, } from 'antd';
@@ -8,7 +8,6 @@ const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const STP = Steps.Step;
 const profile = () => {
-    const { get, post } = useFetch(`${Endpoint}/student/profile`)
     const { AxiosConfig, Token } = React.useContext(GlobalState)
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
@@ -101,6 +100,8 @@ const profile = () => {
             position: ""
         }
     })
+    
+    const { get, post } = useFetch(`${Endpoint}/student/profile`, axiosConfig)
 
     const handleFormprofile = (e) => {
         setForm({
@@ -204,7 +205,7 @@ const profile = () => {
     }
 
     const handleSubmit = (e) => {
-        const { id } = JSON.parse(sessionStorage.getItem('token'))
+        const { id } = JSON.parse(sessionStorage.getItem('token')) || token
 
         const success = () => {
             message.success('บันทึกข้อมูลเรียบร้อยแล้ว');
@@ -264,14 +265,20 @@ const profile = () => {
     }
 
     const getInitialProfile = async () => {
-        if (sessionStorage.getItem('token')) {
-            const { id } = JSON.parse(sessionStorage.getItem('token'))
-            const studentProfile = await get(`/${id}`)
-            setForm(studentProfile)
+        try {
+            if (sessionStorage.getItem('token')) {
+                const token = await JSON.parse(sessionStorage.getItem('token'))
+                const studentProfile = await get(`/${token.id}`)
+                console.log(studentProfile)
+                setForm(studentProfile)
+            }
+        }
+        catch (error) {
+            console.error(error)
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         verifyLogin()
         getHeader()
         getInitialProfile()
@@ -280,7 +287,7 @@ const profile = () => {
     const steps = [
         {
             title: 'ข้อมูลเบื้องต้น',
-            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเบื้องต้น</h2>
                 <label>รหัสนักศึกษา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.id} name="id" onChange={handleFormprofile} />
@@ -304,11 +311,11 @@ const profile = () => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.department} name="department" onChange={handleFormprofile} />
                 <label>Line ID</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.line} name="line" onChange={handleFormprofile} />
-            </div>
+            </div> : null
         },
         {
             title: 'ข้อมูลติดต่อ',
-            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลติดต่อ</h2>
                 <label>เบอร์โทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.tel} name="tel" onChange={handleFormContact} />
@@ -334,11 +341,11 @@ const profile = () => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.province} name="province" onChange={handleFormContact} />
                 <label>รหัสไปรษณีย์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.postalcode} name="postalcode" onChange={handleFormContact} />
-            </div>
+            </div> : null
         },
         {
             title: 'ข้อมูลการศึกษา',
-            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลการศึกษา</h2>
                 <label>จบจากโรงเรียน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.school} name="school" onChange={handleFormInformation} />
@@ -358,11 +365,11 @@ const profile = () => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.disease} name="desease" onChange={handleFormInformation} />
                 <label>แพ้ยา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.drugallergy} name="drugallergy" onChange={handleFormInformation} />
-            </div>
+            </div> : null
         },
         {
             title: 'เพื่อนสนิท',
-            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>เพื่อนสนิท</h2>
                 <label>ชื่อจริง</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.name} name="name" onChange={handleFormFriend} />
@@ -376,11 +383,11 @@ const profile = () => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.faculty} name="faculty" onChange={handleFormFriend} />
                 <label>สาขา/ภาควิชา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.department} name="department" onChange={handleFormFriend} />
-            </div>
+            </div> : null
         },
         {
             title: 'ข้อมูลเกี่ยวกับครอบครัว',
-            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเกี่ยวกับครอบครัว</h2>
                 <label>ชื่อจริงบิดา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.name} name="name" onChange={handleFormFamily.dad} />
@@ -434,11 +441,11 @@ const profile = () => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.tel} name="tel" onChange={handleFormFamily.emergency} />
                 <label>ระบบเครือข่ายโทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.network} name="network" onChange={handleFormFamily.emergency} />
-            </div>
+            </div> : null
         },
         {
             title: 'ข้อมูลอื่น ๆ',
-            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลอื่น ๆ</h2>
                 <label>ความสามารถพิเศษ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.talent} name="talent" onChange={handleFormOther} />
@@ -446,7 +453,7 @@ const profile = () => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.character} name="character" onChange={handleFormOther} />
                 <label>เคยได้รับตำแหน่งใดในมหาวิทยาลัย/โรงเรียน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.position} name="position" onChange={handleFormOther} />
-            </div>
+            </div> : null
         },
     ];
 
@@ -461,7 +468,6 @@ const profile = () => {
             <div className="steps-action">
                 {current < steps.length - 1 && (
                     <Button type="primary" onClick={() => {
-                        console.log('inc')
                         setCurrent(prev => prev + 1)
                     }}>
                         Next

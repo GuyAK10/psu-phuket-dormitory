@@ -12,7 +12,7 @@ const Endpoint = process.env.END_POINT || 'http://localhost'
 const reserve = () => {
     const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
     const [menuBar, setMenuBar] = MenuBar
-    const [axiosConfig] = AxiosConfig
+    const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
@@ -39,7 +39,15 @@ const reserve = () => {
     }
 
     const getHeader = () => {
-        if (sessionStorage.getItem('token')) setToken(JSON.parse(sessionStorage.getItem('token')))
+        if (sessionStorage.getItem('token')) {
+            setToken(JSON.parse(sessionStorage.getItem('token')))
+            setAxiosConfig({
+                headers: {
+                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                    type: JSON.parse(sessionStorage.getItem('token')).type
+                }
+            })
+        }
         else Logout()
     }
 

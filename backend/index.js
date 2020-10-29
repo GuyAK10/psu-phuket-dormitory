@@ -20,7 +20,7 @@ app.use(accessControl)
 // app.use('/staff', verifyHeader, staffType)
 app.use(staffprofile);
 app.use(staffRoom);
-// app.use('/student', verifyHeader, studentType)
+app.use('/student', verifyHeader, studentType)
 app.use(studentprofile);
 app.use(studentRoom);
 

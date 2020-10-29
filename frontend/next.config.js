@@ -8,7 +8,7 @@ module.exports = {
             '/login': { page: '/login' },
             '/profile': { page: '/profile' },
             '/reserve': { page: '/reserve' },
-            '/admin/profile': { page: '/admin/profile' },
+            '/admin/profiles': { page: '/admin/profiles' },
             '/admin/reserve': { page: '/admin/reserve' },
         }
     },

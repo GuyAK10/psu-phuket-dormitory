@@ -8,7 +8,6 @@ const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 const createToken = async (user, responseData, _req, res) => {
       try {
             if (responseData.userId === null && responseData.role === null) {
-
                   res.status(401).send("ID หรือ Password ผิด");
             } else {
                   if (user.type == responseData.role) {
@@ -40,6 +39,7 @@ const createToken = async (user, responseData, _req, res) => {
             }
       } catch (e) {
             console.error(e)
+            res.status(400).send({ code: 400, success: false, message: "เกิดข้อผิดพลาด" + e })
       }
 }
 
@@ -56,7 +56,7 @@ const verifyHeader = async (req, res, next) => {
                   }
                   if (isExpToken.token !== token) {
                         console.log("Not authorization")
-                        res.status(401).send({ code: 401, status: "logout", message: "Not Authorization" })
+                        res.status(401).send({ code: 401, status: "logout", message: "ไม่อนุญาติให้ใช้งาน" })
                   }
                   if (+decode.exp < Date.now()) {
                         console.log("Token expired")
@@ -66,9 +66,10 @@ const verifyHeader = async (req, res, next) => {
 
             } else {
                   console.log("Please Login")
-                  res.status(401).send({ code: 401, status: "logout", message: "Please login" })
+                  res.status(401).send({ code: 401, status: "logout", message: "เกิดข้อผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
             }
       } catch (e) {
+            console.log(e)
             res.sendStatus(400);
       }
 }

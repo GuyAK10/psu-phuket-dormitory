@@ -28,7 +28,6 @@ router.delete('/logout/:token', async (req, res) => {
     }
 })
 
-
 //create token
 router.post('/', (req, res) => {
     try {
@@ -45,12 +44,13 @@ router.post('/', (req, res) => {
                     }
                     createToken(user, responseData, req, res)
                 } catch (error) {
+                    console.log(error)
                     res.sendStatus(501)
                 }
-
             });
         });
     } catch (error) {
+        console.log(error)
         res.status(400).send(error);
     }
 })

@@ -28,11 +28,13 @@ const Login = () => {
     }
 
     const getAuthen = async () => {
+        const fail = () => {
+            message.warn('ID หรือ รหัสผ่านผิดพลาด')
+        }
+        const success = () => {
+            message.success('เข้าสู้ระบบแล้ว')
+        }
         try {
-            const success = () => {
-                message.success('เข้าสู้ระบบแล้ว')
-            }
-            
             const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -56,9 +58,11 @@ const Login = () => {
                 success()
             }
             else if (result.status === 401) {
+                fail()
                 setToken(null)
             }
         } catch (e) {
+            fail()
             console.log(e)
         }
     }
@@ -92,7 +96,7 @@ const Login = () => {
                 <label htmlFor="สถานะ" className="status">สถานะ</label>
                 <select name="type" onChange={handleForm}>
                     <option value="Students">นักศึกษา</option>
-                    <option value="Staff">เจ้าหน้าที่/อาจารย์</option>
+                    <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
                 </select>
                 <button className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-5" onClick={getAuthen}>Login</button>
             </div>

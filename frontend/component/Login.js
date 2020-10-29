@@ -26,6 +26,9 @@ const Login = ({ children }) => {
     }
 
     const getAuthen = async () => {
+        const fail = () => {
+            message.warn('ID หรือรหัสผ่านผิดพลาด')
+        }
         try {
             const success = () => {
                 message.success('เข้าสู้ระบบแล้ว')
@@ -52,6 +55,7 @@ const Login = ({ children }) => {
                 setToken(null)
             }
         } catch (e) {
+            fail()
             console.log(e)
         }
     }
@@ -77,7 +81,7 @@ const Login = ({ children }) => {
                     <label htmlFor="สถานะ" className="status">สถานะ</label>
                     <select name="type" onChange={handleForm}>
                         <option value="Students">นักศึกษา</option>
-                        <option value="Staff">เจ้าหน้าที่/อาจารย์</option>
+                        <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
                     </select>
                     <button onClick={getAuthen}>Login</button>
                 </div>
