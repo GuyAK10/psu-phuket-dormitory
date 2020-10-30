@@ -6,7 +6,8 @@ import Loading from '../../../component/Loading'
 import { message, Tooltip } from 'antd';
 import useFetch from 'use-http'
 import { TweenMax } from 'gsap'
-const Endpoint = process.env.END_POINT || 'http://localhost'
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const reserve = () => {
     const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
@@ -58,7 +59,7 @@ const reserve = () => {
         let floorDetails = []
         setIsLoading(false)
         try {
-            await axios.get(`${Endpoint}/student/room/floor${floor[0]}`, axiosConfig)
+            await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[0]}`, axiosConfig)
                 .then(res => {
                     floorDetails[0] = { ...res.data.result }
                 })
@@ -67,7 +68,7 @@ const reserve = () => {
                     Logout()
                 })
 
-            await axios.get(`${Endpoint}/student/room/floor${floor[1]}`, axiosConfig)
+            await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[1]}`, axiosConfig)
                 .then(res => {
                     floorDetails[1] = { ...res.data.result }
                 })
@@ -149,7 +150,11 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
+<<<<<<< HEAD
         const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
+=======
+        const { post } = useFetch(`${ENV_ENPOINT}/student/room`)
+>>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -389,4 +394,5 @@ const reserve = () => {
         </div>
     )
 }
+
 export default reserve

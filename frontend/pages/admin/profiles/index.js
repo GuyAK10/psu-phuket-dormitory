@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react'
 import { GlobalState } from '../../../utils/context'
 import axios from 'axios'
 import Router from 'next/router'
-const Endpoint = process.env.END_POINT || 'http://localhost'
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const profile = () => {
     const { AxiosConfig, Token, Students } = useContext(GlobalState)
@@ -138,7 +139,7 @@ const profile = () => {
 
     const getStudent = async () => {
         try {
-            const result = await axios.get(`${Endpoint}/staff/profile/`)
+            const result = await axios.get(`${ENDPOINT}:${PORT}/staff/profile/`)
             console.log(result.data)
             setStudents(result.data)
         } catch (e) {

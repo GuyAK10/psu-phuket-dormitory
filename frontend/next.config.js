@@ -1,3 +1,4 @@
+require('dotenv').config()
 module.exports = {
     exportPathMap: async function (
         defaultPathMap,
@@ -14,6 +15,8 @@ module.exports = {
     },
     env: {
         dev: "http://localhost",
-        production: ""
+        production: "",
+        ENDPOINT: process.env.END_POINT,
+        PORT: process.env.PORT,
     }
 }

@@ -2,9 +2,10 @@ import React from 'react'
 import axios from 'axios'
 import qs from 'qs'
 import { GlobalState } from '../utils/context'
-import { message, Button, Space } from 'antd';
+import { message } from 'antd';
 import Router from 'next/router'
-const Endpoint = process.env.END_POINT || 'http://localhost'
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const Login = () => {
     const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute } = React.useContext(GlobalState)
@@ -35,7 +36,8 @@ const Login = () => {
             message.success('เข้าสู้ระบบแล้ว')
         }
         try {
-            const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
+            console.log(ENDPOINT, PORT)
+            const result = await axios.post(`${ENDPOINT}:${PORT}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }

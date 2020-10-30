@@ -2,3 +2,4 @@
 node_modules
 out
 debug.log
+.env*

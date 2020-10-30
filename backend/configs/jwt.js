@@ -4,6 +4,7 @@ const firebase = require('./firebase')
 const tokenRef = firebase.firestore().collection('token')
 const db = firebase.firestore()
 const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
+// const privateKey = process.env.PRIVATE_KEY
 
 const createToken = async (user, responseData, _req, res) => {
       try {

@@ -1,9 +1,10 @@
 import React from 'react'
 import axios from 'axios'
 import qs from 'qs'
-import { message, Button, Space } from 'antd';
+import { message } from 'antd';
 import { GlobalState } from '../utils/context'
-const Endpoint = process.env.END_POINT || 'http://localhost'
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const Login = ({ children }) => {
     const { MenuBar, Token, Modal, AxiosConfig } = React.useContext(GlobalState)
@@ -33,7 +34,7 @@ const Login = ({ children }) => {
             const success = () => {
                 message.success('เข้าสู้ระบบแล้ว')
             }
-            const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
+            const result = await axios.post(`${ENDPOINT}:${PORT}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
