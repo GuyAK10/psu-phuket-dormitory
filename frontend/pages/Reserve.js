@@ -158,7 +158,7 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
-        const { post } = useFetch(`${Endpoint}/student/room`)
+        const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -189,7 +189,7 @@ const reserve = () => {
                     orderId: student
                 }
 
-                const data = await post(`/`, body)
+                const data = await post(`/`, body,axiosConfig)
 
                 if (!data.success) message.error(data.message)
 
@@ -223,7 +223,7 @@ const reserve = () => {
                 }
 
                 // const reserve = await axios.post()
-                const data = await post(`/remove`, body)
+                const data = await post(`/remove`, body,axiosConfig)
 
                 if (!data.success) {
                     message.error(data.message)

@@ -26,17 +26,16 @@ router.get('/staff/room/:floorId/', async (req, res) => {
             const roomRef = await docRef.get()
             let result = [];
 
-            roomRef.forEach(profile => {
-
-                  let profileList = {
-                        profileId: '',
+            roomRef.forEach(floors => {
+                  let floorList = {
+                      floorId: '',
                   }
-
-                  profileList.profileId = profile.id
-                  Object.assign(profileList, profile.data())
-                  result.push(profileList)
-
-            })
+  
+                  floorList.floorId = floors.id
+                  Object.assign(floorList, floors.data())
+                  result.push(floorList)
+  
+              })
             res.status(200).send(result);
 
       } catch (error) {
