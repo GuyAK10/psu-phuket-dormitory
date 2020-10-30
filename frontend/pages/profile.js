@@ -4,9 +4,12 @@ import axios from 'axios'
 import { message, Steps, Button, } from 'antd';
 import Router from 'next/router';
 import useFetch from 'use-http'
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
-const STP = Steps.Step;
-const profile = ({ Endpoint, PORT }) => {
+const { Step } = Steps;
+
+const profile = () => {
     const { AxiosConfig, Token } = React.useContext(GlobalState)
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
@@ -100,7 +103,7 @@ const profile = ({ Endpoint, PORT }) => {
         }
     })
 
-    const { get, post } = useFetch(`${Endpoint}:${PORT}/student/profile`, axiosConfig)
+    const { get, post } = useFetch(`${ENDPOINT}:${PORT}/student/profile`, axiosConfig)
 
     const handleFormprofile = (e) => {
         setForm({
@@ -215,7 +218,7 @@ const profile = ({ Endpoint, PORT }) => {
         };
 
         try {
-            axios.post(`${Endpoint}/student/profile/${id}`, form, axiosConfig).then(res => {
+            axios.post(`${ENDPOINT}/student/profile/${id}`, form, axiosConfig).then(res => {
                 if (res.status === 200) {
                     console.log("Submit success")
                     success()
@@ -460,7 +463,7 @@ const profile = ({ Endpoint, PORT }) => {
         <div className="profile-container h-auto flex flex-col items-center">
             <Steps current={current}>
                 {steps.map(item => (
-                    <STP key={item.title} title={item.title} />
+                    <Step key={item.title} title={item.title} />
                 ))}
             </Steps>
             <div className="steps-content">{steps[current].content}</div>
@@ -487,10 +490,6 @@ const profile = ({ Endpoint, PORT }) => {
             </div>
         </div>
     )
-}
-
-profile.getInitialProps = () => {
-    return { Endpoint: process.env.END_POINT, PORT: process.env.PORT }
 }
 
 export default profile

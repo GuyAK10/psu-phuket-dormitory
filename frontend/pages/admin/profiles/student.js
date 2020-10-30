@@ -3,10 +3,11 @@ import { GlobalState } from '../../../utils/context'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import useFetch from 'use-http'
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
-const Endpoint = process.env.END_POINT || 'http://localhost'
 const profile = ({ profileId }) => {
-    const { get, loading } = useFetch(`${Endpoint}`)
+    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`)
     const { Students } = useContext(GlobalState)
     const [student, setStudent] = useState({
         profile: {
@@ -274,7 +275,9 @@ const profile = ({ profileId }) => {
 }
 
 profile.getInitialProps = async ({ query }) => {
-    return { profileId: query.profileId }
+    return {
+        profileId: query.profileId,
+    }
 }
 
 export default profile

@@ -3,7 +3,7 @@ import Router from 'next/router'
 import { GlobalState } from '../utils/context'
 import axios from 'axios'
 import { message, Button, Space } from 'antd';
-const Endpoint = process.env.END_POINT || 'http://localhost'
+const ENV_ENPOINT = process.env.END_POINT || 'http://localhost'
 
 const NavigationBar = () => {
     const { MenuBar, Token, Modal, PreviousRoute } = React.useContext(GlobalState)
@@ -51,7 +51,7 @@ const NavigationBar = () => {
             sessionStorage.removeItem('token')
             setMenuBar('ลงชื่อเข้าใช้')
             try {
-                axios.delete(`${Endpoint}/logout/${token}`)
+                axios.delete(`${ENV_ENPOINT}/logout/${token}`)
                     .then((res) => {
                         logout()
                     })
