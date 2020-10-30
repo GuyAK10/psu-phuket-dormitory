@@ -4,8 +4,9 @@ import qs from 'qs'
 import { GlobalState } from '../utils/context'
 import { message } from 'antd';
 import Router from 'next/router'
+import { processEnv } from 'next/dist/lib/load-env-config';
 
-const Login = ({ Endpoint }) => {
+const Login = ({ Endpoint, PORT }) => {
     const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute } = React.useContext(GlobalState)
     const [previousRoute] = PreviousRoute
     const [token, setToken] = Token
@@ -34,7 +35,7 @@ const Login = ({ Endpoint }) => {
             message.success('เข้าสู้ระบบแล้ว')
         }
         try {
-            const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
+            const result = await axios.post(`${Endpoint}:${PORT}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -142,7 +143,7 @@ const Login = ({ Endpoint }) => {
 }
 
 Login.getInitialProps = () => {
-    return { Endpoint: process.env.END_POINT }
+    return { Endpoint: process.env.END_POINT, PORT: process.env.PORT }
 }
 
 export default Login

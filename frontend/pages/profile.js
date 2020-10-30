@@ -6,7 +6,7 @@ import Router from 'next/router';
 import useFetch from 'use-http'
 
 const STP = Steps.Step;
-const profile = ({ Endpoint }) => {
+const profile = ({ Endpoint, PORT }) => {
     const { AxiosConfig, Token } = React.useContext(GlobalState)
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
@@ -100,7 +100,7 @@ const profile = ({ Endpoint }) => {
         }
     })
 
-    const { get, post } = useFetch(`${Endpoint}/student/profile`, axiosConfig)
+    const { get, post } = useFetch(`${Endpoint}:${PORT}/student/profile`, axiosConfig)
 
     const handleFormprofile = (e) => {
         setForm({
@@ -490,7 +490,7 @@ const profile = ({ Endpoint }) => {
 }
 
 profile.getInitialProps = () => {
-    return { Endpoint: process.env.END_POINT }
+    return { Endpoint: process.env.END_POINT, PORT: process.env.PORT }
 }
 
 export default profile

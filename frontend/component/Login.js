@@ -5,7 +5,7 @@ import { message, Button, Space } from 'antd';
 import { GlobalState } from '../utils/context'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
-const Login = ({ children, Endpoint }) => {
+const Login = ({ children, Endpoint, PORT }) => {
     const { MenuBar, Token, Modal, AxiosConfig } = React.useContext(GlobalState)
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
@@ -33,7 +33,7 @@ const Login = ({ children, Endpoint }) => {
             const success = () => {
                 message.success('เข้าสู้ระบบแล้ว')
             }
-            const result = await axios.post(`${Endpoint}`, qs.stringify(form), {
+            const result = await axios.post(`${Endpoint}:${PORT}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -121,7 +121,7 @@ const Login = ({ children, Endpoint }) => {
 }
 
 Login.getInitialProps = () => {
-    return { Endpoint: process.env.END_POINT }
+    return { Endpoint: process.env.END_POINT, PORT: process.env.PORT }
 }
 
 export default Login
