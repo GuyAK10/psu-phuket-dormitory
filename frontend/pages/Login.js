@@ -2,11 +2,10 @@ import React from 'react'
 import axios from 'axios'
 import qs from 'qs'
 import { GlobalState } from '../utils/context'
-import { message, Button, Space } from 'antd';
+import { message } from 'antd';
 import Router from 'next/router'
-const Endpoint = process.env.END_POINT || 'http://localhost'
 
-const Login = () => {
+const Login = ({ Endpoint }) => {
     const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute } = React.useContext(GlobalState)
     const [previousRoute] = PreviousRoute
     const [token, setToken] = Token
@@ -140,6 +139,10 @@ const Login = () => {
             `}</style>
         </div>
     )
+}
+
+Login.getInitialProps = () => {
+    return { Endpoint: process.env.END_POINT }
 }
 
 export default Login

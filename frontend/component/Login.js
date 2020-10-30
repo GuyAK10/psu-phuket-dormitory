@@ -5,7 +5,7 @@ import { message, Button, Space } from 'antd';
 import { GlobalState } from '../utils/context'
 const Endpoint = process.env.END_POINT || 'http://localhost'
 
-const Login = ({ children }) => {
+const Login = ({ children, Endpoint }) => {
     const { MenuBar, Token, Modal, AxiosConfig } = React.useContext(GlobalState)
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
@@ -118,6 +118,10 @@ const Login = ({ children }) => {
         </>
     )
     else return <div>{children}</div>
+}
+
+Login.getInitialProps = () => {
+    return { Endpoint: process.env.END_POINT }
 }
 
 export default Login

@@ -4,10 +4,9 @@ import axios from 'axios'
 import { message, Steps, Button, } from 'antd';
 import Router from 'next/router';
 import useFetch from 'use-http'
-const Endpoint = process.env.END_POINT || 'http://localhost'
 
 const STP = Steps.Step;
-const profile = () => {
+const profile = ({ Endpoint }) => {
     const { AxiosConfig, Token } = React.useContext(GlobalState)
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
@@ -100,7 +99,7 @@ const profile = () => {
             position: ""
         }
     })
-    
+
     const { get, post } = useFetch(`${Endpoint}/student/profile`, axiosConfig)
 
     const handleFormprofile = (e) => {
@@ -488,6 +487,10 @@ const profile = () => {
             </div>
         </div>
     )
+}
+
+profile.getInitialProps = () => {
+    return { Endpoint: process.env.END_POINT }
 }
 
 export default profile

@@ -7,9 +7,7 @@ import { message } from 'antd';
 import useFetch from 'use-http'
 import { TweenMax } from 'gsap'
 
-const Endpoint = process.env.END_POINT || 'http://localhost'
-
-const reserve = () => {
+const reserve = ({ Endpoint }) => {
     const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
     const [menuBar, setMenuBar] = MenuBar
     const [axiosConfig, setAxiosConfig] = AxiosConfig
@@ -361,4 +359,9 @@ const reserve = () => {
         </div>
     )
 }
+
+reserve.getInitialProps = () => {
+    return { Endpoint: process.env.END_POINT }
+}
+
 export default reserve
