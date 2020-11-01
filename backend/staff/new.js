@@ -1,14 +1,12 @@
 const express = require('express');
 const firestore = require('../configs/firebase')
 const multer = require('multer');
+const { storage } = require('../configs/firebase');
 
 const router = express.Router()
 const bucket = firestore.storage().bucket()
 const uploader = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-        fileSize: 5 * 1024 * 1024
-    }
+    storage: storage
 });
 
 router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
@@ -49,3 +47,5 @@ router.get('/staff/new/dowload/', (req, res) => {
         res.sendStatus(400);
     }
 });
+
+module.exports = router;

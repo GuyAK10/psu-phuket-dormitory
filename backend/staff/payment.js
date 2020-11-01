@@ -7,64 +7,66 @@ const router = express.Router();
 const bucket = firestore.storage().bucket()
 const db = firestore.firestore()
 
-const uploadBill = async (roomId, month, semester, year, water, electric, total, res) => {
-    try {  
+const uploadBill = async (roomId, month, semester, year, water, electric, total) => {
+    try {
 
         const paymentRef = db.collection(`payment/`).doc(`${semester}-${year}-${month}-${roomId}`)
-        await paymentRef.update({
-            semester:semester,
-            year:year,
-            month:month,
-            roomId:roomId,
-            water:water,
-            electric:electric,
-            total:total 
+        await paymentRef.set({
+            semester: semester,
+            year: year,
+            month: month,
+            roomId: roomId,
+            water: water,
+            electric: electric,
+            total: total
         })
 
         console.log("บันทึกข้อมูลค่าน้ำค่าไฟแล้ว")
-        res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลค่าน้ำค่าไฟแล้ว" });
 
     } catch (error) {
-        console.log(error)
-        res.sendStatus(400);
+
+        throw error
     }
 }
 
-const uploadQr = (payload, options, month, semester, year, roomId, res) => {
+const uploadQr = async (payload, options, month, semester, year, roomId) => {
     try {
-        qrcode.toDataURL(payload, options, (err, png) => {
-            try {
-                console.log(typeof(png))
-                console.log(png)
-                const folder = 'payment'
-                const fileUpload = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
-                const blobStream = fileUpload.createWriteStream({
-                    metadata: {
-                        contentType: png
-                    }
-                });
+        await new Promise((resolve, reject) => {
+            qrcode.toDataURL(payload, options, (err, png) => {
+                try {
 
-                blobStream.on('error', (err) => {
-                    res.status(405).json(err);
-                });
+                    const folder = 'payment'
+                    const fileUpload = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
+                    const blobStream = fileUpload.createWriteStream({
+                        metadata: {
+                            contentType: png
+                        }
+                    });
 
-                blobStream.on('finish', () => {
-                    res.status(200).send('Upload complete!');
-                });
+                    blobStream.on('error', (err) => {
+                        reject(err)
+                    });
 
-                blobStream.end(png.buffer);
+                    blobStream.on('finish', () => {
+                        console.log("Upload complete!")
+                        resolve()
+                    });
 
-            } catch (error) {
-                console.log(error)
-                res.sendStatus(400);
-            }
+                    blobStream.end(png.buffer);
 
+                } catch (error) {
+                    error.custom = "Qr Error"
+                    reject(error)
+                }
+
+            })
         })
+
     } catch (error) {
-        console.log(error)
-        res.sendStatus(400);
+        throw error;
     }
 }
+
 
 router.post('/staff/payment', async (req, res) => {
     try {
@@ -75,8 +77,25 @@ router.post('/staff/payment', async (req, res) => {
 
         // Convert to SVG QR Code
         const options = { type: 'png', color: { dark: '#000', light: '#fff' } }
-        // uploadQr(payload, options, month, semester, year, roomId, res)
-        await uploadBill(roomId, month, semester, year, water, electric, total, res)
+        const status = {
+            qr:false,
+            bill:false
+        }
+
+        try {
+            await uploadQr(payload, options, month, semester, year, roomId)
+            status.qr = true
+        } catch (error) {
+            console.log("QR Error")
+        }
+        try {
+            await uploadBill(roomId, month, semester, year, water, electric, total) 
+            status.bill = true
+        } catch (error) {
+            console.log("Bill Error")
+        }
+        res.send(status);
+
 
     } catch (error) {
         console.log(error)
@@ -86,12 +105,12 @@ router.post('/staff/payment', async (req, res) => {
 
 router.get('/staff/payment', async (req, res) => {
     try {
-        
+
         const { body: { semester, year } } = req
-        const billRef = await db.collection('payment').where("semester","==",semester).where("year","==",year).get()
-        
+        const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).get()
+
         let billList = []
-        billRef.docs.map((bill)=>{
+        billRef.docs.map((bill) => {
             billList.push(bill.data())
         })
         console.log(billList)
