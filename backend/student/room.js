@@ -72,7 +72,6 @@ router.get('/student/room/:floorId/', async (req, res) => {
         const checkStatus = await checkRef.get()
         const check = Object.values(checkStatus.data())
         const checkDormitory = check[0]
-        const checkAllroom = check[1]
         if (checkDormitory) {
             const docRef = db.collection(`${floorId}`);
             const roomRef = await docRef.get()
@@ -88,10 +87,7 @@ router.get('/student/room/:floorId/', async (req, res) => {
                 result.push(floorList)
 
             })
-            res.status(200).send({
-                result,
-                statusAllroom: checkAllroom
-            });
+            res.status(200).send(result);
         } else {
             res.status(200).send("ระบบยังไม่เปิดจอง");;
         }

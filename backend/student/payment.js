@@ -1,11 +1,11 @@
 const express = require('express');
-const { firestore } = require('../configs/firebase')
+const  firestore = require('../configs/firebase')
 
 const router = express.Router();
 const bucket = firestore.storage().bucket()
-const db = firestore()
+const db = firestore.firestore()
 
-router.get('/student/payment/', async (req, res) => {
+router.get('/student/payment/qrcode', async (req, res) => {
     try {
         const { body: { roomId, month, semester, year } } = req
         const folder = 'payment'
@@ -22,3 +22,23 @@ router.get('/student/payment/', async (req, res) => {
         res.sendStatus(400);
     }
 });
+
+router.get('/student/payment/bill', async (req, res) => {
+    try {
+        
+        const { body: { semester, year ,month ,roomId } } = req
+        const billRef = await db.collection('payment').where("semester","==",semester).where("year","==",year).where("month","==",month).where("roomId","==",roomId).get()
+        
+        let billList = []
+        billRef.docs.map((bill)=>{
+            billList.push(bill.data())
+        })
+        console.log(billList)
+        res.status(200).send(billList);
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(400);
+    }
+});
+
+module.exports = router;

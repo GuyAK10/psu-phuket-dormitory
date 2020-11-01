@@ -8,7 +8,6 @@ router.post('/staff/room/',  (req, res) => {
       try {
             const statusDormitory = {
                   system: req.body.system,
-                  all: req.body.all,
             };
             const docRef = db.doc('/dormitory/status')
             docRef.set(statusDormitory)
