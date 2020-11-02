@@ -7,11 +7,12 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Login = ({ children }) => {
-    const { MenuBar, Token, Modal, AxiosConfig } = React.useContext(GlobalState)
+    const { MenuBar, Token, Modal, AxiosConfig, Staff } = React.useContext(GlobalState)
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar
     const [axiosConfig, setAxiosConfig] = AxiosConfig
+    const [staff, setStaff] = Staff
 
     const [form, setForm] = React.useState({
         username: "",
@@ -24,6 +25,18 @@ const Login = ({ children }) => {
             ...form,
             [event.target.name]: event.target.value
         })
+    }
+
+    const isStaff = () => {
+        const session = JSON.parse(sessionStorage.getItem('token'))
+        if (session) {
+            if (session.type == "Staffs") {
+                setStaff(true)
+            }
+            else if (session.type == "Students") {
+                setStaff(false)
+            }
+        }
     }
 
     const getAuthen = async () => {
@@ -49,6 +62,7 @@ const Login = ({ children }) => {
                         type: result.data.type
                     }
                 })
+                isStaff()
                 setMenuBar('ออกจากระบบ')
                 success()
             }

@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs')
 const firebase = require('./firebase')
+require('dotenv').config()
 const tokenRef = firebase.firestore().collection('token')
 const db = firebase.firestore()
-const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
-// const privateKey = process.env.PRIVATE_KEY
+// const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
+const privateKey = process.env.PRIVATE_KEY
 
 const createToken = async (user, responseData, _req, res) => {
       try {
@@ -18,17 +19,16 @@ const createToken = async (user, responseData, _req, res) => {
                               type: responseData.role,
                               exp: Date.now() + (1000 * 60 * 60)
                         }
+                        
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
                         const docRef = db.collection('token');
                         const register = docRef.doc(`${responseData.userId}`)
                         await register.set({
-                              login: true,
                               id: responseData.userId,
                               type: responseData.role,
                               token: encoded
                         });
                         res.status(200).send({
-                              login: true,
                               id: responseData.userId,
                               type: responseData.role,
                               token: encoded

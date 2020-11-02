@@ -4,7 +4,7 @@ const firestore = require('../configs/firebase')
 const router = express.Router()
 const db = firestore.firestore()
 
-router.post('/staff/room/',  (req, res) => {
+router.post('/staff/room/', (req, res) => {
       try {
             const statusDormitory = {
                   system: req.body.system,
@@ -44,7 +44,7 @@ router.get('/staff/room/:floorId/', async (req, res) => {
       }
 })
 
-router.post('/staff/room/:floorId/:roomId',  async (req, res) => {
+router.post('/staff/room/:floorId/:roomId', async (req, res) => {
       try {
             const statusRoom = {
                   roomStatus: req.body.roomStatus
@@ -61,7 +61,7 @@ router.post('/staff/room/:floorId/:roomId',  async (req, res) => {
       }
 });
 
-router.delete('/staff/room/:floorId/:roomId/:orderId' , (req, res) => {
+router.delete('/staff/room/:floorId/:roomId/:orderId', (req, res) => {
       try {
             const floorId = req.params.floorId;
             const roomId = req.params.roomId;

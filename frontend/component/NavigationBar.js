@@ -1,30 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Router from 'next/router'
 import { GlobalState } from '../utils/context'
 import axios from 'axios'
-import { message, Button, Space } from 'antd';
-const ENV_ENPOINT = process.env.END_POINT || 'http://localhost'
+import { message } from 'antd';
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const NavigationBar = () => {
-    const { MenuBar, Token, Modal, PreviousRoute } = React.useContext(GlobalState)
+    const { MenuBar, Token, Modal, PreviousRoute, Staff } = React.useContext(GlobalState)
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar
     const [previousRoute, setPreviousRoute] = PreviousRoute
-    const [hamburgerMenu, setHamburgermenu] = React.useState(false)
+    const [staff] = Staff
     const ref = React.useRef()
-
-    const hamburgerToggle = () => {
-        setHamburgermenu(!hamburgerMenu)
-        if (window.innerWidth < 500)
-            ref.current.style.display !== 'flex' ? ref.current.style.display = 'flex' : ref.current.style.display = 'none'
-    }
-
-    const handleTabClose = () => {
-        if (hamburgerMenu) setHamburgermenu(!hamburgerMenu)
-        if (window.innerWidth < 500)
-            ref.current.style.display = 'none';
-    }
 
     const handleRoute = (url) => {
         const session = sessionStorage.getItem('token')
@@ -51,7 +40,7 @@ const NavigationBar = () => {
             sessionStorage.removeItem('token')
             setMenuBar('ลงชื่อเข้าใช้')
             try {
-                axios.delete(`${ENV_ENPOINT}/logout/${token}`)
+                axios.delete(`${ENDPOINT}:${PORT}/logout/${token}`)
                     .then((res) => {
                         logout()
                     })
@@ -66,6 +55,7 @@ const NavigationBar = () => {
         const session = sessionStorage.getItem('token')
         if (session) setMenuBar('ออกจากระบบ')
         else setMenuBar('ลงชื่อเข้าใช้')
+        return true
     }
 
     React.useEffect(() => {
@@ -73,34 +63,26 @@ const NavigationBar = () => {
     }, [])
 
     return (
-        <div className="root-navbar-container">
-            {
-                !hamburgerMenu && <div onClick={hamburgerToggle} className="hamburger-container">
-                    <img className="hamburger" src="/icon/Hamburger_icon.svg.png" alt="Hambuger Menu" />
-                </div>
-            }
-            {
-                <div ref={ref} onClick={hamburgerToggle} className="navbar-container">
-                    <span onClick={() => handleRoute('/')}>หน้าแรก</span>
-                    <span onClick={() => handleRoute('/reserve')}>จองห้อง</span>
-                    <span onClick={() => handleRoute('/support')}>แจ้งซ่อม</span>
-                    <span onClick={() => handleRoute('/profile')}>ข้อมูลส่วนตัว</span>
-                    <span onClick={handleLogin}>{menuBar}</span>
-                </div>
-            }
-            <style jsx>{`
-                .navbar-container > span {
-                    cursor: pointer;
-                    font-family: 'Sarabun', sans-serif;
-                    font-size: 18px;
-                    font-weight: 600;
-                }
-                .root-navbar-container {
-                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                }
-            `}</style>
+        <div className="navbar-container text-center flex flex-col justify-around justify-items-auto items-stretch sm:flex sm:flex-row">
+            <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/')}>หน้าแรก</span>
+            {staff ? <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/admin/reserve')}>รายการจองห้อง</span>
+                : <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/reserve')}>จองห้อง</span>}
+            <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/support')}>แจ้งซ่อม</span>
+            {staff ? <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/admin/profiles')}>ข้อมูลนักศึกษา</span>
+                : <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/profile')}>ข้อมูลส่วนตัว</span>}
+            <span className="cursor-pointer p-3 w-full h-full" onClick={handleLogin}>{menuBar}</span>
         </div>
     )
+
+    // return (
+    //     <div className="navbar-container text-center flex flex-col justify-around justify-items-auto items-stretch sm:flex sm:flex-row">
+    //         <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/')}>หน้าแรก</span>
+    //         <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/admin/reserve')}>รายการจองห้อง</span>
+    //         <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/support')}>แจ้งซ่อม</span>
+    //         <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/admin/profiles')}>ข้อมูลนักศึกษา</span>
+    //         <span className="cursor-pointer p-3 w-full h-full" onClick={handleLogin}>{menuBar}</span>
+    //     </div>
+    // )
 }
 
 export default NavigationBar

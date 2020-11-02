@@ -139,7 +139,7 @@ const profile = () => {
 
     const getStudent = async () => {
         try {
-            const result = await axios.get(`${ENDPOINT}:${PORT}/staff/profile/`)
+            const result = await axios.get(`${ENDPOINT}:${PORT}/staff/profile/`, axiosConfig)
             console.log(result.data)
             setStudents(result.data)
         } catch (e) {
@@ -160,8 +160,6 @@ const profile = () => {
                         <th className="px-4 py-2">PSU PassportID</th>
                         <th className="px-4 py-2">Name</th>
                         <th className="px-4 py-2">Surname</th>
-                        <th className="px-4 py-2">ห้อง</th>
-                        <th className="px-4 py-2">สถานะจ่ายเงิน</th>
                         <th className="px-4 py-2">Action</th>
                     </tr>
                 </thead>
@@ -172,8 +170,6 @@ const profile = () => {
                                 <td className="border px-4 py-2">{item.studentId}</td>
                                 <td className="border px-4 py-2">{item.profile.name}</td>
                                 <td className="border px-4 py-2">{item.profile.surname}</td>
-                                <td className="border px-4 py-2">E01</td>
-                                <td className="border px-4 py-2">จ่ายแล้ว</td>
                                 <td className="border px-4 py-2">
                                     <button onClick={
                                         () => gotoShowMore(item.studentId)

@@ -103,7 +103,7 @@ const profile = () => {
         }
     })
 
-    const { get, post } = useFetch(`${ENDPOINT}:${PORT}/student/profile`, axiosConfig)
+    const { get, post, response } = useFetch(`${ENDPOINT}:${PORT}/student/profile`, axiosConfig)
 
     const handleFormprofile = (e) => {
         setForm({
@@ -271,8 +271,9 @@ const profile = () => {
             if (sessionStorage.getItem('token')) {
                 const token = await JSON.parse(sessionStorage.getItem('token'))
                 const studentProfile = await get(`/${token.id}`)
-                console.log(studentProfile)
-                setForm(studentProfile)
+                if (response.ok) {
+                    setForm(studentProfile)
+                }
             }
         }
         catch (error) {

@@ -69,7 +69,7 @@ const reserve = () => {
         try {
             await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[0]}`, axiosConfig)
                 .then(res => {
-                    floorDetails[0] = { ...res.data.result }
+                    floorDetails[0] = { ...res.data }
                 })
                 .catch(e => {
                     console.log(e)
@@ -78,12 +78,14 @@ const reserve = () => {
 
             await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[1]}`, axiosConfig)
                 .then(res => {
-                    floorDetails[1] = { ...res.data.result }
+                    floorDetails[1] = { ...res.data }
                 })
                 .catch(e => {
                     console.log(e)
                     Logout()
                 })
+
+            console.log(floorDetails)
 
             setFocusListRoom(floorDetails)
             setIsLoading(true)
@@ -250,7 +252,6 @@ const reserve = () => {
 
         return (
             <div className="focus-floor">
-                <button onClick={() => forceUpdate(Math.random())}>Update</button>
                 <img src="icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
                 <div className="modal-content">
                     <div className="even-room">
@@ -261,7 +262,7 @@ const reserve = () => {
                                     <span className="student1">
                                         <img
                                             style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
-                                            src="/icon/male.svg" alt="person" className="person"
+                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student1)
                                                     removeRoom(room, "student1", e.currentTarget)
@@ -273,7 +274,7 @@ const reserve = () => {
                                     <span className="student2">
                                         <img
                                             style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
-                                            src="/icon/male.svg" alt="person" className="person"
+                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student2)
                                                     removeRoom(room, "student2", e.currentTarget)
@@ -296,12 +297,12 @@ const reserve = () => {
 
                             return <div className="room-container" key={key} >
                                 <span className="odd-room-item">
-                                    <span className="student1">
+                                    <span className="student1 ">
                                         <img
                                             style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                             src="/icon/male.svg"
                                             alt="person"
-                                            className="person"
+                                            className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student1)
                                                     removeRoom(room, "student1", e.currentTarget)
@@ -315,7 +316,7 @@ const reserve = () => {
                                             style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                             src="/icon/male.svg"
                                             alt="person"
-                                            className="person"
+                                            className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student2)
                                                     removeRoom(room, "student2", e.currentTarget)

@@ -87,7 +87,7 @@ router.get('/student/room/:floorId/', async (req, res) => {
 
             })
             res.status(200).send({
-                result,
+                ...result,
                 statusAllroom: checkAllroom
             });
         } else {
@@ -106,7 +106,7 @@ router.post('/student/room', async (req, res) => {
 
         const studentRef = await profileRef.get()
         if (!studentRef.exists) {
-            res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใข้ก่อน" })
+            res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใช้ก่อน" })
         }
         else {
             const profileData = studentRef.data()
