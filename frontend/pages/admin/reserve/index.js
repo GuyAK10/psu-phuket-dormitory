@@ -160,6 +160,23 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
+        const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
+
+        const onSelectedRoom = () => {
+            message.success('จองห้องแล้ว')
+        }
+
+        const onSelecteRoom = () => {
+            message.warning('กำลังจองห้อง')
+        }
+
+        const onDeletedRoom = () => {
+            message.warn('ยกเลิกการจองแล้ว')
+        }
+
+        const onDeleteRoom = () => {
+            message.warning('กำลังยกเลิกการจอง')
+        }
 
         const oddRoom = modalFloor.filter((_item, key) => key % 2 !== 0)
         const evenRoom = modalFloor.filter((_item, key) => key % 2 === 0)

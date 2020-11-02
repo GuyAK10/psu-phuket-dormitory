@@ -160,7 +160,11 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
+<<<<<<< HEAD:frontend/pages/Reserve.js
+        const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
+=======
         const { post } = useFetch(`${ENDPOINT}:${PORT}/student/room`, axiosConfig)
+>>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -191,7 +195,11 @@ const reserve = () => {
                     orderId: student
                 }
 
+<<<<<<< HEAD:frontend/pages/Reserve.js
+                const data = await post(`/`, body,axiosConfig)
+=======
                 const data = await post('/', body)
+>>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
 
                 if (!data.success) message.error(data.message)
 
@@ -225,7 +233,11 @@ const reserve = () => {
                 }
 
                 // const reserve = await axios.post()
+<<<<<<< HEAD:frontend/pages/Reserve.js
+                const data = await post(`/remove`, body,axiosConfig)
+=======
                 const data = await post('/remove', body)
+>>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
 
                 if (!data.success) {
                     message.error(data.message)

@@ -48,10 +48,12 @@ const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
         const bookRef = db.collection(floorId).doc(roomId)
         if (orderId == "student1") {
             bookRef.update({ student1: bookRoom })
+            console.log("booking student1 success")
             res.status(200).send({ code: 200, success: true, message: "booking student1 success" });
         }
         else if (orderId == "student2") {
             bookRef.update({ student2: bookRoom })
+            console.log("booking student2 success")
             res.status(200).send({ code: 200, success: true, message: "booking student2 success" });
         }
         else {
@@ -70,20 +72,19 @@ router.get('/student/room/:floorId/', async (req, res) => {
         const checkStatus = await checkRef.get()
         const check = Object.values(checkStatus.data())
         const checkDormitory = check[0]
-        const checkAllroom = check[1]
         if (checkDormitory) {
             const docRef = db.collection(`${floorId}`);
             const roomRef = await docRef.get()
             let result = [];
 
-            roomRef.forEach(profile => {
-                let profileList = {
-                    profileId: '',
+            roomRef.forEach(floors => {
+                let floorList = {
+                    floorId: '',
                 }
 
-                profileList.profileId = profile.id
-                Object.assign(profileList, profile.data())
-                result.push(profileList)
+                floorList.floorId = floors.id
+                Object.assign(floorList, floors.data())
+                result.push(floorList)
 
             })
             res.status(200).send({
@@ -120,6 +121,7 @@ router.post('/student/room', async (req, res) => {
 
             const isBooked = await bookInfomation(profileData, res)
             if (isBooked) {
+                console.log("ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง")
                 res.status(200).send({ code: 200, success: false, message: "ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง" })
             } else if (!isBooked) {
                 bookingRoom(bookRoom, floorId, roomId, orderId, res)

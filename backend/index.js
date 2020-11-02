@@ -3,13 +3,20 @@ const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const PORT = process.env.PORT || 80
+
 const { verifyHeader } = require("./configs/jwt");
 const { staffType, studentType } = require("./configs/type")
 const accessControl = require('./access')
-const studentprofile = require('./student/profile')
+const studentProfile = require('./student/profile')
 const studentRoom = require('./student/room')
-const staffprofile = require('./staff/profile')
+const studentPayment = require('./student/payment')
+const studentNew = require('./student/new')
+const studentRepair = require('./student/repair')
+const staffProfile = require('./staff/profile')
 const staffRoom = require('./staff/room')
+const staffPayment = require('./staff/payment')
+const staffNew = require('./staff/new')
+const staffRepair = require('./staff/repair')
 require('dotenv').config()
 
 app.use(cors())
@@ -18,10 +25,16 @@ app.use(bodyParser.json())
 
 app.use(accessControl)
 app.use('/staff', verifyHeader, staffType)
-app.use(staffprofile);
+app.use(staffProfile);
 app.use(staffRoom);
+app.use(staffPayment);
+app.use(staffNew);
+app.use(staffRepair);
 app.use('/student', verifyHeader, studentType)
-app.use(studentprofile);
+app.use(studentProfile);
 app.use(studentRoom);
+app.use(studentPayment);
+app.use(studentNew);
+app.use(studentRepair);
 
 app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))
