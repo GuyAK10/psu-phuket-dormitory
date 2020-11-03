@@ -107,7 +107,7 @@ router.get('/staff/payment', async (req, res) => {
     try {
 
         const { body: { semester, year } } = req
-        const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).get()
+        const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month","==",month).get()
 
         let billList = []
         billRef.docs.map((bill) => {
@@ -115,6 +115,21 @@ router.get('/staff/payment', async (req, res) => {
         })
         console.log(billList)
         res.status(200).send(billList);
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(400);
+    }
+});
+
+router.get('/student/payment/reciept', async (req, res) => {
+    try {
+        const { body: { month, semester, year } } = req
+        const folder = 'receipt'
+        const file = bucket.file(`${folder}/${semester}-${year}/${month}/`);
+        file.download().then(downloadResponse => {
+            res.status(200).send(downloadResponse);
+        });
+
     } catch (error) {
         console.log(error)
         res.sendStatus(400);

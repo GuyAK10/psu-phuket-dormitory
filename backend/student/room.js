@@ -65,9 +65,9 @@ const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
 
 }
 
-router.get('/student/room/:floorId/', async (req, res) => {
+router.get('/student/room/', async (req, res) => {
     try {
-        const floorId = req.params.floorId;
+        const { body: { floorId } } = req
         const checkRef = db.collection('dormitory').doc('status');
         const checkStatus = await checkRef.get()
         const check = Object.values(checkStatus.data())
@@ -130,7 +130,7 @@ router.post('/student/room', async (req, res) => {
     }
 })
 
-router.post('/student/room/remove', async (req, res) => {
+router.delete('/student/room/remove', async (req, res) => {
     try {
         const { body: { floorId, roomId, studentId, orderId } } = req
         const profileRef = db.doc(`${floorId}/${roomId}`);

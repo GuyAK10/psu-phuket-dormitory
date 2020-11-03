@@ -12,11 +12,11 @@ const uploader = multer({
   }
 });
 
-router.post('/student/profile/upload/:studentId', uploader.single('img'), (req, res) => {
+router.post('/student/profile/upload/', uploader.single('img'), (req, res) => {
   try {
-    const id = req.params.studentId
+    const { body: { studentId } } = req
     const folder = 'profile'
-    const fileName = `${id}`
+    const fileName = `${studentId}`
     const fileUpload = bucket.file(`${folder}/` + fileName);
     const blobStream = fileUpload.createWriteStream({
       metadata: {
@@ -39,10 +39,13 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), (req, 
 
 });
 
-router.get('/student/profile/picture/studentId', (req, res) => {
+router.get('/student/profile/picture/', (req, res) => {
   try {
-    const file = bucket.file(`profile/${req.params.studentId}`);
+    
+    const { body: { studentId } } = req
+    const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
+      console.log(typeof(downloadResponse[0]))
       res.status(200).send(downloadResponse[0]);
     });
   } catch (error) {
@@ -50,9 +53,10 @@ router.get('/student/profile/picture/studentId', (req, res) => {
   }
 });
 
-router.get('/student/profile/:studentId', async (req, res) => {
+router.get('/student/profile/', async (req, res) => {
   try {
-    const studentId = req.params.studentId
+
+    const { body: { studentId } } = req
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
     res.status(200).send(profile.data());
@@ -62,8 +66,9 @@ router.get('/student/profile/:studentId', async (req, res) => {
   }
 });
 
-router.post('/student/profile/:studentId', (req, res) => {
+router.post('/student/profile/', (req, res) => {
   try {
+    const { body: { studentId } } = req
     const user = {
       profile: {
         id: req.body.profile.id,
@@ -153,7 +158,6 @@ router.post('/student/profile/:studentId', (req, res) => {
       }
     }
 
-    const studentId = req.params.studentId;
     const docRef = db.collection('students').doc(`${studentId}`)
     docRef.set(user)
     res.status(200).send("add profile success");

@@ -2,6 +2,7 @@ const express = require('express');
 const firestore = require('../configs/firebase')
 const multer = require('multer');
 const { storage } = require('../configs/firebase');
+const { news } = require('../configs/line')
 
 const router = express.Router()
 const bucket = firestore.storage().bucket()
@@ -26,7 +27,7 @@ router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
         });
 
         blobStream.on('finish', () => {
-            res.status(200).send('Upload complete!');
+            news()
         });
 
         blobStream.end(req.file.buffer);

@@ -20,7 +20,7 @@ router.post('/staff/room/',  (req, res) => {
 
 router.get('/staff/room/:floorId/', async (req, res) => {
       try {
-            const floorId = req.params.floorId;
+            const { body: { floorId } } = req
             const docRef = db.collection(`${floorId}`);
             const roomRef = await docRef.get()
             let result = [];
@@ -42,51 +42,44 @@ router.get('/staff/room/:floorId/', async (req, res) => {
       }
 })
 
-router.post('/staff/room/:floorId/:roomId',  async (req, res) => {
+router.delete('/staff/room/remove', async (req, res) => {
       try {
-            const statusRoom = {
-                  roomStatus: req.body.roomStatus
-            }
-
-            const floorId = req.params.floorId;
-            const roomId = req.params.roomId;
-            const docRef = db.collection(`${floorId}`).doc(`${roomId}`)
-            await docRef.update(statusRoom)
-            res.status(200).send("change status");
-
+          const { body: { floorId, roomId, studentId, orderId } } = req
+          const profileRef = db.doc(`${floorId}/${roomId}`);
+          await profileRef.get().then(async data => {
+              if (data.data()[orderId].id === studentId) {
+                  await profileRef.update({ [orderId]: FieldValue.delete() })
+                  res.status(200).send({ code: 200, success: true, message: "deleted" })
+              }
+              else {
+                  res.status(200).send({ code: 200, success: false, message: "ไม่สามารถยกเลิกการจองของผู้อื่นได้" })
+              }
+          })
       } catch (error) {
-            res.sendStatus(400)
+          console.log(error)
+          res.status(200).send({ code: 200, success: false, message: "ผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
+  
       }
-});
+  })
+  
+// เผื่อใช้ในอนาคต
+// router.post('/staff/room/statusRoom',  async (req, res) => {
+//       try {
 
-router.delete('/staff/room/:floorId/:roomId/:orderId' , (req, res) => {
-      try {
-            const floorId = req.params.floorId;
-            const roomId = req.params.roomId;
-            const orderId = req.params.orderId;
-            const FieldValue = firestore.firestore.FieldValue;
-            const docRef = db.doc(`/${floorId}/${roomId}`)
-            const value = `${orderId}`
+//             const { body: { floorId, roomId, studentId, orderId } } = req
+//             const statusRoom = {
+//                   roomStatus: req.body.roomStatus
+//             }
 
-            if (value == "student1") {
-                  docRef.update({
-                        student1: FieldValue.delete()
-                  })
-                  res.status(200).send("delete student1 success");
-            }
-            else if (value == "student2") {
-                  docRef.update({
-                        student2: FieldValue.delete()
-                  })
-                  res.status(200).send("delete student2 success");
-            }
-            else {
-                  res.status(400).send("delete failed");
-            }
-      }
-      catch (error) {
-            res.sendStatus(400)
-      }
-});
+            
+//             const docRef = db.collection(`${floorId}`).doc(`${roomId}`)
+//             await docRef.update(statusRoom)
+//             res.status(200).send("change status");
+
+//       } catch (error) {
+//             res.sendStatus(400)
+//       }
+// });
+
 
 module.exports = router;

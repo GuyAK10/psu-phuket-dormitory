@@ -2,28 +2,16 @@ const express = require('express');
 const firestore = require('../configs/firebase')
 
 const router = express.Router()
+const db = firestore.firestore()
 
 router.post('/student/repair', (req, res) => {
     try {
-        
-        const folder = 'repair'
-        const fileName = `${id}`
-        const fileUpload = bucket.file(`${folder}/` + fileName);
-        const blobStream = fileUpload.createWriteStream({
-          metadata: {
-            contentType: req.file.mimetype
-          }
-        });
-    
-        blobStream.on('error', (err) => {
-          res.status(405).json(err);
-        });
-    
-        blobStream.on('finish', () => {
-          res.status(200).send('Upload complete!');
-        });
-    
-        blobStream.end(req.file.buffer);
+      const { body: { detail, roomId, day , month, semester, year } } = req
+      const repairRef = db.collection('repair').doc(`${semester}-${year}-${month}-${roomId}`)
+      repairRef.set({
+          detail:detail
+      })
+   
       } catch (error) {
         res.sendStatus(400);
       }

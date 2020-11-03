@@ -1,9 +1,19 @@
 const express = require('express');
 const  firestore = require('../configs/firebase')
+const { receipt } = require('../configs/line')
+const multer = require('multer');
 
 const router = express.Router();
 const bucket = firestore.storage().bucket()
 const db = firestore.firestore()
+const uploader = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 5 * 1024 * 1024
+    }
+});
+
+
 
 router.get('/student/payment/qrcode', async (req, res) => {
     try {
@@ -14,9 +24,6 @@ router.get('/student/payment/qrcode', async (req, res) => {
             res.status(200).send(downloadResponse[0]);
         });
 
-        const paymentRef = db.doc(`payment/${semester}-${year}/${month}/${roomId}`)
-        const billRef = await paymentRef.get()
-        res.status(200).send(billRef.data());
     } catch (error) {
         console.log(error)
         res.sendStatus(400);
@@ -39,6 +46,32 @@ router.get('/student/payment/bill', async (req, res) => {
         console.log(error)
         res.sendStatus(400);
     }
+});
+
+router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
+  try {
+    const { body: { semester, year ,month ,roomId } } = req
+    const folder = 'receipt'
+    const fileUpload = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
+    const blobStream = fileUpload.createWriteStream({
+      metadata: {
+        contentType: req.file.mimetype
+      }
+    });
+
+    blobStream.on('error', (err) => {
+      res.status(405).json(err);
+    });
+
+    blobStream.on('finish', () => {
+        receipt()
+    });
+
+    blobStream.end(req.file.buffer);
+  } catch (error) {
+    res.sendStatus(400);
+  }
+
 });
 
 module.exports = router;
