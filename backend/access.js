@@ -32,23 +32,34 @@ router.delete('/logout/:token', async (req, res) => {
 router.post('/', (req, res) => {
     try {
         soap.createClient(url, (err, client) => {
-            let user = {}
-            user.username = req.body.username
-            user.password = req.body.password
-            user.type = req.body.type
-            client.GetUserDetails(user, async function (err, response) {
-                try {
-                    const responseData = {
-                        userId: userUsecase.getStudentId(response),
-                        role: userUsecase.getRole(response)
+            const { username, password, type } = req.body
+
+            //test user staff
+            const mockRequestStaff = { headers: { type: "Staffs" } }
+            const mockRequestStudent = { headers: { type: "Staffs" } }
+            if (username == "staff") {
+                createToken({ username, password: "any", type: "Staffs" }, { userId: "test", role: "Staffs" }, mockRequestStaff, res)
+            }
+            //test user student
+            else if (username == "student") {
+                createToken({ username, password: "any", type: "Students" }, { userId: "test", role: "Students" }, mockRequestStudent, res)
+            }
+
+            else {
+                client.GetUserDetails({ username, password, type }, async function (err, response) {
+                    try {
+                        const responseData = {
+                            userId: userUsecase.getStudentId(response),
+                            role: userUsecase.getRole(response)
+                        }
+                        createToken({ username, password, type }, responseData, req, res)
+                    } catch (error) {
+                        console.log(error)
+                        res.sendStatus(501)
                     }
-                    createToken(user, responseData, req, res)
-                } catch (error) {
-                    console.log(error)
-                    res.sendStatus(501)
-                }
-            });
-        });
+                })
+            }
+        })
     } catch (error) {
         console.log(error)
         res.status(400).send(error);

@@ -4,7 +4,7 @@ import '../component/NavigationBar'
 import NavigationBar from '../component/NavigationBar'
 import Footer from '../component/Footer'
 import { GlobalState } from '../utils/context'
-import LoginModal from '../component/login'
+import LoginModal from '../component/Login'
 import React, { useState } from 'react'
 
 const MyApp = ({ Component, pageProps }) => {
@@ -14,6 +14,7 @@ const MyApp = ({ Component, pageProps }) => {
     const [menuBar, setMenubar] = useState('ลงชื่อเข้าใช้')
     const [previousRoute, setPreviousRoute] = useState(null)
     const [students, setStudents] = useState(null)
+    const [staff, setStaff] = useState(false)
 
     return (
         <GlobalState.Provider
@@ -23,7 +24,8 @@ const MyApp = ({ Component, pageProps }) => {
                 AxiosConfig: [axiosConfig, setAxiosConfig],
                 MenuBar: [menuBar, setMenubar],
                 PreviousRoute: [previousRoute, setPreviousRoute],
-                Students: [students, setStudents]
+                Students: [students, setStudents],
+                Staff: [staff, setStaff]
             }}>
             <div className="root-container h-screen">
                 <NavigationBar />
@@ -33,8 +35,8 @@ const MyApp = ({ Component, pageProps }) => {
                             html, body{
                                 margin:0;
                                 padding:0;
-                                /*background: hsla(0, 0%, 80%, .65);*/
-                                min-width:100vw;
+                                /*background: hsla(0, 0%, 80%, .65);
+                                min-width:100vw;*/
                                 font-size: 16px;
                             }
                       `}</style>

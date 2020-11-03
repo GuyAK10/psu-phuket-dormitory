@@ -8,12 +8,13 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Login = () => {
-    const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute } = React.useContext(GlobalState)
+    const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute, Staff } = React.useContext(GlobalState)
     const [previousRoute] = PreviousRoute
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar
     const [axiosConfig, setAxiosConfig] = AxiosConfig
+    const [staff, setStaff] = Staff
 
     const [form, setForm] = React.useState({
         username: "",
@@ -28,6 +29,18 @@ const Login = () => {
         })
     }
 
+    const isStaff = () => {
+        const session = JSON.parse(sessionStorage.getItem('token'))
+        if (session) {
+            if (session.type == "Staffs") {
+                setStaff(true)
+            }
+            else if (session.type == "Students") {
+                setStaff(false)
+            }
+        }
+    }
+
     const getAuthen = async () => {
         const fail = () => {
             message.warn('ID หรือ รหัสผ่านผิดพลาด')
@@ -36,7 +49,6 @@ const Login = () => {
             message.success('เข้าสู้ระบบแล้ว')
         }
         try {
-            console.log(ENDPOINT, PORT)
             const result = await axios.post(`${ENDPOINT}:${PORT}`, qs.stringify(form), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -53,6 +65,7 @@ const Login = () => {
                         type: result.data.type
                     }
                 })
+                isStaff()
                 setMenuBar('ออกจากระบบ')
                 if (previousRoute) {
                     Router.push(previousRoute)

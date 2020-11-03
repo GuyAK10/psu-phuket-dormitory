@@ -4,7 +4,7 @@ const firestore = require('../configs/firebase')
 const router = express.Router()
 const db = firestore.firestore()
 
-router.post('/staff/room/',  (req, res) => {
+router.post('/staff/room/', (req, res) => {
       try {
             const statusDormitory = {
                   system: req.body.system,

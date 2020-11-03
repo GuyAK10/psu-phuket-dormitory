@@ -24,13 +24,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use(accessControl)
-// app.use('/staff', verifyHeader, staffType)
+app.use('/staff', verifyHeader, staffType)
 app.use(staffProfile);
 app.use(staffRoom);
 app.use(staffPayment);
 app.use(staffNew);
 app.use(staffRepair);
-// app.use('/student', verifyHeader, studentType)
+app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);

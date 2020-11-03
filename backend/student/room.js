@@ -2,7 +2,7 @@ const express = require('express');
 const { firestore } = require('../configs/firebase')
 const router = express.Router()
 const db = firestore()
-const { firestore: { FieldValue, FieldPath } } = require('../configs/firebase')
+const { firestore: { FieldValue } } = require('../configs/firebase')
 
 const bookInfomation = async (profileData, res) => {
     try {
@@ -87,11 +87,14 @@ router.get('/student/room/', async (req, res) => {
                 result.push(floorList)
 
             })
-            res.status(200).send(result);
+            res.status(200).send({
+                ...result,
+            });
         } else {
             res.status(200).send("ระบบยังไม่เปิดจอง");;
         }
     } catch (error) {
+        console.error(error)
         res.sendStatus(400);
     }
 });
@@ -104,7 +107,7 @@ router.post('/student/room', async (req, res) => {
 
         const studentRef = await profileRef.get()
         if (!studentRef.exists) {
-            res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใข้ก่อน" })
+            res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใช้ก่อน" })
         }
         else {
             const profileData = studentRef.data()

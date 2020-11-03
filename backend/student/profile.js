@@ -39,6 +39,11 @@ router.post('/student/profile/upload/', uploader.single('img'), (req, res) => {
 
 });
 
+router.get('/student/files', (req, res) => {
+  console.log(req)
+  res.send('finished')
+})
+
 router.get('/student/profile/picture/', (req, res) => {
   try {
     

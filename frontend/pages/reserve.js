@@ -20,7 +20,7 @@ const reserve = () => {
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
     const [person, setPerson] = useState([{}, {}, {}, {}])
-    const [focusRoomList, setFocusListRoom] = useState([[{ profileId: "E01" }], [{ profileId: "A01" }]])
+    const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const floorList = [
         { 1: ["E", "A"] },
         { 2: ["F", "B"] },
@@ -69,7 +69,7 @@ const reserve = () => {
         try {
             await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[0]}`, axiosConfig)
                 .then(res => {
-                    floorDetails[0] = { ...res.data.result }
+                    floorDetails[0] = { ...res.data }
                 })
                 .catch(e => {
                     console.log(e)
@@ -78,12 +78,14 @@ const reserve = () => {
 
             await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[1]}`, axiosConfig)
                 .then(res => {
-                    floorDetails[1] = { ...res.data.result }
+                    floorDetails[1] = { ...res.data }
                 })
                 .catch(e => {
                     console.log(e)
                     Logout()
                 })
+
+            console.log(floorDetails)
 
             setFocusListRoom(floorDetails)
             setIsLoading(true)
@@ -158,11 +160,7 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
-<<<<<<< HEAD:frontend/pages/Reserve.js
-        const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
-=======
         const { post } = useFetch(`${ENDPOINT}:${PORT}/student/room`, axiosConfig)
->>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -187,25 +185,27 @@ const reserve = () => {
             try {
                 const { id } = token
                 const body = {
-                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
-                    roomId: item.profileId,
+                    floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
+                    roomId: item.floorId,
                     studentId: id,
                     orderId: student
                 }
 
-<<<<<<< HEAD:frontend/pages/Reserve.js
-                const data = await post(`/`, body,axiosConfig)
-=======
-                const data = await post('/', body)
->>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
+                const data = await post(`/`, body, axiosConfig)
 
-                if (!data.success) message.error(data.message)
+                if (!data.success) {
+                    message.error(data.message)
+                    if (data.message === "กรุณาบันทึกข้อมูลผู้ใช้ก่อน") {
+                        message.warn("ระบบจะพาคุณไปยังหน้าบันทึกข้อมูล")
+                        Router.push("profile")
+                    }
+                }
 
                 if (data.success) {
                     let changeStatusReserve = modalFloor
                     changeStatusReserve.map(room => {
                         let temp = room
-                        if (temp.profileId === item.profileId) {
+                        if (temp.floorId === item.floorId) {
                             temp[`${student}`] = id
                             return temp
                         } else return temp
@@ -224,18 +224,14 @@ const reserve = () => {
             try {
                 const { id } = token
                 const body = {
-                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
-                    roomId: item.profileId,
+                    floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
+                    roomId: item.floorId,
                     studentId: id,
                     orderId: student
                 }
 
                 // const reserve = await axios.post()
-<<<<<<< HEAD:frontend/pages/Reserve.js
-                const data = await post(`/remove`, body,axiosConfig)
-=======
-                const data = await post('/remove', body)
->>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
+                const data = await post(`/remove`, body, axiosConfig)
 
                 if (!data.success) {
                     message.error(data.message)
@@ -245,7 +241,7 @@ const reserve = () => {
                     let changeStatusReserve = modalFloor
                     changeStatusReserve.map(room => {
                         let temp = room
-                        if (temp.profileId === item.profileId) {
+                        if (temp.floorId === item.floorId) {
                             temp[`${student}`] = undefined
                             return temp
                         } else return temp
@@ -262,7 +258,6 @@ const reserve = () => {
 
         return (
             <div className="focus-floor">
-                <button onClick={() => forceUpdate(Math.random())}>Update</button>
                 <img src="icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
                 <div className="modal-content">
                     <div className="even-room">
@@ -273,7 +268,7 @@ const reserve = () => {
                                     <span className="student1">
                                         <img
                                             style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
-                                            src="/icon/male.svg" alt="person" className="person"
+                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student1)
                                                     removeRoom(room, "student1", e.currentTarget)
@@ -285,7 +280,7 @@ const reserve = () => {
                                     <span className="student2">
                                         <img
                                             style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
-                                            src="/icon/male.svg" alt="person" className="person"
+                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student2)
                                                     removeRoom(room, "student2", e.currentTarget)
@@ -295,7 +290,7 @@ const reserve = () => {
                                         />
                                     </span>
                                 </span>
-                                {room.profileId}
+                                {room.floorId}
                             </div>
                         }
                         ) : null}
@@ -308,12 +303,12 @@ const reserve = () => {
 
                             return <div className="room-container" key={key} >
                                 <span className="odd-room-item">
-                                    <span className="student1">
+                                    <span className="student1 ">
                                         <img
                                             style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                             src="/icon/male.svg"
                                             alt="person"
-                                            className="person"
+                                            className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student1)
                                                     removeRoom(room, "student1", e.currentTarget)
@@ -327,7 +322,7 @@ const reserve = () => {
                                             style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                             src="/icon/male.svg"
                                             alt="person"
-                                            className="person"
+                                            className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student2)
                                                     removeRoom(room, "student2", e.currentTarget)
@@ -337,7 +332,7 @@ const reserve = () => {
                                         />
                                     </span>
                                 </span>
-                                {room.profileId}
+                                {room.floorId}
                             </div>
                         }) : null}
 

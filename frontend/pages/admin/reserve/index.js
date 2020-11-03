@@ -12,14 +12,13 @@ const PORT = process.env.PORT
 const reserve = () => {
     const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
     const [menuBar, setMenuBar] = MenuBar
-    const [axiosConfig] = AxiosConfig
+    const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
-    const [person, setPerson] = useState([{}, {}, {}, {}])
     const [focusRoomList, setFocusListRoom] = useState([[{ profileId: "E01" }], [{ profileId: "A01" }]])
     const floorList = [
         { 1: ["E", "A"] },
@@ -39,7 +38,15 @@ const reserve = () => {
     }
 
     const getHeader = () => {
-        if (sessionStorage.getItem('token')) setToken(JSON.parse(sessionStorage.getItem('token')))
+        if (sessionStorage.getItem('token')) {
+            setToken(JSON.parse(sessionStorage.getItem('token')))
+            setAxiosConfig({
+                headers: {
+                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                    type: JSON.parse(sessionStorage.getItem('token')).type
+                }
+            })
+        }
         else Logout()
     }
 
@@ -58,19 +65,20 @@ const reserve = () => {
         setShowBuilding(floor)
         let floorDetails = []
         setIsLoading(false)
+        console.log(ENDPOINT, PORT)
         try {
-            await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[0]}`, axiosConfig)
+            await axios.get(`${ENDPOINT}:${PORT}/staff/room/floor${floor[0]}`, axiosConfig)
                 .then(res => {
-                    floorDetails[0] = { ...res.data.result }
+                    floorDetails[0] = { ...res.data }
                 })
                 .catch(e => {
                     console.log(e)
                     Logout()
                 })
 
-            await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[1]}`, axiosConfig)
+            await axios.get(`${ENDPOINT}:${PORT}/staff/room/floor${floor[1]}`, axiosConfig)
                 .then(res => {
-                    floorDetails[1] = { ...res.data.result }
+                    floorDetails[1] = { ...res.data }
                 })
                 .catch(e => {
                     console.log(e)
@@ -125,6 +133,8 @@ const reserve = () => {
             }
         }
 
+        console.log(temp)
+
         setModalFloor(temp)
         setShowRoomSelect(true)
     }
@@ -150,11 +160,7 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
-<<<<<<< HEAD
         const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
-=======
-        const { post } = useFetch(`${ENV_ENPOINT}/student/room`)
->>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -175,78 +181,12 @@ const reserve = () => {
         const oddRoom = modalFloor.filter((_item, key) => key % 2 !== 0)
         const evenRoom = modalFloor.filter((_item, key) => key % 2 === 0)
 
-        const selectRoom = async (item, student, event) => {
-            try {
-                const { id } = token
-                const body = {
-                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
-                    roomId: item.profileId,
-                    studentId: id,
-                    orderId: student
-                }
-
-                const data = await post(`/`, body,axiosConfig)
-
-                if (!data.success) message.error(data.message)
-
-                if (data.success) {
-                    let changeStatusReserve = modalFloor
-                    changeStatusReserve.map(room => {
-                        let temp = room
-                        if (temp.profileId === item.profileId) {
-                            temp[`${student}`] = id
-                            return temp
-                        } else return temp
-                    })
-                    TweenMax.set(event, { filter: "invert(86%) sepia(98%) saturate(734%) hue-rotate(356deg) brightness(102%) contrast(105%)" })
-                    onSelectedRoom()
-                    // forceUpdate(Math.random())
-                }
-            }
-            catch (e) {
-                console.log(e)
-            }
-        }
-
-        const removeRoom = async (item, student, event) => {
-            try {
-                const { id } = token
-                const body = {
-                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
-                    roomId: item.profileId,
-                    studentId: id,
-                    orderId: student
-                }
-
-                // const reserve = await axios.post()
-                const data = await post(`/remove`, body,axiosConfig)
-
-                if (!data.success) {
-                    message.error(data.message)
-                }
-
-                if (data.success) {
-                    let changeStatusReserve = modalFloor
-                    changeStatusReserve.map(room => {
-                        let temp = room
-                        if (temp.profileId === item.profileId) {
-                            temp[`${student}`] = undefined
-                            return temp
-                        } else return temp
-                    })
-                    onDeletedRoom()
-                    TweenMax.set(event, { filter: null })
-                    // forceUpdate(Math.random())
-                }
-            }
-            catch (e) {
-                console.log(e)
-            }
+        const routeToStudent = (id) => {
+            Router.push({ pathname: "profiles/student", query: { profileId: id } })
         }
 
         return (
             <div className="focus-floor">
-                <button onClick={() => forceUpdate(Math.random())}>Update</button>
                 <img src="../icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
                 <div className="modal-content">
                     <div className="even-room">
@@ -256,44 +196,36 @@ const reserve = () => {
                                 <span className="even-room-item" >
                                     <span className="student1">
                                         <Tooltip title={room.student1 ?
-                                            `${room.student1.id}\n/
-                                                ${room.student1.name}\n/
-                                                ${room.student1.surname}\n/
-                                                ${room.student1.nickname}\n/
-                                                ${room.student1.tel}`
+                                            `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student1.name ? room.student1.name : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student1.surname ? room.student1.surname : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student1.nickname ? room.student1.nickname : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student1.tel ? room.student1.tel : "ไม่ได้กรอกข้อมูล"}`
                                             : null}
                                         >
                                             <img
+                                                className="person cursor-pointer"
                                                 style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                                 src="/icon/male.svg" alt="person" className="person"
-                                                onClick={(e) => {
-                                                    if (room.student1)
-                                                        removeRoom(room, "student1", e.currentTarget)
-                                                    else
-                                                        selectRoom(room, "student1", e.currentTarget)
-                                                }}
+                                                onClick={() => routeToStudent(room.student1.id)}
                                             />
                                         </Tooltip>
                                     </span>
                                     <span className="student2">
                                         <Tooltip
                                             title={room.student2 ?
-                                                `${room.student2.id}\n/
-                                                ${room.student2.name}\n/
-                                                ${room.student2.surname}\n/
-                                                ${room.student2.nickname}\n/
-                                                ${room.student2.tel}`
+                                                `${room.student2.id ? room.student2.id : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student2.name ? room.student2.name : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student2.surname ? room.student2.surname : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student2.nickname ? room.student2.nickname : "ไม่ได้กรอกข้อมูล"}\n/
+                                                ${room.student2.tel ? room.student2.tel : "ไม่ได้กรอกข้อมูล"}`
                                                 : null}
                                         >
                                             <img
+                                                className="person cursor-pointer"
                                                 style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                                 src="/icon/male.svg" alt="person" className="person"
-                                                onClick={(e) => {
-                                                    if (room.student2)
-                                                        removeRoom(room, "student2", e.currentTarget)
-                                                    else
-                                                        selectRoom(room, "student2", e.currentTarget)
-                                                }}
+                                                onClick={() => routeToStudent(room.student2.id)}
                                             />
                                         </Tooltip>
                                     </span>
@@ -313,47 +245,37 @@ const reserve = () => {
                                 <span className="odd-room-item">
                                     <span className="student1">
                                         <Tooltip title={room.student1 ?
-                                            `${room.student1.id}\n/
-                                                ${room.student1.name}\n/
-                                                ${room.student1.surname}\n/
-                                                ${room.student1.nickname}\n/
-                                                ${room.student1.tel}`
+                                            `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student1.name ? room.student1.name : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student1.surname ? room.student1.surname : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student1.nickname ? room.student1.nickname : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student1.tel ? room.student1.tel : "ไม่ได้กรอกข้อมูล"}`
                                             : null}
                                         >
                                             <img
                                                 style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                                 src="/icon/male.svg"
                                                 alt="person"
-                                                className="person"
-                                                onClick={(e) => {
-                                                    if (room.student1)
-                                                        removeRoom(room, "student1", e.currentTarget)
-                                                    else
-                                                        selectRoom(room, "student1", e.currentTarget)
-                                                }}
+                                                className="person cursor-pointer"
+                                                onClick={() => routeToStudent(room.student1.id)}
                                             />
                                         </Tooltip>
                                     </span>
                                     <span className="student2">
                                         <Tooltip title={room.student2 ?
-                                            `${room.student2.id}\n/
-                                                ${room.student2.name}\n/
-                                                ${room.student2.surname}\n/
-                                                ${room.student2.nickname}\n/
-                                                ${room.student2.tel}`
+                                            `${room.student2.id ? room.student2.id : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student2.name ? room.student2.name : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student2.surname ? room.student2.surname : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student2.nickname ? room.studen2.nickname : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student2.tel ? room.student2.tel : "ไม่ได้กรอกข้อมูล"}`
                                             : null}
                                         >
                                             <img
                                                 style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                                 src="/icon/male.svg"
                                                 alt="person"
-                                                className="person"
-                                                onClick={(e) => {
-                                                    if (room.student2)
-                                                        removeRoom(room, "student2", e.currentTarget)
-                                                    else
-                                                        selectRoom(room, "student2", e.currentTarget)
-                                                }}
+                                                className="person cursor-pointer"
+                                                onClick={() => routeToStudent(room.student2.id)}
                                             />
                                         </Tooltip>
                                     </span>

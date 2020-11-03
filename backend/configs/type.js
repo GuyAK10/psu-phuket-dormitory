@@ -8,11 +8,10 @@ const checkType = {
             console.log("คุณไม่ใช่นักศึกษา")
             res.status(403).send(error);
         }
-
     },
     staffType: (req, res, next) => {
         try {
-            if (req.headers.type === "Staff") {
+            if (req.headers.type === "Staffs") {
                 next();
             }
         } catch (error) {

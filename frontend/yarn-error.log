@@ -1,0 +1,67 @@
+Arguments: 
+  /root/.nvm/versions/node/v12.13.0/bin/node /root/.nvm/versions/node/v12.13.0/bin/yarn add next@latest react@latest react-dorm@latest
+
+PATH: 
+  /root/.vscode-server/bin/d2e414d9e4239a252d1ab117bd7067f125afd80a/bin:/root/.nvm/versions/node/v12.13.0/bin:/root/.vscode-server/bin/d2e414d9e4239a252d1ab117bd7067f125afd80a/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  12.13.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/react-dorm: Not found
+      at Request.params.callback [as _callback] (/root/.nvm/versions/node/v12.13.0/lib/node_modules/yarn/lib/cli.js:66988:18)
+      at Request.self.callback (/root/.nvm/versions/node/v12.13.0/lib/node_modules/yarn/lib/cli.js:140662:22)
+      at Request.emit (events.js:210:5)
+      at Request.<anonymous> (/root/.nvm/versions/node/v12.13.0/lib/node_modules/yarn/lib/cli.js:141634:10)
+      at Request.emit (events.js:210:5)
+      at IncomingMessage.<anonymous> (/root/.nvm/versions/node/v12.13.0/lib/node_modules/yarn/lib/cli.js:141556:12)
+      at Object.onceWrapper (events.js:299:28)
+      at IncomingMessage.emit (events.js:215:7)
+      at endReadableNT (_stream_readable.js:1183:12)
+      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+
+npm manifest: 
+  {
+    "name": "psu-phuket-dormitory",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "dependencies": {
+      "antd": "^4.7.3",
+      "axios": "^0.20.0",
+      "dotenv": "^8.2.0",
+      "firebase": "^7.20.0",
+      "gsap": "^3.5.1",
+      "next": "^9.5.2",
+      "qs": "^6.9.4",
+      "react": "^16.13.1",
+      "react-dom": "^16.13.1",
+      "recoil": "^0.0.13",
+      "tailwindcss": "^1.9.5",
+      "use-http": "^1.0.15"
+    },
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "export": "next export",
+      "out": "yarn build && yarn export",
+      "serve": "yarn out && serve out",
+      "deploy": "yarn out && firebase deploy"
+    },
+    "devDependencies": {
+      "firebase-tools": "^8.10.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

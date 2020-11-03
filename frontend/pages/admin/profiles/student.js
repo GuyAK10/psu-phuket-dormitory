@@ -1,14 +1,13 @@
 import React, { useEffect, useContext, useState } from 'react'
 import { GlobalState } from '../../../utils/context'
-import { useRouter } from 'next/router'
-import axios from 'axios'
 import useFetch from 'use-http'
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const profile = ({ profileId }) => {
-    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`)
-    const { Students } = useContext(GlobalState)
+    const { AxiosConfig } = useContext(GlobalState)
+    const [axiosConfig] = AxiosConfig
+    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`, axiosConfig)
     const [student, setStudent] = useState({
         profile: {
             id: "",
