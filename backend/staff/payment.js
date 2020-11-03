@@ -44,6 +44,7 @@ const uploadQr = async (payload, options, month, semester, year, roomId) => {
                     });
 
                     blobStream.on('error', (err) => {
+                        console.log(err)
                         reject(err)
                     });
 
@@ -87,13 +88,16 @@ router.post('/staff/payment', async (req, res) => {
             status.qr = true
         } catch (error) {
             console.log("QR Error")
+            throw error
         }
         try {
             await uploadBill(roomId, month, semester, year, water, electric, total) 
             status.bill = true
         } catch (error) {
             console.log("Bill Error")
+            throw error
         }
+        console.log(status ) //ถ้าตัวไหนเป็น false แสดงว่าตัวนั้นทำงานไม่สำเร็จ
         res.send(status);
 
 
@@ -107,7 +111,7 @@ router.get('/staff/payment', async (req, res) => {
     try {
 
         const { body: { semester, year } } = req
-        const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).get()
+        const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month","==",month).get()
 
         let billList = []
         billRef.docs.map((bill) => {
@@ -115,6 +119,22 @@ router.get('/staff/payment', async (req, res) => {
         })
         console.log(billList)
         res.status(200).send(billList);
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(400);
+    }
+});
+
+router.get('/student/payment/reciept', async (req, res) => {
+    try {
+        const { body: { month, semester, year ,roomId} } = req
+        const folder = 'receipt'
+        const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
+        file.download().then(downloadResponse => {
+            console.log(typeof(downloadResponse[0]))
+            res.status(200).send(downloadResponse);
+        });
+
     } catch (error) {
         console.log(error)
         res.sendStatus(400);

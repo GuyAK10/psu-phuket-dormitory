@@ -2,15 +2,15 @@ const express = require('express');
 const firestore = require('../configs/firebase')
 
 const router = express.Router()
+const db = firestore.firestore()
 
-router.get('/staff/repair', (req, res) => {
+router.get('/staff/repair', async (req, res) => {
     try {
-        const { body: {  newName } } = req
-        const file = bucket.file(`news/${newName}`);
-        file.download().then(downloadResponse => {
-            res.status(200).send(downloadResponse[0]);
-        });
+        const { body: { detail, roomId, day , month, semester, year } } = req
+        const repairRef = db.collection('repair').doc(`${semester}-${year}-${month}-${roomId}`)
+        await repairRef.get()
     } catch (error) {
+        console.log(error)
         res.sendStatus(400);
     }
 });

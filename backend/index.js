@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const PORT = process.env.PORT || 80
+require('dotenv').config()
 
 const { verifyHeader } = require("./configs/jwt");
 const { staffType, studentType } = require("./configs/type")
@@ -10,12 +11,12 @@ const accessControl = require('./access')
 const studentProfile = require('./student/profile')
 const studentRoom = require('./student/room')
 const studentPayment = require('./student/payment')
-const studentNew = require('./student/new')
+const studentNew = require('./student/news')
 const studentRepair = require('./student/repair')
 const staffProfile = require('./staff/profile')
 const staffRoom = require('./staff/room')
 const staffPayment = require('./staff/payment')
-const staffNew = require('./staff/new')
+const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 
 app.use(cors())

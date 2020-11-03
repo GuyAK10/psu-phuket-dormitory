@@ -46,20 +46,24 @@ router.post('/student/profile/upload/:studentId', uploader.single('file'), async
   }
 });
 
-router.get('/student/profile/:studentId', async (req, res) => {
+router.get('/student/profile/', async (req, res) => {
   try {
-    const studentId = req.params.studentId
+
+    const { body: { studentId } } = req
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
+    console.log(profile.data())
     res.status(200).send(profile.data());
   }
   catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 });
 
-router.post('/student/profile/:studentId', (req, res) => {
+router.post('/student/profile/', (req, res) => {
   try {
+    const { body: { studentId } } = req
     const user = {
       profile: {
         id: req.body.profile.id,
@@ -149,11 +153,12 @@ router.post('/student/profile/:studentId', (req, res) => {
       }
     }
 
-    const studentId = req.params.studentId;
     const docRef = db.collection('students').doc(`${studentId}`)
     docRef.set(user)
+    console.log("add profile success")
     res.status(200).send("add profile success");
   } catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 });

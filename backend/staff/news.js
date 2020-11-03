@@ -2,6 +2,7 @@ const express = require('express');
 const firestore = require('../configs/firebase')
 const multer = require('multer');
 const { storage } = require('../configs/firebase');
+const { newsNotify } = require('../configs/line')
 
 const router = express.Router()
 const bucket = firestore.storage().bucket()
@@ -22,28 +23,33 @@ router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
         });
 
         blobStream.on('error', (err) => {
+            console.log(err)
             res.status(405).json(err);
         });
 
         blobStream.on('finish', () => {
-            res.status(200).send('Upload complete!');
+            console.log("Upload Complete!")  
+            // newsNotify(newName) แจ้งเตือนไลน์ ยังไม่ได้ test
         });
 
         blobStream.end(req.file.buffer);
     } catch (error) {
+        console.log(error)
         res.sendStatus(400);
     }
 
 });
 
-router.get('/staff/new/dowload/', (req, res) => {
+router.get('/staff/new/', (req, res) => {
     try {
         const { body: {  newName } } = req
         const file = bucket.file(`news/${newName}`);
         file.download().then(downloadResponse => {
+            console.log(typeof(downloadResponse[0]))
             res.status(200).send(downloadResponse[0]);
         });
     } catch (error) {
+        console.log(error)
         res.sendStatus(400);
     }
 });
