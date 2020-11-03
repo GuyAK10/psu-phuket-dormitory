@@ -151,21 +151,21 @@ const verifyHeader = async (req, res, next) => {
                   }
                   if (isExpToken.token !== token) {
                         console.log("Not authorization")
-                        res.status(401).send({ code: 401, status: "logout", message: "ไม่อนุญาติให้ใช้งาน" })
+                        res.status(401).send({ code: 401, logout: true, message: "ไม่อนุญาติให้ใช้งาน" })
                   }
                   if (+decode.exp < Date.now()) {
                         console.log("Token expired")
-                        res.status(401).send({ code: 401, status: "logout", message: "Token expired" })
+                        res.status(401).send({ code: 401, logout: true, message: "Token expired" })
                   }
                   else next()
 
             } else {
                   console.log("Please Login")
-                  res.status(401).send({ code: 401, status: "logout", message: "เกิดข้อผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
+                  res.status(401).send({ code: 401, logout: true, message: "เกิดข้อผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
             }
       } catch (e) {
             console.log(e)
-            res.sendStatus(400);
+            res.sendStatus(400).send({ code: 401, logout: true, message: e });
       }
 }
 

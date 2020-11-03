@@ -17,7 +17,6 @@ const staffRoom = require('./staff/room')
 const staffPayment = require('./staff/payment')
 const staffNew = require('./staff/new')
 const staffRepair = require('./staff/repair')
-require('dotenv').config()
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))

@@ -5,6 +5,7 @@ const multer = require('multer');
 const router = express.Router()
 const db = firestore.firestore()
 const bucket = firestore.storage().bucket()
+
 const uploader = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -12,45 +13,35 @@ const uploader = multer({
   }
 });
 
-// router.post('/student/profile/upload/:studentId', uploader.single('img'), (req, res) => {
-//   try {
-//     const id = req.params.studentId
-//     const folder = 'profile'
-//     const fileName = `${id}`
-//     const fileUpload = bucket.file(`${folder}/` + fileName);
-//     const blobStream = fileUpload.createWriteStream({
-//       metadata: {
-//         contentType: req.file.mimetype
-//       }
-//     });
-
-//     blobStream.on('error', (err) => {
-//       res.status(405).json(err);
-//     });
-
-//     blobStream.on('finish', () => {
-//       res.status(200).send('Upload complete!');
-//     });
-
-//     blobStream.end(req.file.buffer);
-//   } catch (error) {
-//     res.sendStatus(400);
-//   }
-
-// });
-
-router.get('/student/files', (req, res) => {
-  console.log(req)
-  res.send('finished')
-})
-
-router.get('/student/profile/picture/studentId', (req, res) => {
+router.post('/student/profile/upload/:studentId', uploader.single('file'), async (req, res) => {
   try {
-    const file = bucket.file(`profile/${req.params.studentId}`);
-    file.download().then(downloadResponse => {
-      res.status(200).send(downloadResponse[0]);
+    const id = req.params.studentId
+    const folder = 'profile'
+    const fileName = `${id}`
+    const fileUpload = bucket.file(`${folder}/${fileName}`);
+
+    const blobStream = fileUpload.createWriteStream({
+      metadata: {
+        contentType: req.file.mimetype
+      },
     });
+
+    blobStream.on('error', (err) => {
+      console.log(err)
+      res.status(405).json(err);
+    });
+
+    blobStream.on('finish', () => {
+      bucket.file(`profile/${id}`)
+        .getSignedUrl({ action: "read", expires: "01-01-3000" })
+        .then(url => {
+          res.status(200).send({ code: 200, success: true, message: url[0] });
+        })
+    });
+    blobStream.end(req.file.buffer, () => console.log('close'));
+
   } catch (error) {
+    console.error(error)
     res.sendStatus(400);
   }
 });

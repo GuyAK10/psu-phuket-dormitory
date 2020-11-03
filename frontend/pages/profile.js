@@ -14,9 +14,9 @@ const profile = () => {
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
     const [current, setCurrent] = useState(0)
-    const [img, setImg] = useState(null)
     const [form, setForm] = React.useState({
         profile: {
+            profileImg: "",
             id: "",
             name: "",
             surname: "",
@@ -104,7 +104,7 @@ const profile = () => {
         }
     })
 
-    const { get, post, response } = useFetch(`${ENDPOINT}:${PORT}/student/profile`, axiosConfig)
+    const { get, post, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...axiosConfig, cachePolicy: "no-cache" })
 
     const handleFormprofile = (e) => {
         setForm({
@@ -208,7 +208,7 @@ const profile = () => {
     }
 
     const handleSubmit = (e) => {
-        const { id } = JSON.parse(sessionStorage.getItem('token')) || token
+        const { id } = JSON.parse(sessionStorage.getItem('token'))
 
         const success = () => {
             message.success('บันทึกข้อมูลเรียบร้อยแล้ว');
@@ -271,9 +271,8 @@ const profile = () => {
         try {
             if (sessionStorage.getItem('token')) {
                 const token = await JSON.parse(sessionStorage.getItem('token'))
-                const studentProfile = await get(`/${token.id}`)
-                if (studentProfile) {
-                    console.log(studentProfile)
+                const studentProfile = await get(`/student/profile/${token.id}`)
+                if (response.ok) {
                     setForm(studentProfile)
                 }
             }
@@ -283,11 +282,16 @@ const profile = () => {
         }
     }
 
-    useEffect(() => {
-        verifyLogin()
-        getHeader()
-        getInitialProfile()
-    }, [])
+    const handleFile = async (file) => {
+        const token = JSON.parse(sessionStorage.getItem('token'))
+        let data = new FormData()
+        data.append('file', file)
+        const resImg = await post(`/student/profile/upload/${token.id}`, data)
+        console.log(resImg)
+        if (resImg.success) {
+            setForm({ ...form, profile: { ...form.profile, profileImg: resImg.message } })
+        }
+    }
 
     const steps = [
         {
@@ -296,10 +300,10 @@ const profile = () => {
                 <h2>ข้อมูลเบื้องต้น</h2>
 
                 <label>รูปภาพ</label>
-                <button onClick={() => console.log(img)}>file</button>
-                <input type="file" onChange={e => {
-                    setImg(e.target.files[0])
-                }} />
+
+                {form.profile.profileImg ? <img className="w-20 h-20" src={form.profile.profileImg} alt="profileImg" /> : <img className="w-20 h-20" src="https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png" alt="mock profile" />}
+                <input type="file" name="file" onChange={(e) => handleFile(e.target.files[0])} />
+
                 <label>รหัสนักศึกษา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.id} name="id" onChange={handleFormprofile} />
                 <label>ชื่อจริง</label>
@@ -466,7 +470,13 @@ const profile = () => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.position} name="position" onChange={handleFormOther} />
             </div> : null
         },
-    ];
+    ]
+
+    useEffect(() => {
+        verifyLogin()
+        getHeader()
+        getInitialProfile()
+    }, [])
 
     return (
         <div className="profile-container h-auto flex flex-col items-center">
