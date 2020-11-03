@@ -25,24 +25,22 @@ router.post('/student/profile/upload/', uploader.single('img'), (req, res) => {
     });
 
     blobStream.on('error', (err) => {
+      console.log(err)
       res.status(405).json(err);
     });
 
     blobStream.on('finish', () => {
+      console.log("Upload complete!")
       res.status(200).send('Upload complete!');
     });
 
     blobStream.end(req.file.buffer);
   } catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 
 });
-
-router.get('/student/files', (req, res) => {
-  console.log(req)
-  res.send('finished')
-})
 
 router.get('/student/profile/picture/', (req, res) => {
   try {
@@ -54,6 +52,7 @@ router.get('/student/profile/picture/', (req, res) => {
       res.status(200).send(downloadResponse[0]);
     });
   } catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 });
@@ -64,9 +63,11 @@ router.get('/student/profile/', async (req, res) => {
     const { body: { studentId } } = req
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
+    console.log(profile.data())
     res.status(200).send(profile.data());
   }
   catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 });
@@ -165,8 +166,10 @@ router.post('/student/profile/', (req, res) => {
 
     const docRef = db.collection('students').doc(`${studentId}`)
     docRef.set(user)
+    console.log("add profile success")
     res.status(200).send("add profile success");
   } catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 });

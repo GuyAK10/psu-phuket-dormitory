@@ -18,10 +18,12 @@ router.get('/staff/profile/list',  async (req, res) => {
           Object.assign(studentData, list.data())
           studentList.push(studentData)
       })
+      console.log(studentList)
       res.status(200).send(studentList);
   }
   catch (error) {
-      res.sendStatus(500);
+    console.log(error)
+    res.sendStatus(500);
   }
 });
 
@@ -31,9 +33,11 @@ router.get('/staff/profile/', async (req, res) => {
     const { body: { studentId } } = req
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
+    console.log(profile.data())
     res.status(200).send(profile.data());
   }
   catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 });
@@ -48,6 +52,7 @@ router.get('/staff/profile/picture/', (req, res) => {
       res.status(200).send(downloadResponse[0]);
     });
   } catch (error) {
+    console.log(error)
     res.sendStatus(400);
   }
 });

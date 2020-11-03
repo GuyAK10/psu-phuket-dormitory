@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs')
 const firebase = require('./firebase')
 require('dotenv').config()
+
 const tokenRef = firebase.firestore().collection('token')
 const db = firebase.firestore()
 // const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
@@ -108,8 +109,7 @@ const createToken = async (user, responseData, _req, res) => {
                         }
 
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
-                        const docRef = db.collection('token');
-                        const register = docRef.doc(`${responseData.userId}`)
+                        const register = tokenRef.doc(`${responseData.userId}`)
                         const setProfile = db.collection('students').doc(`${responseData.userId}`);
 
                         await register.set({
@@ -147,7 +147,7 @@ const verifyHeader = async (req, res, next) => {
                   let isExpToken = {}
                   const decode = jwt.decode(token, privateKey)
                   if (!verifyHeaderToken.empty) {
-                        await verifyHeaderToken.forEach(result => isExpToken = { ...result.data() })
+                        verifyHeaderToken.forEach(result => isExpToken = { ...result.data() })
                   }
                   if (isExpToken.token !== token) {
                         console.log("Not authorization")

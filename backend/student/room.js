@@ -39,7 +39,8 @@ const bookInfomation = async (profileData, res) => {
         return booked
     }
     catch (error) {
-        res.sendStatus(400);
+        console.log(error)
+        throw error
     }
 }
 
@@ -57,10 +58,12 @@ const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
             res.status(200).send({ code: 200, success: true, message: "booking student2 success" });
         }
         else {
+            console.log("booking failed")
             res.status(400).send({ code: 200, success: false, message: "booking failed" });
         }
     } catch (error) {
-        res.sendStatus(400);
+        console.log(error)
+        throw error
     }
 
 }
@@ -87,10 +90,12 @@ router.get('/student/room/', async (req, res) => {
                 result.push(floorList)
 
             })
+            console.log(result)
             res.status(200).send({
                 ...result,
             });
         } else {
+            console.log("ระบบยังไม่เปิดจอง")
             res.status(200).send("ระบบยังไม่เปิดจอง");;
         }
     } catch (error) {
@@ -140,9 +145,11 @@ router.delete('/student/room/remove', async (req, res) => {
         await profileRef.get().then(async data => {
             if (data.data()[orderId].id === studentId) {
                 await profileRef.update({ [orderId]: FieldValue.delete() })
+                console.log("deleted")
                 res.status(200).send({ code: 200, success: true, message: "deleted" })
             }
             else {
+                console.log("ไม่สามารถยกเลิกการจองของผู้อื่นได้")
                 res.status(200).send({ code: 200, success: false, message: "ไม่สามารถยกเลิกการจองของผู้อื่นได้" })
             }
         })

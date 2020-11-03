@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const PORT = process.env.PORT || 80
+require('dotenv').config()
 
 const { verifyHeader } = require("./configs/jwt");
 const { staffType, studentType } = require("./configs/type")
@@ -17,7 +18,6 @@ const staffRoom = require('./staff/room')
 const staffPayment = require('./staff/payment')
 const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
-require('dotenv').config()
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))

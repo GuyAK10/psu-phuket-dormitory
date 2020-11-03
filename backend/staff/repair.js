@@ -10,6 +10,7 @@ router.get('/staff/repair', async (req, res) => {
         const repairRef = db.collection('repair').doc(`${semester}-${year}-${month}-${roomId}`)
         await repairRef.get()
     } catch (error) {
+        console.log(error)
         res.sendStatus(400);
     }
 });

@@ -44,6 +44,7 @@ const uploadQr = async (payload, options, month, semester, year, roomId) => {
                     });
 
                     blobStream.on('error', (err) => {
+                        console.log(err)
                         reject(err)
                     });
 
@@ -87,13 +88,16 @@ router.post('/staff/payment', async (req, res) => {
             status.qr = true
         } catch (error) {
             console.log("QR Error")
+            throw error
         }
         try {
             await uploadBill(roomId, month, semester, year, water, electric, total) 
             status.bill = true
         } catch (error) {
             console.log("Bill Error")
+            throw error
         }
+        console.log(status ) //ถ้าตัวไหนเป็น false แสดงว่าตัวนั้นทำงานไม่สำเร็จ
         res.send(status);
 
 
@@ -123,10 +127,11 @@ router.get('/staff/payment', async (req, res) => {
 
 router.get('/student/payment/reciept', async (req, res) => {
     try {
-        const { body: { month, semester, year } } = req
+        const { body: { month, semester, year ,roomId} } = req
         const folder = 'receipt'
-        const file = bucket.file(`${folder}/${semester}-${year}/${month}/`);
+        const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
         file.download().then(downloadResponse => {
+            console.log(typeof(downloadResponse[0]))
             res.status(200).send(downloadResponse);
         });
 

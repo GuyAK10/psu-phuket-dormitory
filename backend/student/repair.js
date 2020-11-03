@@ -13,6 +13,7 @@ router.post('/student/repair', (req, res) => {
       })
    
       } catch (error) {
+        console.log(error)
         res.sendStatus(400);
       }
 });
