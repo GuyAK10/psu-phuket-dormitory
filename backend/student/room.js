@@ -2,7 +2,7 @@ const express = require('express');
 const { firestore } = require('../configs/firebase')
 const router = express.Router()
 const db = firestore()
-const { firestore: { FieldValue, FieldPath } } = require('../configs/firebase')
+const { firestore: { FieldValue } } = require('../configs/firebase')
 
 const bookInfomation = async (profileData, res) => {
     try {
@@ -89,12 +89,12 @@ router.get('/student/room/:floorId/', async (req, res) => {
             })
             res.status(200).send({
                 ...result,
-                statusAllroom: checkAllroom
             });
         } else {
             res.status(200).send("ระบบยังไม่เปิดจอง");;
         }
     } catch (error) {
+        console.error(error)
         res.sendStatus(400);
     }
 });

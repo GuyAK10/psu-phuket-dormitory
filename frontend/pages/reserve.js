@@ -20,7 +20,7 @@ const reserve = () => {
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
     const [person, setPerson] = useState([{}, {}, {}, {}])
-    const [focusRoomList, setFocusListRoom] = useState([[{ profileId: "E01" }], [{ profileId: "A01" }]])
+    const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const floorList = [
         { 1: ["E", "A"] },
         { 2: ["F", "B"] },
@@ -160,11 +160,7 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
-<<<<<<< HEAD:frontend/pages/Reserve.js
-        const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
-=======
         const { post } = useFetch(`${ENDPOINT}:${PORT}/student/room`, axiosConfig)
->>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -189,25 +185,27 @@ const reserve = () => {
             try {
                 const { id } = token
                 const body = {
-                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
-                    roomId: item.profileId,
+                    floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
+                    roomId: item.floorId,
                     studentId: id,
                     orderId: student
                 }
 
-<<<<<<< HEAD:frontend/pages/Reserve.js
-                const data = await post(`/`, body,axiosConfig)
-=======
-                const data = await post('/', body)
->>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
+                const data = await post(`/`, body, axiosConfig)
 
-                if (!data.success) message.error(data.message)
+                if (!data.success) {
+                    message.error(data.message)
+                    if (data.message === "กรุณาบันทึกข้อมูลผู้ใช้ก่อน") {
+                        message.warn("ระบบจะพาคุณไปยังหน้าบันทึกข้อมูล")
+                        Router.push("profile")
+                    }
+                }
 
                 if (data.success) {
                     let changeStatusReserve = modalFloor
                     changeStatusReserve.map(room => {
                         let temp = room
-                        if (temp.profileId === item.profileId) {
+                        if (temp.floorId === item.floorId) {
                             temp[`${student}`] = id
                             return temp
                         } else return temp
@@ -226,18 +224,14 @@ const reserve = () => {
             try {
                 const { id } = token
                 const body = {
-                    floorId: `floor${item.profileId.split(0, 1)[0][0]}`,
-                    roomId: item.profileId,
+                    floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
+                    roomId: item.floorId,
                     studentId: id,
                     orderId: student
                 }
 
                 // const reserve = await axios.post()
-<<<<<<< HEAD:frontend/pages/Reserve.js
-                const data = await post(`/remove`, body,axiosConfig)
-=======
-                const data = await post('/remove', body)
->>>>>>> a9deb330bfeb65852f43b03ea981508c84ac817f:frontend/pages/reserve.js
+                const data = await post(`/remove`, body, axiosConfig)
 
                 if (!data.success) {
                     message.error(data.message)
@@ -247,7 +241,7 @@ const reserve = () => {
                     let changeStatusReserve = modalFloor
                     changeStatusReserve.map(room => {
                         let temp = room
-                        if (temp.profileId === item.profileId) {
+                        if (temp.floorId === item.floorId) {
                             temp[`${student}`] = undefined
                             return temp
                         } else return temp
@@ -296,7 +290,7 @@ const reserve = () => {
                                         />
                                     </span>
                                 </span>
-                                {room.profileId}
+                                {room.floorId}
                             </div>
                         }
                         ) : null}
@@ -338,7 +332,7 @@ const reserve = () => {
                                         />
                                     </span>
                                 </span>
-                                {room.profileId}
+                                {room.floorId}
                             </div>
                         }) : null}
 

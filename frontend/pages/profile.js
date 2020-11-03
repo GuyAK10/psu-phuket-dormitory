@@ -14,6 +14,7 @@ const profile = () => {
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
     const [current, setCurrent] = useState(0)
+    const [img, setImg] = useState(null)
     const [form, setForm] = React.useState({
         profile: {
             id: "",
@@ -271,7 +272,8 @@ const profile = () => {
             if (sessionStorage.getItem('token')) {
                 const token = await JSON.parse(sessionStorage.getItem('token'))
                 const studentProfile = await get(`/${token.id}`)
-                if (response.ok) {
+                if (studentProfile) {
+                    console.log(studentProfile)
                     setForm(studentProfile)
                 }
             }
@@ -292,6 +294,12 @@ const profile = () => {
             title: 'ข้อมูลเบื้องต้น',
             content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเบื้องต้น</h2>
+
+                <label>รูปภาพ</label>
+                <button onClick={() => console.log(img)}>file</button>
+                <input type="file" onChange={e => {
+                    setImg(e.target.files[0])
+                }} />
                 <label>รหัสนักศึกษา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.id} name="id" onChange={handleFormprofile} />
                 <label>ชื่อจริง</label>
