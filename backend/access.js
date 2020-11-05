@@ -52,8 +52,14 @@ router.post('/', (req, res) => {
                     try {
                         const responseData = {
                             userId: userUsecase.getStudentId(response),
-                            role: userUsecase.getRole(response)
+                            role: userUsecase.getRole(response),
+                            name:userUsecase.getName(response),
+                            surname:userUsecase.getSurname(response),
+                            faculty:userUsecase.getFaculty(response),
+                            department:userUsecase.getDepartment(response),
+                            email:userUsecase.getEmail(response)
                         }
+    
                         createToken({ username, password, type }, responseData, req, res)
                     } catch (error) {
                         console.log(error)

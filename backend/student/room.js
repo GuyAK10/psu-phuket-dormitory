@@ -64,8 +64,8 @@ const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
         }
         else if (bookRef.exists &&orderId == "student2") {
             bookRef.update({ student1: bookRoom })
-            console.log("booking student1 success")
-            res.status(200).send({ code: 200, success: true, message: "booking student1 success" });
+            console.log("booking student2 success")
+            res.status(200).send({ code: 200, success: true, message: "booking student2 success" });
         }
         else {
             console.log("booking failed")

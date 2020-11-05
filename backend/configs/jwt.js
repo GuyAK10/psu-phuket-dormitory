@@ -118,8 +118,13 @@ const createToken = async (user, responseData, _req, res) => {
                               type: responseData.role,
                               token: encoded
                         });
-
+                        
                         student.profile.id = responseData.userId
+                        student.profile.name = responseData.name
+                        student.profile.surname = responseData.surname
+                        student.profile.faculty = responseData.faculty
+                        student.profile.department = responseData.department
+                        student.contact.email = responseData.email
 
                         const doc = await setProfile.get()
                         if (!doc.exists) await setProfile.set(student)

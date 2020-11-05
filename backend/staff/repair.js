@@ -6,9 +6,9 @@ const db = firestore.firestore()
 
 router.get('/staff/repair', async (req, res) => {
     try {
-        const { body: { detail, roomId, day , month, semester, year } } = req
-        const repairRef = db.collection('repair').doc(`${semester}-${year}-${month}-${roomId}`)
-        await repairRef.get()
+        const { body: {  roomId, day , month, semester, year } } = req
+        const repairRef = await db.collection('repair').doc(`${semester}-${year}-${month}-${roomId}`).get()
+        console.log(repairRef.data())
     } catch (error) {
         console.log(error)
         res.sendStatus(400);
