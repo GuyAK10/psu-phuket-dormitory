@@ -5,8 +5,9 @@ require('dotenv').config()
 
 const tokenRef = firebase.firestore().collection('token')
 const db = firebase.firestore()
-// const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 const privateKey = process.env.PRIVATE_KEY
+// const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
+
 let student = {
       profile: {
             id: "",

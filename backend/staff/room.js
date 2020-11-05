@@ -46,7 +46,7 @@ router.get('/staff/room/:floorId/', async (req, res) => {
       }
 })
 
-router.delete('/staff/room/remove', async (req, res) => {
+router.post('/staff/room/remove', async (req, res) => {
       try {
           const { body: { floorId, roomId, studentId, orderId } } = req
           const profileRef = db.doc(`${floorId}/${roomId}`);

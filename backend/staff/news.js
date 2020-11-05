@@ -29,7 +29,7 @@ router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
 
         blobStream.on('finish', () => {
             console.log("Upload Complete!")  
-            // newsNotify(newName) แจ้งเตือนไลน์ ยังไม่ได้ test
+            newsNotify(newName) 
         });
 
         blobStream.end(req.file.buffer);

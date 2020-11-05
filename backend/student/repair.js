@@ -1,5 +1,6 @@
 const express = require('express');
 const firestore = require('../configs/firebase')
+const { repairNotify } = require('../configs/line')
 
 const router = express.Router()
 const db = firestore.firestore()
@@ -11,7 +12,7 @@ router.post('/student/repair', (req, res) => {
       repairRef.set({
           detail:detail
       })
-   
+      repairNotify()
       } catch (error) {
         console.log(error)
         res.sendStatus(400);

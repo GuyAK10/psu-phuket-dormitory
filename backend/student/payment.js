@@ -66,10 +66,10 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
       res.status(405).json(err);
     });
 
-    blobStream.on('finish', () => {
+    blobStream.on('finish', async () => {
       console.log("Upload Complete!")
-      res.status(200).send('Upload complete!');
-      // receiptNotify(semester, year, month, roomId) แจ้งเตือนไลน์ ยังไม่ได้ test
+      // res.status(200).send('Upload complete!');
+      receiptNotify(semester, year, month, roomId) 
     });
 
     blobStream.end(req.file.buffer);
