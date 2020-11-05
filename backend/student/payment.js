@@ -21,7 +21,7 @@ router.get('/student/payment/qrcode', async (req, res) => {
     const folder = 'payment'
     const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
     file.download().then(downloadResponse => {
-      console.log(typeof (downloadResponse[0]))
+      console.log (downloadResponse)
       res.status(200).send(downloadResponse[0]);
     });
 

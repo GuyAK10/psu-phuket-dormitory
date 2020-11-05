@@ -121,8 +121,8 @@ const createToken = async (user, responseData, _req, res) => {
 
                         student.profile.id = responseData.userId
 
-                        await setProfile.set(student)
-
+                        const doc = await setProfile.get()
+                        if (!doc.exists) await setProfile.set(student)
                         res.status(200).send({
                               id: responseData.userId,
                               type: responseData.role,

@@ -5,7 +5,7 @@ const router = express.Router()
 const db = firestore.firestore()
 const bucket = firestore.storage().bucket()
 
-router.get('/staff/profile/list',  async (req, res) => {
+router.get('/staff/profile/',  async (req, res) => {
   try {
       let studentList = []
       const docRef = db.collection('students')
@@ -27,10 +27,9 @@ router.get('/staff/profile/list',  async (req, res) => {
   }
 });
 
-router.get('/staff/profile/', async (req, res) => {
+router.get('/staff/profile/:studentId', async (req, res) => {
   try {
-
-    const { body: { studentId } } = req
+    const studentId =req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
     console.log(profile.data())
@@ -42,10 +41,10 @@ router.get('/staff/profile/', async (req, res) => {
   }
 });
 
-router.get('/staff/profile/picture/', (req, res) => {
+router.get('/staff/profile/picture/:studentId', (req, res) => {
   try {
 
-    const { body: { studentId } } = req
+    const studentId =req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
       console.log(typeof(downloadResponse[0]))

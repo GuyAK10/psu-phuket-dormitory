@@ -20,9 +20,9 @@ router.post('/staff/room/', (req, res) => {
       }
 });
 
-router.get('/staff/room/:floorId/', async (req, res) => {
+router.get('/staff/room/:floorId', async (req, res) => {
       try {
-            const { body: { floorId } } = req
+            const floorId = req.params.floorId
             const docRef = db.collection(`${floorId}`);
             const roomRef = await docRef.get()
             let result = [];
