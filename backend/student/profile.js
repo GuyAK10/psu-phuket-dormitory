@@ -32,9 +32,9 @@ router.post('/student/profile/upload/:studentId', uploader.single('file'), async
     });
 
     blobStream.on('finish', () => {
-      
+
       res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}` });
-        
+
     });
     blobStream.end(req.file.buffer, () => console.log('close'));
 
@@ -49,7 +49,7 @@ router.get('/student/profile/picture/:studentId', (req, res) => {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
-      const picture = "data:image/png;base64,"+downloadResponse[0].toString('base64')
+      const picture = "data:image/png;base64," + downloadResponse[0].toString('base64')
       res.status(200).send(picture);
     });
   } catch (error) {
@@ -73,7 +73,7 @@ router.get('/student/profile/:studentId', async (req, res) => {
   }
 });
 
-router.post('/student/profile/', (req, res) => {
+router.post('/student/profile/', async (req, res) => {
   try {
     const { body: { studentId } } = req
     const user = {
@@ -166,8 +166,13 @@ router.post('/student/profile/', (req, res) => {
     }
 
     const docRef = db.collection('students').doc(`${studentId}`)
-    docRef.set(user)
-    console.log("add profile success")
+    if (!docRef.exists) {
+      await docRef.set(user)
+      console.log("add profile success")
+    } else {
+      await docRef.update(user)
+      console.log("update profile success")
+    }
     res.status(200).send("add profile success");
   } catch (error) {
     console.log(error)
