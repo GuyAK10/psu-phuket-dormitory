@@ -5,6 +5,7 @@ const multer = require('multer');
 const router = express.Router()
 const db = firestore.firestore()
 const bucket = firestore.storage().bucket()
+
 const uploader = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -12,16 +13,17 @@ const uploader = multer({
   }
 });
 
-router.post('/student/profile/upload/', uploader.single('img'), (req, res) => {
+router.post('/student/profile/upload/:studentId', uploader.single('file'), async (req, res) => {
   try {
-    const { body: { studentId } } = req
+    const id = req.params.studentId
     const folder = 'profile'
-    const fileName = `${studentId}`
-    const fileUpload = bucket.file(`${folder}/` + fileName);
+    const fileName = `${id}`
+    const fileUpload = bucket.file(`${folder}/${fileName}`);
+
     const blobStream = fileUpload.createWriteStream({
       metadata: {
         contentType: req.file.mimetype
-      }
+      },
     });
 
     blobStream.on('error', (err) => {
@@ -30,29 +32,16 @@ router.post('/student/profile/upload/', uploader.single('img'), (req, res) => {
     });
 
     blobStream.on('finish', () => {
-      console.log("Upload complete!")
-      res.status(200).send('Upload complete!');
+      bucket.file(`profile/${id}`)
+        .getSignedUrl({ action: "read", expires: "01-01-3000" })
+        .then(url => {
+          res.status(200).send({ code: 200, success: true, message: url[0] });
+        })
     });
+    blobStream.end(req.file.buffer, () => console.log('close'));
 
-    blobStream.end(req.file.buffer);
   } catch (error) {
-    console.log(error)
-    res.sendStatus(400);
-  }
-
-});
-
-router.get('/student/profile/picture/', (req, res) => {
-  try {
-    
-    const { body: { studentId } } = req
-    const file = bucket.file(`profile/${studentId}`);
-    file.download().then(downloadResponse => {
-      console.log(typeof(downloadResponse[0]))
-      res.status(200).send(downloadResponse[0]);
-    });
-  } catch (error) {
-    console.log(error)
+    console.error(error)
     res.sendStatus(400);
   }
 });
