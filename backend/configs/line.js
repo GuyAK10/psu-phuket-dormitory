@@ -1,6 +1,6 @@
 var request = require('request');
 
-var token = XmePmrVCTE4dlbGNDHWNffoRSDfOxIXwJOG3iummhXD;
+var token = "XmePmrVCTE4dlbGNDHWNffoRSDfOxIXwJOG3iummhXD";
 
 const lineNotify = {
     receiptNotify: (semester, year, month, roomId) => {

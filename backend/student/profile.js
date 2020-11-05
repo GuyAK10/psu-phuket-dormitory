@@ -33,18 +33,26 @@ router.post('/student/profile/upload/:studentId', uploader.single('file'), async
 
     blobStream.on('finish', () => {
       bucket.file(`profile/${id}`)
-        .getSignedUrl({ action: "read", expires: "01-01-3000" })
+        .getSignedUrl({ action: "read", expires: `${Math.floor(Math.random() * 10)}-01-3000` }) // change url when signed
         .then(url => {
           res.status(200).send({ code: 200, success: true, message: url[0] });
         })
     });
-    blobStream.end(req.file.buffer, () => console.log('close'));
+    blobStream.end(req.file.buffer);
 
   } catch (error) {
     console.error(error)
     res.sendStatus(400);
   }
 });
+
+router.get('/student/profile/:id', (req, res) => {
+  const file = bucket.file(`profile/${req.params.id}`);
+  file.download().then(downloadResponse => {
+    res.status(200).send(downloadResponse[0]);
+  });
+});
+
 
 router.get('/student/profile/', async (req, res) => {
   try {

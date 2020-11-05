@@ -68,9 +68,9 @@ const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
 
 }
 
-router.get('/student/room/', async (req, res) => {
+router.get('/student/room/:floorId', async (req, res) => {
     try {
-        const { body: { floorId } } = req
+        const { params: { floorId } } = req
         const checkRef = db.collection('dormitory').doc('status');
         const checkStatus = await checkRef.get()
         const check = Object.values(checkStatus.data())

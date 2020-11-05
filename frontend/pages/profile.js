@@ -289,6 +289,7 @@ const profile = () => {
         const resImg = await post(`/student/profile/upload/${token.id}`, data)
         console.log(resImg)
         if (resImg.success) {
+            console.log('setImg')
             setForm({ ...form, profile: { ...form.profile, profileImg: resImg.message } })
         }
     }
@@ -301,7 +302,10 @@ const profile = () => {
 
                 <label>รูปภาพ</label>
 
-                {form.profile.profileImg ? <img className="w-20 h-20" src={form.profile.profileImg} alt="profileImg" /> : <img className="w-20 h-20" src="https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png" alt="mock profile" />}
+                {form.profile.profileImg ? <img className="w-20 h-20" key={cache} src={`${form.profile.profileImg}`} alt="profileImg" />
+                    :
+                    <img className="w-20 h-20" src="https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png" alt="mock profile" />}
+
                 <input type="file" name="file" onChange={(e) => handleFile(e.target.files[0])} />
 
                 <label>รหัสนักศึกษา</label>
