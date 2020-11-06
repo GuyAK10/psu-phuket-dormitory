@@ -27,7 +27,7 @@ const MyApp = ({ Component, pageProps }) => {
                 Students: [students, setStudents],
                 Staff: [staff, setStaff]
             }}>
-            <div className="root-container h-screen">
+            <div className="root-container relative">
                 <NavigationBar />
                 <LoginModal>
                     <Component {...pageProps} />

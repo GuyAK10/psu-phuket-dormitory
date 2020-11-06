@@ -85,8 +85,6 @@ const reserve = () => {
                     Logout()
                 })
 
-            console.log(floorDetails)
-
             setFocusListRoom(floorDetails)
             setIsLoading(true)
         }

@@ -63,7 +63,7 @@ const NavigationBar = () => {
     }, [])
 
     return (
-        <div className="navbar-container text-center flex flex-col justify-around justify-items-auto items-stretch sm:flex sm:flex-row">
+        <div className="bg-gray-200 text-center flex flex-col justify-around justify-items-auto items-stretch sm:flex-row">
             <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/')}>หน้าแรก</span>
             {staff ? <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/admin/reserve')}>รายการจองห้อง</span>
                 : <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/reserve')}>จองห้อง</span>}
