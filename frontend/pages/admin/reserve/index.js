@@ -160,7 +160,7 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
-        const { post } = useFetch(`${Endpoint}/student/room`,axiosConfig)
+        const { post } = useFetch(`${ENDPOINT}/student/room`,axiosConfig)
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')

@@ -1,9 +1,8 @@
 require('dotenv').config()
 const admin = require('firebase-admin');
-// const serviceAccount = require('./serviceAccountKey.json')
 const FIREBASE_CONFIG = JSON.parse(process.env.FIREBASE_CONFIG)
+// const serviceAccount = require('./serviceAccountKey.json')
 
-// console.log(FIREBASE_CONFIG)
 admin.initializeApp({
   credential: admin.credential.cert(FIREBASE_CONFIG),
   databaseURL: 'https://psu-phuket-dormitory.firebaseio.com',

@@ -32,16 +32,12 @@ const uploadBill = async (roomId, month, semester, year, water, electric, total)
 const uploadQr = async (payload, options, month, semester, year, roomId) => {
     try {
         await new Promise((resolve, reject) => {
-            qrcode.toDataURL(payload, options, (err, png) => {
+           qrcode.toDataURL(payload, options, (err, png) => {
                 try {
 
                     const folder = 'payment'
                     const fileUpload = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
-                    const blobStream = fileUpload.createWriteStream({
-                        metadata: {
-                            contentType: png
-                        }
-                    });
+                    const blobStream = fileUpload.createWriteStream();
 
                     blobStream.on('error', (err) => {
                         console.log(err)
@@ -110,7 +106,7 @@ router.post('/staff/payment', async (req, res) => {
 router.get('/staff/payment', async (req, res) => {
     try {
 
-        const { body: { semester, year } } = req
+        const { body: { semester, year , month } } = req
         const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month","==",month).get()
 
         let billList = []

@@ -21,7 +21,7 @@ router.get('/student/payment/qrcode', async (req, res) => {
     const folder = 'payment'
     const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
     file.download().then(downloadResponse => {
-      console.log(typeof (downloadResponse[0]))
+      console.log (downloadResponse)
       res.status(200).send(downloadResponse[0]);
     });
 
@@ -66,10 +66,10 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
       res.status(405).json(err);
     });
 
-    blobStream.on('finish', () => {
+    blobStream.on('finish', async () => {
       console.log("Upload Complete!")
-      res.status(200).send('Upload complete!');
-      // receiptNotify(semester, year, month, roomId) แจ้งเตือนไลน์ ยังไม่ได้ test
+      // res.status(200).send('Upload complete!');
+      receiptNotify(semester, year, month, roomId) 
     });
 
     blobStream.end(req.file.buffer);

@@ -5,8 +5,9 @@ require('dotenv').config()
 
 const tokenRef = firebase.firestore().collection('token')
 const db = firebase.firestore()
-// const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 const privateKey = process.env.PRIVATE_KEY
+// const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
+
 let student = {
       profile: {
             id: "",
@@ -120,8 +121,8 @@ const createToken = async (user, responseData, _req, res) => {
 
                         student.profile.id = responseData.userId
 
-                        await setProfile.set(student)
-
+                        const doc = await setProfile.get()
+                        if (!doc.exists) await setProfile.set(student)
                         res.status(200).send({
                               id: responseData.userId,
                               type: responseData.role,

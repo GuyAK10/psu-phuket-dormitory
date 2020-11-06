@@ -22,8 +22,10 @@ router.delete('/logout/:token', async (req, res) => {
             find.forEach(res => deleteId = { ...res.data() })
         }
         docRef.doc(deleteId.id).delete()
+        console.log("Logout")
         res.status(200).send({ code: 401, status: "Logout", message: "Logout" });
     } catch (e) {
+        console.log(e)
         res.sendStatus(500)
     }
 })
@@ -55,7 +57,7 @@ router.post('/', (req, res) => {
                         createToken({ username, password, type }, responseData, req, res)
                     } catch (error) {
                         console.log(error)
-                        res.sendStatus(501)
+                        throw error
                     }
                 })
             }

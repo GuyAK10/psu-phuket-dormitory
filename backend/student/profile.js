@@ -32,11 +32,9 @@ router.post('/student/profile/upload/:studentId', uploader.single('file'), async
     });
 
     blobStream.on('finish', () => {
-      bucket.file(`profile/${id}`)
-        .getSignedUrl({ action: "read", expires: `${Math.floor(Math.random() * 10)}-01-3000` }) // change url when signed
-        .then(url => {
-          res.status(200).send({ code: 200, success: true, message: url[0] });
-        })
+      
+      res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}` });
+        
     });
     blobStream.end(req.file.buffer);
 
@@ -46,18 +44,24 @@ router.post('/student/profile/upload/:studentId', uploader.single('file'), async
   }
 });
 
-router.get('/student/profile/:id', (req, res) => {
-  const file = bucket.file(`profile/${req.params.id}`);
-  file.download().then(downloadResponse => {
-    res.status(200).send(downloadResponse[0]);
-  });
+router.get('/student/profile/picture/:studentId', (req, res) => {
+  try {
+    const studentId = req.params.studentId
+    const file = bucket.file(`profile/${studentId}`);
+    file.download().then(downloadResponse => {
+      const picture = "data:image/png;base64,"+downloadResponse[0].toString('base64')
+      res.status(200).send(picture);
+    });
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(400);
+  }
 });
 
-
-router.get('/student/profile/', async (req, res) => {
+router.get('/student/profile/:studentId', async (req, res) => {
   try {
 
-    const { body: { studentId } } = req
+    const studentId = req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
     console.log(profile.data())
