@@ -94,8 +94,8 @@ const Login = () => {
     }, [])
 
     return (
-        <div className="login-page-container">
-            <div className="login-form">
+        <div className="min-h-screen">
+            <div className="flex flex-col">
                 <h2 className="force-login">กรุณาเข้าสู่ระบบ</h2>
                 <label htmlFor="username">PSU Passport</label>
                 <input type="text" name="username" placeholder="username"
@@ -115,44 +115,6 @@ const Login = () => {
                 </select>
                 <button className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-5" onClick={getAuthen}>Login</button>
             </div>
-            <style jsx>{`
-                    .login-page-container {
-                        min-height: 85vh;
-                        display: flex;
-                        flex-direction: column;
-                        align-content: center;
-                        justify-content: center;
-                        text-align: center;
-                        background: #269CD4;
-                    }
-                    .force-login {
-                        font-size: 25px;
-                        margin: 0;
-                        padding: 0;
-                        font-family: 'Sarabun', sans-serif;
-                    }
-                    .login-form {
-                        padding: 4em 5em 5em 5em;
-                        background: #47C5FF;
-                        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                        border-radius: 15px;
-                    }
-                    .login-form > label {
-                        margin: 1em 0 0 0 ;
-                        text-align: left;
-                    }
-                    .login-form > select {
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .login-form > input, select {
-                        width: 30em;
-                    }
-                    .login-form > input, select {
-                        border-radius: 5px;
-                        height: 2em;
-                    }
-            `}</style>
         </div>
     )
 }

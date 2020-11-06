@@ -1,5 +1,5 @@
 import './styles.css'
-import '../style.css'
+import '../styles.css'
 import '../component/NavigationBar'
 import NavigationBar from '../component/NavigationBar'
 import Footer from '../component/Footer'

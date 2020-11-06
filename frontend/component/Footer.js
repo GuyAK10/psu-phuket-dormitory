@@ -10,8 +10,8 @@ const Footer = () => {
                 <p className="block xl:block md:block lg:block sm:hidden">Tel: 062-4488584 Fax: 0-7627-6002</p>
             </div>
             <div className="social-container flex flex-row">
-                <img className="w-10 h-10" src="icon/facebook.png" alt="facebook icon" />
-                <img className="w-10 h-10" src="icon/line.png" alt="line icon" />
+                <img className="w-10 h-10 m-2" src="icon/facebook.png" alt="facebook icon" />
+                <img className="w-10 h-10 m-2" src="icon/line.png" alt="line icon" />
             </div>
         </div>
     )
