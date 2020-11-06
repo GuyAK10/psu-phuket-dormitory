@@ -13,24 +13,6 @@ const uploader = multer({
   }
 });
 
-
-
-router.get('/student/payment/qrcode', async (req, res) => {
-  try {
-    const { body: { roomId, month, semester, year } } = req
-    const folder = 'payment'
-    const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
-    file.download().then(downloadResponse => {
-      console.log (downloadResponse)
-      res.status(200).send(downloadResponse[0]);
-    });
-
-  } catch (error) {
-    console.log(error)
-    res.sendStatus(400);
-  }
-});
-
 router.get('/student/payment/bill', async (req, res) => {
   try {
 
@@ -68,14 +50,14 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
 
     blobStream.on('finish', async () => {
       console.log("Upload Complete!")
-      // res.status(200).send('Upload complete!');
-      receiptNotify(semester, year, month, roomId) 
+      await receiptNotify(semester, year, month, roomId) 
+      res.status(200).send('Upload complete!');
     });
 
     blobStream.end(req.file.buffer);
   } catch (error) {
-    console.log(error)
-    res.sendStatus(400);
+      console.log(error)
+      res.sendStatus(400);
   }
 
 });

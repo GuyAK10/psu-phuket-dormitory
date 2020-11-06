@@ -47,8 +47,8 @@ router.get('/staff/profile/picture/:studentId', (req, res) => {
     const studentId =req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
-      console.log(typeof(downloadResponse[0]))
-      res.status(200).send(downloadResponse[0]);
+      const picture = "data:image/png;base64,"+downloadResponse[0].toString('base64')
+      res.status(200).send(picture);
     });
   } catch (error) {
     console.log(error)

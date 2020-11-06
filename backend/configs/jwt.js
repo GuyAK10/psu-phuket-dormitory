@@ -120,9 +120,25 @@ const createToken = async (user, responseData, _req, res) => {
                         });
 
                         student.profile.id = responseData.userId
+                        student.profile.name = responseData.name
+                        student.profile.surname = responseData.surname
+                        student.profile.faculty = responseData.faculty
+                        student.profile.department = responseData.department
+                        student.contact.email = responseData.email
 
                         const doc = await setProfile.get()
-                        if (!doc.exists) await setProfile.set(student)
+                        if (!doc.exists) {
+                              await setProfile.set(student)
+                        } else {
+                              await setProfile.update({
+                                    'profile.id ': responseData.userId,
+                                    'profile.name': responseData.name,
+                                    'profile.surname': responseData.surname,
+                                    'profile.faculty': responseData.faculty,
+                                    'profile.department': responseData.department,
+                                    'contact.email': responseData.email
+                              })
+                        }
                         res.status(200).send({
                               id: responseData.userId,
                               type: responseData.role,
