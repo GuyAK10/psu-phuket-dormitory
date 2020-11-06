@@ -33,7 +33,7 @@ router.post('/student/profile/upload/:studentId', uploader.single('file'), async
 
     blobStream.on('finish', () => {
 
-      res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}` });
+      res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}?${Math.random()}` });
 
     });
     blobStream.end(req.file.buffer);
@@ -49,8 +49,8 @@ router.get('/student/profile/picture/:studentId', (req, res) => {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
-      const picture = "data:image/png;base64," + downloadResponse[0].toString('base64')
-      res.status(200).send(picture);
+      // const picture = "data:image/png;base64," + downloadResponse[0].toString('base64')
+      res.status(200).send(downloadResponse[0]);
     });
   } catch (error) {
     console.log(error)

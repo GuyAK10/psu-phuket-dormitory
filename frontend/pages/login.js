@@ -99,7 +99,6 @@ const Login = () => {
     const Card = ({ children, background, width }) => {
         const bg = background || "bg-gray-100"
         const w = width ? `w-${width}` || "" : null
-        console.log(w)
         return (
             <div className={`Card ${bg} ${w} shadow-md rounded px-8 pt-6 pb-8 m-4 flex flex-col justify-center items-center`}>
                 {/* <div>{item.title}</div>
