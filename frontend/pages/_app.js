@@ -31,15 +31,6 @@ const MyApp = ({ Component, pageProps }) => {
                 <NavigationBar />
                 <LoginModal>
                     <Component {...pageProps} />
-                    <style jsx global>{`
-                            html, body{
-                                margin:0;
-                                padding:0;
-                                /*background: hsla(0, 0%, 80%, .65);
-                                min-width:100vw;*/
-                                font-size: 16px;
-                            }
-                      `}</style>
                     <Footer />
                 </LoginModal >
             </div>

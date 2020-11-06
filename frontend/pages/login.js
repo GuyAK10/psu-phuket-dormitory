@@ -4,6 +4,9 @@ import qs from 'qs'
 import { GlobalState } from '../utils/context'
 import { message } from 'antd';
 import Router from 'next/router'
+import { Input } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
@@ -93,28 +96,44 @@ const Login = () => {
         setShowModal(false)
     }, [])
 
+    const Card = ({ children, background, width }) => {
+        const bg = background || "bg-gray-100"
+        const w = width ? `w-${width}` || "" : null
+        console.log(w)
+        return (
+            <div className={`Card ${bg} ${w} shadow-md rounded px-8 pt-6 pb-8 m-4 flex flex-col justify-center items-center`}>
+                {/* <div>{item.title}</div>
+                <img src={item.img} />
+                <p>{item.description}</p> */}
+                {children}
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen">
-            <div className="flex flex-col">
-                <h2 className="force-login">กรุณาเข้าสู่ระบบ</h2>
-                <label htmlFor="username">PSU Passport</label>
-                <input type="text" name="username" placeholder="username"
-                    onChange={handleForm}
-                    onKeyDown={handleEnter}
-                />
+            <Card>
+                <h2 className="text-3xl m-3">กรุณาเข้าสู่ระบบ</h2>
+                <Card background="bg-white" width="500">
+                    <label htmlFor="username">PSU Passport</label>
+                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="username" placeholder="username"
+                        onChange={handleForm}
+                        onKeyDown={handleEnter}
+                    />
 
-                <label htmlFor="username">Password</label>
-                <input type="password" name="password" placeholder="password"
-                    onChange={handleForm}
-                    onKeyPress={handleEnter}
-                />
-                <label htmlFor="สถานะ" className="status">สถานะ</label>
-                <select name="type" onChange={handleForm}>
-                    <option value="Students">นักศึกษา</option>
-                    <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
-                </select>
-                <button className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-5" onClick={getAuthen}>Login</button>
-            </div>
+                    <label htmlFor="username">Password</label>
+                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" name="password" placeholder="password"
+                        onChange={handleForm}
+                        onKeyPress={handleEnter}
+                    />
+                    <label htmlFor="สถานะ" className="status">สถานะ</label>
+                    <select className="shadow w-full border rounded h-10" name="type" onChange={handleForm}>
+                        <option value="Students">นักศึกษา</option>
+                        <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
+                    </select>
+                    <button className="w-full bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-5" onClick={getAuthen}>Login</button>
+                </Card>
+            </Card>
         </div>
     )
 }
