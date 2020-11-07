@@ -4,6 +4,9 @@ import qs from 'qs'
 import { GlobalState } from '../utils/context'
 import { message } from 'antd';
 import Router from 'next/router'
+import { Input } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
@@ -93,66 +96,43 @@ const Login = () => {
         setShowModal(false)
     }, [])
 
-    return (
-        <div className="login-page-container">
-            <div className="login-form">
-                <h2 className="force-login">กรุณาเข้าสู่ระบบ</h2>
-                <label htmlFor="username">PSU Passport</label>
-                <input type="text" name="username" placeholder="username"
-                    onChange={handleForm}
-                    onKeyDown={handleEnter}
-                />
-
-                <label htmlFor="username">Password</label>
-                <input type="password" name="password" placeholder="password"
-                    onChange={handleForm}
-                    onKeyPress={handleEnter}
-                />
-                <label htmlFor="สถานะ" className="status">สถานะ</label>
-                <select name="type" onChange={handleForm}>
-                    <option value="Students">นักศึกษา</option>
-                    <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
-                </select>
-                <button className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-5" onClick={getAuthen}>Login</button>
+    const Card = ({ children, background, width }) => {
+        const bg = background || "bg-gray-100"
+        const w = width ? `w-${width}` || "" : null
+        return (
+            <div className={`Card ${bg} ${w} shadow-md rounded px-8 pt-6 pb-8 m-4 flex flex-col justify-center items-center`}>
+                {/* <div>{item.title}</div>
+                <img src={item.img} />
+                <p>{item.description}</p> */}
+                {children}
             </div>
-            <style jsx>{`
-                    .login-page-container {
-                        min-height: 85vh;
-                        display: flex;
-                        flex-direction: column;
-                        align-content: center;
-                        justify-content: center;
-                        text-align: center;
-                        background: #269CD4;
-                    }
-                    .force-login {
-                        font-size: 25px;
-                        margin: 0;
-                        padding: 0;
-                        font-family: 'Sarabun', sans-serif;
-                    }
-                    .login-form {
-                        padding: 4em 5em 5em 5em;
-                        background: #47C5FF;
-                        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                        border-radius: 15px;
-                    }
-                    .login-form > label {
-                        margin: 1em 0 0 0 ;
-                        text-align: left;
-                    }
-                    .login-form > select {
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .login-form > input, select {
-                        width: 30em;
-                    }
-                    .login-form > input, select {
-                        border-radius: 5px;
-                        height: 2em;
-                    }
-            `}</style>
+        )
+    }
+
+    return (
+        <div className="min-h-screen">
+            <Card>
+                <h2 className="text-3xl m-3">กรุณาเข้าสู่ระบบ</h2>
+                <Card background="bg-white" width="500">
+                    <label htmlFor="username">PSU Passport</label>
+                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="username" placeholder="username"
+                        onChange={handleForm}
+                        onKeyDown={handleEnter}
+                    />
+
+                    <label htmlFor="username">Password</label>
+                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" name="password" placeholder="password"
+                        onChange={handleForm}
+                        onKeyPress={handleEnter}
+                    />
+                    <label htmlFor="สถานะ" className="status">สถานะ</label>
+                    <select className="shadow w-full border rounded h-10" name="type" onChange={handleForm}>
+                        <option value="Students">นักศึกษา</option>
+                        <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
+                    </select>
+                    <button className="w-full bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-5" onClick={getAuthen}>Login</button>
+                </Card>
+            </Card>
         </div>
     )
 }

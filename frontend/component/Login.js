@@ -82,54 +82,26 @@ const Login = ({ children }) => {
     if (showModal) return (
         <>
             <div
-                className="login-container"
+                className="h-full flex flex-col absolute right-0 p-5 bg-gray-200"
                 onKeyDown={handleEnter}
             >
                 <div onClick={() => setShowModal(!showModal)}>
-                    <img src="https://image.flaticon.com/icons/svg/271/271228.svg" alt="close login bar" />
+                    <img className="cursor-pointer p-1 shadow border rounded bg-white w-full h-8" src="https://image.flaticon.com/icons/svg/271/271228.svg" alt="close login bar" />
                 </div>
-                <div className="login-form">
+                <div className="flex flex-col">
                     <label htmlFor="username">PSU Passport</label>
-                    <input type="text" name="username" placeholder="username" onChange={handleForm} />
+                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="username" placeholder="username" onChange={handleForm} />
                     <label htmlFor="username">รหัสผ่าน</label>
-                    <input type="password" name="password" placeholder="password" onChange={handleForm} />
+                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" name="password" placeholder="password" onChange={handleForm} />
                     <label htmlFor="สถานะ" className="status">สถานะ</label>
-                    <select name="type" onChange={handleForm}>
+                    <select className="shadow w-full border rounded h-10" name="type" onChange={handleForm}>
                         <option value="Students">นักศึกษา</option>
                         <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
                     </select>
-                    <button onClick={getAuthen}>Login</button>
+                    <button className="w-full bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mt-5" onClick={getAuthen}>Login</button>
                 </div>
             </div>
             {children}
-            <style jsx>{`
-                    .login-container {
-                        background: #269CD4;
-                        font-family: 'Sarabun', sans-serif;
-                    }
-                    .login-container > div:first-child, img:first-child {
-                        grid-column: span 12;
-                        width: 100%;
-                        height: 2em;
-                        cursor: pointer;
-                        background: #6489BD;
-                    }
-                    .login-form > input, select, option{
-                        border-radius: 10px;
-                        height: 2em;
-                        font-family: 'Sarabun', sans-serif;
-                    }
-                    .login-form > label {
-                        margin: 2em 0 0 0;
-                        font-family: 'Sarabun', sans-serif;
-                    }
-                    .login-form > button {
-                        height: 3em;
-                        background: #9BBD22;
-                        border-radius: 10px;
-                        margin: 5em 2px 2px 0;
-                    }
-            `}</style>
         </>
     )
     else return <div>{children}</div>

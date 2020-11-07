@@ -1,5 +1,5 @@
 import './styles.css'
-import '../style.css'
+import '../styles.css'
 import '../component/NavigationBar'
 import NavigationBar from '../component/NavigationBar'
 import Footer from '../component/Footer'
@@ -27,19 +27,10 @@ const MyApp = ({ Component, pageProps }) => {
                 Students: [students, setStudents],
                 Staff: [staff, setStaff]
             }}>
-            <div className="root-container h-screen">
+            <div className="root-container relative">
                 <NavigationBar />
                 <LoginModal>
                     <Component {...pageProps} />
-                    <style jsx global>{`
-                            html, body{
-                                margin:0;
-                                padding:0;
-                                /*background: hsla(0, 0%, 80%, .65);
-                                min-width:100vw;*/
-                                font-size: 16px;
-                            }
-                      `}</style>
                     <Footer />
                 </LoginModal >
             </div>

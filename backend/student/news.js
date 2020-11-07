@@ -9,9 +9,7 @@ router.get('/staff/new/', (req, res) => {
         const { body: {  newName } } = req
         const file = bucket.file(`news/${newName}`);
         file.download().then(downloadResponse => {
-            const fileNews = downloadResponse[0]
-            res.setHeader('Content-Type', 'application/pdf');
-            res.status(200).send(fileNews);
+            res.status(200).send(downloadResponse[0]);
         });
     } catch (error) {
         console.log(error)

@@ -10,7 +10,7 @@ const uploader = multer({
     storage: storage
 });
 
-router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
+router.post('/staff/new/upload/', uploader.single('pdf'), async (req, res) => {
     try {
         const { body: { newName } } = req
         const folder = 'news'
@@ -27,11 +27,9 @@ router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
             res.status(405).json(err);
         });
 
-        blobStream.on('finish', () => {
-            // await newsNotify(newName)
-            const fileNews = req.file.buffer
-            res.setHeader('Content-Type', 'application/pdf');
-            res.status(200).send(fileNews);
+        blobStream.on('finish', async () => {
+            await newsNotify(newName)
+            res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}?${Math.random()}` });;
         });
 
         blobStream.end(req.file.buffer);

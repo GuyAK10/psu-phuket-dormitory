@@ -31,12 +31,11 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
     });
 
     blobStream.on('finish', () => {
-      const picture = req.file.buffer
-      res.setHeader('Content-Type', 'image/png');
-      res.status(200).send(picture);
+
+      res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}?${Math.random()}` });
 
     });
-    blobStream.end(req.file.buffer, () => console.log('close'));
+    blobStream.end(req.file.buffer);
 
   } catch (error) {
     console.error(error)
@@ -49,9 +48,8 @@ router.get('/student/profile/picture/:studentId', (req, res) => {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
-      const picture = downloadResponse[0]
-      res.setHeader('Content-Type', 'image/png');
-      res.status(200).send(picture);
+      // const picture = "data:image/png;base64," + downloadResponse[0].toString('base64')
+      res.status(200).send(downloadResponse[0]);
     });
   } catch (error) {
     console.log(error)
@@ -74,9 +72,9 @@ router.get('/student/profile/:studentId', async (req, res) => {
   }
 });
 
-router.post('/student/profile/', async (req, res) => {
+router.post('/student/profile/:studentId', async (req, res) => {
   try {
-    const { body: { studentId } } = req
+    const { params: { studentId } } = req
     const user = {
       profile: {
         id: req.body.profile.id,
@@ -89,7 +87,8 @@ router.post('/student/profile/', async (req, res) => {
         birthday: req.body.profile.birthday,
         faculty: req.body.profile.faculty,
         department: req.body.profile.department,
-        line: req.body.profile.line
+        line: req.body.profile.line,
+        profileImg:req.body.profile.profileImg
       },
       contact: {
         tel: req.body.contact.tel,

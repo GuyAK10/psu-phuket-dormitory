@@ -9,17 +9,18 @@ const db = firestore.firestore()
 
 router.post('/staff/payment', async (req, res) => {
     try {
-        const { body: { roomId, month, semester, year, water, electric } } = req
-        await uploadBill(roomId, month, semester, year, water, electric)
-        const paymentRef = db.collection(`payment/`).doc(`${semester}-${year}-${month}-${roomId}`)
-        await paymentRef.set({
-            semester: semester,
-            year: year,
-            month: month,
-            roomId: roomId,
-            water: water,
-            electric: electric,
-        })
+        const paymentList = req.body
+        paymentList.forEach(async(value)=>{
+            const paymentRef = db.collection(`payment/`).doc(`${value.roomId}-${value.month}-${value.semester}-${value.year}`)
+            await paymentRef.set({
+                semester: value.semester,
+                year: value.year,
+                month: value.month,
+                roomId: value.roomId,
+                water: value.water,
+                electric: value.electric,
+            })
+        });
         console.log("บันทึกข้อมูลค่าน้ำค่าไฟแล้ว")
         res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลค่าน้ำค่าไฟเรียบร้อย" });
 
@@ -47,15 +48,13 @@ router.get('/staff/payment', async (req, res) => {
     }
 });
 
-router.get('/student/payment/reciept', async (req, res) => {
+router.get('/staff/payment/reciept', async (req, res) => {
     try {
         const { body: { month, semester, year, roomId } } = req
         const folder = 'receipt'
         const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
         file.download().then(downloadResponse => {
-            const picture = downloadResponse[0]
-            res.setHeader('Content-Type', 'image/png');
-            res.status(200).send(picture);
+            res.status(200).send(downloadResponse[0]);
         });
 
     } catch (error) {
