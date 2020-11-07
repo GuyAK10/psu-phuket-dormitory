@@ -7,9 +7,10 @@ const router = express.Router();
 const bucket = firestore.storage().bucket()
 const db = firestore.firestore()
 
-const uploadBill = async (roomId, month, semester, year, water, electric, total) => {
+router.post('/staff/payment', async (req, res) => {
     try {
-
+        const { body: { roomId, month, semester, year, water, electric } } = req
+        await uploadBill(roomId, month, semester, year, water, electric)
         const paymentRef = db.collection(`payment/`).doc(`${semester}-${year}-${month}-${roomId}`)
         await paymentRef.set({
             semester: semester,
@@ -18,68 +19,9 @@ const uploadBill = async (roomId, month, semester, year, water, electric, total)
             roomId: roomId,
             water: water,
             electric: electric,
-            total: total
         })
-
         console.log("บันทึกข้อมูลค่าน้ำค่าไฟแล้ว")
-
-    } catch (error) {
-
-        throw error
-    }
-}
-
-const uploadQr = async (payload, options, month, semester, year, roomId) => {
-    try {
-        qrcode.toDataURL(payload, options, (err, png) => {
-            try {
-                const paymentRef = db.collection(`payment/`).doc(`${semester}-${year}-${month}-${roomId}`)
-                paymentRef.set({
-                    qrUrl: png
-                },{merge:true})
-
-            } catch (error) {
-                error.custom = "Qr Error"
-                throw error
-            }
-        })
-    } catch (error) {
-        throw error;
-    }
-}
-
-
-router.post('/staff/payment', async (req, res) => {
-    try {
-        const { body: { roomId, month, semester, year, water, electric, total } } = req
-        const mobileNumber = '082-432-7072'
-        const amount = total
-        const payload = generatePayload(mobileNumber, { amount }) //First parameter : mobileNumber || IDCardNumber
-
-        // Convert to SVG QR Code
-        const options = { type: 'png', color: { dark: '#000', light: '#fff' } }
-        const status = {
-            qr: false,
-            bill: false
-        }
-
-        try {
-            await uploadQr(payload, options, month, semester, year, roomId)
-            status.qr = true
-        } catch (error) {
-            console.log("QR Error")
-            throw error
-        }
-        try {
-            await uploadBill(roomId, month, semester, year, water, electric, total)
-            status.bill = true
-        } catch (error) {
-            console.log("Bill Error")
-            throw error
-        }
-        console.log(status) //ถ้าตัวไหนเป็น false แสดงว่าตัวนั้นทำงานไม่สำเร็จ
-        res.send(status);
-
+        res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลค่าน้ำค่าไฟเรียบร้อย" });
 
     } catch (error) {
         console.log(error)
@@ -111,8 +53,9 @@ router.get('/student/payment/reciept', async (req, res) => {
         const folder = 'receipt'
         const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
         file.download().then(downloadResponse => {
-            const reciept = "data:image/png;base64," + downloadResponse[0].toString('base64')
-            res.status(200).send(reciept);
+            const picture = downloadResponse[0]
+            res.setHeader('Content-Type', 'image/png');
+            res.status(200).send(picture);
         });
 
     } catch (error) {

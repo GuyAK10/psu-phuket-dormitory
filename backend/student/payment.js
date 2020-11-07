@@ -49,9 +49,11 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
     });
 
     blobStream.on('finish', async () => {
-      console.log("Upload Complete!")
-      await receiptNotify(semester, year, month, roomId) 
-      res.status(200).send('Upload complete!');
+      await receiptNotify(semester, year, month, roomId)
+      const receipt = req.file.buffer
+      res.setHeader('Content-Type', 'application/pdf');
+      res.status(200).send(receipt); 
+     
     });
 
     blobStream.end(req.file.buffer);

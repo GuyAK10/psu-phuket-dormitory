@@ -13,13 +13,12 @@ const uploader = multer({
   }
 });
 
-router.post('/student/profile/upload/:studentId', uploader.single('file'), async (req, res) => {
+router.post('/student/profile/upload/:studentId', uploader.single('img'), async (req, res) => {
   try {
     const id = req.params.studentId
     const folder = 'profile'
     const fileName = `${id}`
     const fileUpload = bucket.file(`${folder}/${fileName}`);
-
     const blobStream = fileUpload.createWriteStream({
       metadata: {
         contentType: req.file.mimetype
@@ -32,8 +31,9 @@ router.post('/student/profile/upload/:studentId', uploader.single('file'), async
     });
 
     blobStream.on('finish', () => {
-
-      res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}` });
+      const picture = req.file.buffer
+      res.setHeader('Content-Type', 'image/png');
+      res.status(200).send(picture);
 
     });
     blobStream.end(req.file.buffer, () => console.log('close'));
@@ -49,7 +49,8 @@ router.get('/student/profile/picture/:studentId', (req, res) => {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
-      const picture = "data:image/png;base64," + downloadResponse[0].toString('base64')
+      const picture = downloadResponse[0]
+      res.setHeader('Content-Type', 'image/png');
       res.status(200).send(picture);
     });
   } catch (error) {

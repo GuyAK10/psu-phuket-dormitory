@@ -101,7 +101,7 @@ const createToken = async (user, responseData, _req, res) => {
             if (responseData.userId === null && responseData.role === null) {
                   res.status(401).send("ID หรือ Password ผิด");
             } else {
-                  if (user.type == responseData.role) {
+                  if (user.type == responseData.role && responseData.role === "Students") {
 
                         const payload = {
                               id: responseData.userId,
@@ -145,13 +145,33 @@ const createToken = async (user, responseData, _req, res) => {
                               token: encoded
                         })
                   }
+                  else if (user.type == responseData.role && responseData.role === "Staffs") {
+                        const payload = {
+                              id: responseData.userId,
+                              type: responseData.role,
+                              exp: Date.now() + (1000 * 60 * 60)
+                        }
+
+                        let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
+                        const register = tokenRef.doc(`${responseData.userId}`)
+                        await register.set({
+                              id: responseData.userId,
+                              type: responseData.role,
+                              token: encoded
+                        });
+                        res.status(200).send({
+                              id: responseData.userId,
+                              type: responseData.role,
+                              token: encoded
+                        })
+                  } 
                   else {
                         res.status(400).send("สถานะไม่ถูกต้อง")
                   }
             }
-      } catch (e) {
-            console.error(e)
-            res.status(400).send({ code: 400, success: false, message: "เกิดข้อผิดพลาด" + e })
+      } catch (error) {
+            console.error(error)
+            res.status(400).send({ code: 400, success: false, message: "เกิดข้อผิดพลาด" + error })
       }
 }
 
@@ -180,9 +200,9 @@ const verifyHeader = async (req, res, next) => {
                   console.log("Please Login")
                   res.status(401).send({ code: 401, logout: true, message: "เกิดข้อผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
             }
-      } catch (e) {
-            console.log(e)
-            res.sendStatus(400).send({ code: 401, logout: true, message: e });
+      } catch (error) {
+            console.log(error)
+            res.sendStatus(400).send({ code: 401, logout: true, message: error });
       }
 }
 
