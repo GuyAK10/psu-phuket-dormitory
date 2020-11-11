@@ -8,8 +8,9 @@ const bucket = firestore.storage().bucket()
 router.get('/staff/profile/',  async (req, res) => {
   try {
       let studentList = []
-      const docRef = db.collection('students')
-      const profile = await docRef.get();
+
+      const studentRef = db.collection('students')
+      const profile = await studentRef.get();
       profile.forEach(list => {
           let studentData = {
               studentId: '',
@@ -47,7 +48,8 @@ router.get('/staff/profile/picture/:studentId', (req, res) => {
     const studentId =req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
-      const picture = "data:image/png;base64,"+downloadResponse[0].toString('base64')
+      const picture = downloadResponse[0]
+      res.setHeader('Content-Type', 'image/png');
       res.status(200).send(picture);
     });
   } catch (error) {

@@ -33,6 +33,7 @@ const bookInfomation = async (profileData, res) => {
 
                 if (!result.empty) {
                     booked = true
+                    return true
                 }
             }
         }

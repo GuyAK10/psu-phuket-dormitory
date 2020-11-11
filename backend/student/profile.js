@@ -13,13 +13,12 @@ const uploader = multer({
   }
 });
 
-router.post('/student/profile/upload/:studentId', uploader.single('file'), async (req, res) => {
+router.post('/student/profile/upload/:studentId', uploader.single('img'), async (req, res) => {
   try {
     const id = req.params.studentId
     const folder = 'profile'
     const fileName = `${id}`
     const fileUpload = bucket.file(`${folder}/${fileName}`);
-
     const blobStream = fileUpload.createWriteStream({
       metadata: {
         contentType: req.file.mimetype
@@ -73,9 +72,9 @@ router.get('/student/profile/:studentId', async (req, res) => {
   }
 });
 
-router.post('/student/profile/', async (req, res) => {
+router.post('/student/profile/:studentId', async (req, res) => {
   try {
-    const { body: { studentId } } = req
+    const { params: { studentId } } = req
     const user = {
       profile: {
         id: req.body.profile.id,
@@ -88,7 +87,8 @@ router.post('/student/profile/', async (req, res) => {
         birthday: req.body.profile.birthday,
         faculty: req.body.profile.faculty,
         department: req.body.profile.department,
-        line: req.body.profile.line
+        line: req.body.profile.line,
+        profileImg:req.body.profile.profileImg
       },
       contact: {
         tel: req.body.contact.tel,

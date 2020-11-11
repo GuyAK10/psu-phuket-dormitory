@@ -49,9 +49,9 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
     });
 
     blobStream.on('finish', async () => {
-      console.log("Upload Complete!")
-      await receiptNotify(semester, year, month, roomId) 
-      res.status(200).send('Upload complete!');
+      await receiptNotify(semester, year, month, roomId)
+      res.status(200).send({ code: 200, success: true, message: `/student/profile/reciept/${id}?${Math.random()}` });
+     
     });
 
     blobStream.end(req.file.buffer);
@@ -60,6 +60,21 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
       res.sendStatus(400);
   }
 
+});
+
+router.get('/student/payment/reciept', async (req, res) => {
+  try {
+      const { body: { month, semester, year, roomId } } = req
+      const folder = 'receipt'
+      const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
+      file.download().then(downloadResponse => {
+          res.status(200).send(downloadResponse[0]);
+      });
+
+  } catch (error) {
+      console.log(error)
+      res.sendStatus(400);
+  }
 });
 
 module.exports = router;

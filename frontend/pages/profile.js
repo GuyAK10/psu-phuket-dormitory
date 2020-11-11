@@ -289,7 +289,7 @@ const profile = () => {
     const handleFile = async (file) => {
         const token = JSON.parse(sessionStorage.getItem('token'))
         let data = new FormData()
-        data.append('file', file)
+        data.append('img', file)
         const resImg = await post(`/student/profile/upload/${token.id}`, data)
         console.log(resImg)
         if (resImg.success) {

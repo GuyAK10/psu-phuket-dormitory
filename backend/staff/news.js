@@ -10,7 +10,7 @@ const uploader = multer({
     storage: storage
 });
 
-router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
+router.post('/staff/new/upload/', uploader.single('pdf'), async (req, res) => {
     try {
         const { body: { newName } } = req
         const folder = 'news'
@@ -27,9 +27,9 @@ router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
             res.status(405).json(err);
         });
 
-        blobStream.on('finish', () => {
-            console.log("Upload Complete!")  
-            newsNotify(newName) 
+        blobStream.on('finish', async () => {
+            await newsNotify(newName)
+            res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}?${Math.random()}` });;
         });
 
         blobStream.end(req.file.buffer);
@@ -42,11 +42,12 @@ router.post('/staff/new/upload/', uploader.single('pdf'), (req, res) => {
 
 router.get('/staff/new/', (req, res) => {
     try {
-        const { body: {  newName } } = req
+        const { body: { newName } } = req
         const file = bucket.file(`news/${newName}`);
         file.download().then(downloadResponse => {
-            console.log(typeof(downloadResponse[0]))
-            res.status(200).send(downloadResponse[0]);
+            const fileNews = downloadResponse[0]
+            res.setHeader('Content-Type', 'application/pdf');
+            res.status(200).send(fileNews);
         });
     } catch (error) {
         console.log(error)
