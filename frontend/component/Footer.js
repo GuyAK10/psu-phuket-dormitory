@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer = () => {
     return (
-        <div className="footer-container flex flex-row justify-between items-center bg-gray-200 bottom-0 absolute w-full shadow-md p-4">
+        <div className="footer-container flex flex-row justify-between items-center bg-gray-200 w-full shadow-md p-4">
             <img className="w-20 h-10" src="icon/psuPhuketLogo.png" alt="psu phuket logo" />
             <div className="footer-contact flex flex-col justify-center items-center">
                 <p className="">Prince of Songkla University, Phuket Campus</p>

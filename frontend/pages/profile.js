@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import axios from 'axios'
+import Loading from '../component/Loading'
 import { message, Steps, Button, } from 'antd';
 import Router from 'next/router';
 import useFetch from 'use-http'
@@ -10,10 +11,13 @@ const PORT = process.env.PORT
 const { Step } = Steps;
 
 const profile = () => {
-    const { AxiosConfig, Token } = React.useContext(GlobalState)
+    const { AxiosConfig, Token, Modal, MenuBar } = React.useContext(GlobalState)
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
+    const [showModal, setShowModal] = Modal
+    const [menuBar, setMenuBar] = MenuBar
     const [current, setCurrent] = useState(0)
+    const [isLoading, setIsLoading] = useState(true)
     const [form, setForm] = React.useState({
         profile: {
             profileImg: "",
@@ -104,7 +108,7 @@ const profile = () => {
         }
     })
 
-    const { get, post, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...axiosConfig, cachePolicy: "no-cache" })
+    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...axiosConfig, cachePolicy: "no-cache" })
 
     const handleFormprofile = (e) => {
         setForm({
@@ -303,7 +307,7 @@ const profile = () => {
 
                 {form.profile.profileImg ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}${form.profile.profileImg}`} alt="profileImg" />
                     :
-                    <img className="w-20 h-20" src="https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png" alt="mock profile" />}
+                    <img className="w-20 h-20" src="icon/mockProfile.png" alt="mock profile" />}
 
                 <input type="file" name="file" onChange={(e) => handleFile(e.target.files[0])} />
 
@@ -479,10 +483,13 @@ const profile = () => {
         verifyLogin()
         getHeader()
         getInitialProfile()
+        if (!loading) setIsLoading(false)
     }, [])
 
+    if (isLoading) return <Loading />
+
     return (
-        <div className="profile-container h-auto flex flex-col items-center pt-10">
+        <div className="profile-container h-auto flex flex-col items-center p-10">
             <Steps current={current}>
                 {steps.map(item => (
                     <Step key={item.title} title={item.title} />
@@ -490,23 +497,23 @@ const profile = () => {
             </Steps>
             <div className="steps-content">{steps[current].content}</div>
             <div className="steps-action">
-                {current < steps.length - 1 && (
-                    <Button type="primary" onClick={() => {
-                        setCurrent(prev => prev + 1)
-                    }}>
-                        Next
+                {current > 0 && (
+                    <Button style={{ margin: '0 8px' }} onClick={() => setCurrent(prev => prev - 1)}>
+                        ก่อนหน้า
                     </Button>
                 )}
                 {current === steps.length - 1 && (
                     <Button type="primary" onClick={() => {
                         handleSubmit()
                     }}>
-                        Done
+                        บันทึกข้อมูล
                     </Button>
                 )}
-                {current > 0 && (
-                    <Button style={{ margin: '0 8px' }} onClick={() => setCurrent(prev => prev - 1)}>
-                        Previous
+                {current < steps.length - 1 && (
+                    <Button type="primary" onClick={() => {
+                        setCurrent(prev => prev + 1)
+                    }}>
+                        ถัดไป
                     </Button>
                 )}
             </div>

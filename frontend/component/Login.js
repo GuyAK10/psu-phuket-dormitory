@@ -90,11 +90,29 @@ const Login = ({ children }) => {
                 </div>
                 <div className="flex flex-col">
                     <label htmlFor="username">PSU Passport</label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="username" placeholder="username" onChange={handleForm} />
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        type="text"
+                        name="username"
+                        placeholder="username"
+                        onChange={handleForm}
+                        value={form.username}
+                    />
                     <label htmlFor="username">รหัสผ่าน</label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" name="password" placeholder="password" onChange={handleForm} />
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        type="password"
+                        name="password"
+                        placeholder="password"
+                        onChange={handleForm}
+                        value={form.password}
+                    />
                     <label htmlFor="สถานะ" className="status">สถานะ</label>
-                    <select className="shadow w-full border rounded h-10" name="type" onChange={handleForm}>
+                    <select className="shadow w-full border rounded h-10"
+                        name="type"
+                        onChange={handleForm}
+                        value={form.type}
+                    >
                         <option value="Students">นักศึกษา</option>
                         <option value="Staffs">เจ้าหน้าที่/อาจารย์</option>
                     </select>

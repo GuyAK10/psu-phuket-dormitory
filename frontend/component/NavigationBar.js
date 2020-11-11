@@ -3,6 +3,8 @@ import Router from 'next/router'
 import { GlobalState } from '../utils/context'
 import axios from 'axios'
 import { message } from 'antd';
+import Link from 'next/link'
+
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
@@ -64,13 +66,24 @@ const NavigationBar = () => {
 
     return (
         <div className="shadow bg-gray-200 text-center flex flex-col justify-around justify-items-auto items-stretch sm:flex-row">
-            <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/')}>หน้าแรก</span>
-            {staff ? <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/admin/reserve')}>รายการจองห้อง</span>
-                : <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/reserve')}>จองห้อง</span>}
-            <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/support')}>แจ้งซ่อม</span>
-            {staff ? <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/admin/profiles')}>ข้อมูลนักศึกษา</span>
-                : <span className="cursor-pointer p-3 w-full h-full" onClick={() => handleRoute('/profile')}>ข้อมูลส่วนตัว</span>}
-            <span className="cursor-pointer p-3 w-full h-full" onClick={handleLogin}>{menuBar}</span>
+            <Link href="/"><a className="cursor-pointer p-3 w-full h-full">หน้าแรก</a></Link>
+            {
+                staff
+                    ? <Link href="/admin/profiles"><a className="cursor-pointer p-3 w-full h-full">ข้อมูลนักศึกษา</a></Link>
+                    : <Link href="/profile"><a className="cursor-pointer p-3 w-full h-full">ข้อมูลส่วนตัว</a></Link>
+            }
+            {
+                staff
+                    ? <Link href="/admin/payment"><a className="cursor-pointer p-3 w-full h-full">รายการจ่ายเงิน</a></Link>
+                    : <Link href="/payment"><a className="cursor-pointer p-3 w-full h-full">จ่ายเงิน</a></Link>
+            }
+            {
+                staff
+                    ? <Link href="/admin/reserve"><a className="cursor-pointer p-3 w-full h-full">รายการจองห้อง</a></Link>
+                    : <Link href="/reserve"><a className="cursor-pointer p-3 w-full h-full">จองห้อง</a></Link>
+            }
+            <Link href="/support"><a className="cursor-pointer p-3 w-full h-full">แจ้งซ่อม</a></Link>
+            <Link href="/"><a className="cursor-pointer p-3 w-full h-full" onClick={handleLogin}>{menuBar}</a></Link>
         </div>
     )
 
