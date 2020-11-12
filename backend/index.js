@@ -31,7 +31,7 @@ app.use(bodyParser.json())
 
 //useStaff
 app.use(accessControl)
-// app.use('/staff', verifyHeader, staffType)
+app.use('/staff', verifyHeader, staffType)
 app.use(staffProfile);
 app.use(staffRoom);
 app.use(staffPayment);
@@ -40,7 +40,7 @@ app.use(staffRepair);
 app.use(staffSupport);
 
 //useStudent
-// app.use('/student', verifyHeader, studentType)
+app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);

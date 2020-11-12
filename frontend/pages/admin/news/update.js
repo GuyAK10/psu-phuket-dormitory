@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Payment = () => {
+const Update = () => {
     return (
         <div>
             ยังไม่เปิดให้บริการ
@@ -8,4 +8,4 @@ const Payment = () => {
     )
 }
 
-export default Payment
+export default Update
