@@ -19,7 +19,7 @@ const reserve = () => {
     const [isLoading, setIsLoading] = React.useState(false)
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
-    const [focusRoomList, setFocusListRoom] = useState([[{ profileId: "E01" }], [{ profileId: "A01" }]])
+    const [focusRoomList, setFocusListRoom] = useState([[{ roomId: "E01" }], [{ roomId: "A01" }]])
     const floorList = [
         { 1: ["E", "A"] },
         { 2: ["F", "B"] },
@@ -133,8 +133,6 @@ const reserve = () => {
             }
         }
 
-        console.log(temp)
-
         setModalFloor(temp)
         setShowRoomSelect(true)
     }
@@ -152,7 +150,7 @@ const reserve = () => {
             <div className="building-container">
                 <div className="left" onClick={() => handleModalFloor("l-1-16")}>{left}01 - {left}16</div>
                 <div className="sleft" onClick={() => handleModalFloor("l-17-24")}>{left}17 - {left}24</div>
-                <div className="center">center</div>
+                <div className="center">ส่วนกลาง</div>
                 <div className="right" onClick={() => handleModalFloor("r-1-16")}>{right}01 - {right}16</div>
                 <div className="sright" onClick={() => handleModalFloor("r-17-24")}>{right}17 - {right}24</div>
             </div>
@@ -230,7 +228,7 @@ const reserve = () => {
                                         </Tooltip>
                                     </span>
                                 </span>
-                                {room.profileId}
+                                {room.roomId}
                             </div>
                         }
                         ) : null}
@@ -280,7 +278,7 @@ const reserve = () => {
                                         </Tooltip>
                                     </span>
                                 </span>
-                                {room.profileId}
+                                {room.roomId}
                             </div>
                         }) : null}
 

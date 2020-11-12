@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext, createRef } from 'react'
-import axios from 'axios'
+import React, { useState, useEffect, useContext } from 'react'
 import { GlobalState } from '../utils/context'
 import Router from 'next/router'
 import Loading from '../component/Loading'
@@ -16,10 +15,9 @@ const reserve = () => {
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
-    const [isLoading, setIsLoading] = React.useState(false)
+    const [isLoading, setIsLoading] = React.useState(true)
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
-    const [person, setPerson] = useState([{}, {}, {}, {}])
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const floorList = [
         { 1: ["E", "A"] },
@@ -27,7 +25,7 @@ const reserve = () => {
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const [_, forceUpdate] = useState(0)
+    const { get, post, loading } = useFetch(`${ENDPOINT}:${PORT}/student/room`, { ...axiosConfig })
 
     const Logout = () => {
         console.log("Logout")
@@ -65,28 +63,16 @@ const reserve = () => {
     const handleSelectFloor = async floor => {
         setShowBuilding(floor)
         let floorDetails = []
-        setIsLoading(false)
+        setIsLoading(true)
         try {
-            await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[0]}`, axiosConfig)
-                .then(res => {
-                    floorDetails[0] = { ...res.data }
-                })
-                .catch(e => {
-                    console.log(e)
-                    Logout()
-                })
+            const floor0 = await get(`/floor${floor[0]}`)
+            floorDetails[0] = { ...floor0 }
 
-            await axios.get(`${ENDPOINT}:${PORT}/student/room/floor${floor[1]}`, axiosConfig)
-                .then(res => {
-                    floorDetails[1] = { ...res.data }
-                })
-                .catch(e => {
-                    console.log(e)
-                    Logout()
-                })
+            const floor1 = await get(`/floor${floor[1]}`)
+            floorDetails[1] = { ...floor1 }
 
             setFocusListRoom(floorDetails)
-            setIsLoading(true)
+            setIsLoading(false)
         }
         catch (e) {
             console.error(e)
@@ -140,17 +126,11 @@ const reserve = () => {
     const Building = () => {
         const left = showbuilding[0]
         const right = showbuilding[1]
-        if (!isLoading)
-            return (
-                <div className="Loading">
-                    <Loading />
-                </div>
-            )
-        else return (
+        return (
             <div className="building-container">
                 <div className="left" onClick={() => handleModalFloor("l-1-16")}>{left}01 - {left}16</div>
                 <div className="sleft" onClick={() => handleModalFloor("l-17-24")}>{left}17 - {left}24</div>
-                <div className="center">center</div>
+                <div className="center">ชั้นส่วนกลาง</div>
                 <div className="right" onClick={() => handleModalFloor("r-1-16")}>{right}01 - {right}16</div>
                 <div className="sright" onClick={() => handleModalFloor("r-17-24")}>{right}17 - {right}24</div>
             </div>
@@ -158,7 +138,6 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
-        const { post } = useFetch(`${ENDPOINT}:${PORT}/student/room`, axiosConfig)
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -210,7 +189,6 @@ const reserve = () => {
                     })
                     TweenMax.set(event, { filter: "invert(86%) sepia(98%) saturate(734%) hue-rotate(356deg) brightness(102%) contrast(105%)" })
                     onSelectedRoom()
-                    // forceUpdate(Math.random())
                 }
             }
             catch (e) {
@@ -228,8 +206,7 @@ const reserve = () => {
                     orderId: student
                 }
 
-                // const reserve = await axios.post()
-                const data = await post(`/remove`, body, axiosConfig)
+                const data = await post(`/remove`, body)
 
                 if (!data.success) {
                     message.error(data.message)
@@ -246,7 +223,6 @@ const reserve = () => {
                     })
                     onDeletedRoom()
                     TweenMax.set(event, { filter: null })
-                    // forceUpdate(Math.random())
                 }
             }
             catch (e) {
@@ -301,7 +277,7 @@ const reserve = () => {
 
                             return <div className="room-container" key={key} >
                                 <span className="odd-room-item">
-                                    <span className="student1 ">
+                                    <span className="student1">
                                         <img
                                             style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
                                             src="/icon/male.svg"
@@ -345,21 +321,25 @@ const reserve = () => {
         verifyLogin()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
+        if (!loading) setIsLoading(false)
     }, [])
 
+    if (loading) return <Loading />
     return (
         <div className="reserve-container">
-            <div className="floor-select-container">
-                {floorList.map((floor, key) =>
+            <h1 className="col-span-full text-center self-end text-xl">เลือกชั้น</h1>
+            <div className="floor-select-container col-span-full">
+                <div className="flex flex-row justify-center">{floorList.map((floor, key) =>
                     <div
                         value={floor}
                         key={key}
-                        className="floor-select-block"
+                        className="shadow-md p-3 bg-gray-200 cursor-pointer"
                         onClick={() => handleSelectFloor(floor[key + 1])}
                     >
                         {Object.keys(floor)}
                     </div>
                 )}
+                </div>
             </div>
             <Building />
             {showRoomSelect && <FocusFloor />}
