@@ -48,7 +48,7 @@ router.get('/student/profile/picture/:studentId', (req, res) => {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
-      // const picture = "data:image/png;base64," + downloadResponse[0].toString('base64')
+      
       res.status(200).send(downloadResponse[0]);
     });
   } catch (error) {
@@ -63,7 +63,6 @@ router.get('/student/profile/:studentId', async (req, res) => {
     const studentId = req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
-    console.log(profile.data())
     res.status(200).send(profile.data());
   }
   catch (error) {
@@ -166,14 +165,9 @@ router.post('/student/profile/:studentId', async (req, res) => {
     }
 
     const docRef = db.collection('students').doc(`${studentId}`)
-    if (!docRef.exists) {
-      await docRef.set(user)
-      console.log("add profile success")
-    } else {
-      await docRef.update(user)
-      console.log("update profile success")
-    }
+    await docRef.update(user) 
     res.status(200).send("add profile success");
+    
   } catch (error) {
     console.log(error)
     res.sendStatus(400);

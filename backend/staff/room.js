@@ -11,7 +11,6 @@ router.post('/staff/room/', (req, res) => {
             };
             const docRef = db.doc('/dormitory/status')
             docRef.set(statusDormitory)
-            console.log("change status")
             res.status(200).send("change status");
 
       } catch (error) {
@@ -37,7 +36,6 @@ router.get('/staff/room/:floorId', async (req, res) => {
                   result.push(floorList)
   
               })
-            console.log(result)
             res.status(200).send(result);
 
       } catch (error) {
@@ -53,11 +51,9 @@ router.post('/staff/room/remove', async (req, res) => {
           await profileRef.get().then(async data => {
               if (data.data()[orderId].id === studentId) {
                   await profileRef.update({ [orderId]: FieldValue.delete() })
-                  console.log("deleted")
                   res.status(200).send({ code: 200, success: true, message: "deleted" })
               }
               else {
-                  console.log("ไม่สามารถยกเลิกการจองของผู้อื่นได้")
                   res.status(200).send({ code: 200, success: false, message: "ไม่สามารถยกเลิกการจองของผู้อื่นได้" })
               }
           })

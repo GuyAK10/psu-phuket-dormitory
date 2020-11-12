@@ -19,7 +19,6 @@ router.get('/staff/profile/',  async (req, res) => {
           Object.assign(studentData, list.data())
           studentList.push(studentData)
       })
-      console.log(studentList)
       res.status(200).send(studentList);
   }
   catch (error) {
@@ -33,7 +32,6 @@ router.get('/staff/profile/:studentId', async (req, res) => {
     const studentId =req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
     const profile = await docRef.get();
-    console.log(profile.data())
     res.status(200).send(profile.data());
   }
   catch (error) {

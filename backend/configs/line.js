@@ -25,10 +25,10 @@ const lineNotify = {
                     console.log(err);
                 } else {
                     console.log(`อัปเดตค่าน้ำค่าไฟประจำเดือน ${month} ปีการศึกษา ${semester}/${year} เรียบร้อยแล้ว`)
-                    res.json({
-                        httpResponse: httpResponse,
-                        body: body
-                    });
+                    // res.json({
+                    //     httpResponse: httpResponse,
+                    //     body: body
+                    // });
                 }
             });
         } catch (error) {
@@ -58,10 +58,10 @@ const lineNotify = {
                     console.log(err);
                 } else {
                     console.log(`ห้อง ${roomId} ทำการชำระค่าน้ำค่าไฟเทอม ${semester} ปีการศึกษา ${year} เดือน ${month} เรียบร้อยแล้ว`)
-                    res.json({
-                        httpResponse: httpResponse,
-                        body: body
-                    });
+                    // res.json({
+                    //     httpResponse: httpResponse,
+                    //     body: body
+                    // });
                 }
             });
         } catch (error) {
@@ -90,10 +90,10 @@ const lineNotify = {
                 console.log(err);
             } else {
                 console.log("อัปเดตข่าวเรื่อง" + `${newName}`)
-                res.json({
-                    httpResponse: httpResponse,
-                    body: body
-                });
+                // res.json({
+                //     httpResponse: httpResponse,
+                //     body: body
+                // });
             }
         });
 
@@ -119,10 +119,10 @@ const lineNotify = {
                 console.log(err);
             } else {
                 console.log(`ห้อง ${roomId} ทำการแจ้งซ่อม ${detail}`)
-                res.json({
-                    httpResponse: httpResponse,
-                    body: body
-                });
+                // res.json({
+                //     httpResponse: httpResponse,
+                //     body: body
+                // });
             }
         });
 
@@ -148,10 +148,10 @@ const lineNotify = {
                 console.log(err);
             } else {
                 console.log("ทำการส่งข้อเสนอแนะ/แก้ไขแล้ว")
-                res.json({
-                    httpResponse: httpResponse,
-                    body: body
-                });
+                // res.json({
+                //     httpResponse: httpResponse,
+                //     body: body
+                // });
             }
         });
 

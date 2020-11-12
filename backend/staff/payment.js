@@ -1,6 +1,4 @@
 const express = require('express');
-const generatePayload = require('promptpay-qr')
-const qrcode = require('qrcode')
 const firestore = require('../configs/firebase')
 
 const router = express.Router();
@@ -19,9 +17,9 @@ router.post('/staff/payment', async (req, res) => {
                 roomId: value.roomId,
                 water: value.water,
                 electric: value.electric,
+                status:value.status
             })
         });
-        console.log("บันทึกข้อมูลค่าน้ำค่าไฟแล้ว")
         res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลค่าน้ำค่าไฟเรียบร้อย" });
 
     } catch (error) {
@@ -40,7 +38,7 @@ router.get('/staff/payment', async (req, res) => {
         billRef.docs.map((bill) => {
             billList.push(bill.data())
         })
-        console.log(billList)
+
         res.status(200).send(billList);
     } catch (error) {
         console.log(error)
@@ -57,6 +55,19 @@ router.get('/staff/payment/reciept', async (req, res) => {
             res.status(200).send(downloadResponse[0]);
         });
 
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(400);
+    }
+});
+
+router.post('/staff/payment/reciept', async (req, res) => {
+    try {
+        const { body: { month, semester, year, roomId } } = req
+        const receiptRef = db.collection(`payment/`).doc(`${roomId}-${month}-${semester}-${year}`)
+        await receiptRef.set({
+            status:"ชำระเสร็จสิ้น"
+        },{merge:true})
     } catch (error) {
         console.log(error)
         res.sendStatus(400);

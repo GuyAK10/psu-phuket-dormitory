@@ -23,7 +23,6 @@ router.get('/student/payment/bill', async (req, res) => {
     billRef.docs.map((bill) => {
       billList.push(bill.data())
     })
-    console.log(billList)
     res.status(200).send(billList);
 
   } catch (error) {
@@ -50,7 +49,11 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
 
     blobStream.on('finish', async () => {
       await receiptNotify(semester, year, month, roomId)
-      res.status(200).send({ code: 200, success: true, message: `/student/profile/reciept/${id}?${Math.random()}` });
+      const receiptRef = db.collection(`payment/`).doc(`${roomId}-${month}-${semester}-${year}`)
+      await receiptRef.set({
+        status:"รอการยืนยัน"
+      },{merge:true})
+      res.status(200).send({ code: 200, success: true, message: `/student/profile/reciept/` });
      
     });
 

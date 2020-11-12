@@ -29,7 +29,7 @@ router.post('/staff/new/upload/', uploader.single('pdf'), async (req, res) => {
 
         blobStream.on('finish', async () => {
             await newsNotify(newName)
-            res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}?${Math.random()}` });;
+            res.status(200).send({ code: 200, success: true, message: `อัพเดทข่าวแล้ว` });;
         });
 
         blobStream.end(req.file.buffer);
