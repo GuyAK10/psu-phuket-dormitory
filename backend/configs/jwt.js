@@ -101,7 +101,7 @@ const createToken = async (user, responseData, _req, res) => {
             if (responseData.userId === null && responseData.role === null) {
                   res.status(401).send("ID หรือ Password ผิด");
             } else {
-                  if (user.type == responseData.role && responseData.role === "Students") {
+                  if (user.type == responseData.role) {
 
                         const payload = {
                               id: responseData.userId,
@@ -126,45 +126,28 @@ const createToken = async (user, responseData, _req, res) => {
                         student.profile.department = responseData.department
                         student.contact.email = responseData.email
 
-                        const doc = await setProfile.get()
-                        if (!doc.exists) {
-                              await setProfile.set(student)
-                        } else {
-                              await setProfile.update({
-                                    'profile.id ': responseData.userId,
-                                    'profile.name': responseData.name,
-                                    'profile.surname': responseData.surname,
-                                    'profile.faculty': responseData.faculty,
-                                    'profile.department': responseData.department,
-                                    'contact.email': responseData.email
-                              })
+                        if (responseData.role === "Students") {
+                              const doc = await setProfile.get()
+                              if (!doc.exists) {
+                                    await setProfile.set(student)
+                              } else {
+                                    await setProfile.update({
+                                          'profile.id ': responseData.userId,
+                                          'profile.name': responseData.name,
+                                          'profile.surname': responseData.surname,
+                                          'profile.faculty': responseData.faculty,
+                                          'profile.department': responseData.department,
+                                          'contact.email': responseData.email
+                                    })
+                              }
                         }
+
                         res.status(200).send({
                               id: responseData.userId,
                               type: responseData.role,
                               token: encoded
                         })
                   }
-                  else if (user.type == responseData.role && responseData.role === "Staffs") {
-                        const payload = {
-                              id: responseData.userId,
-                              type: responseData.role,
-                              exp: Date.now() + (1000 * 60 * 60)
-                        }
-
-                        let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
-                        const register = tokenRef.doc(`${responseData.userId}`)
-                        await register.set({
-                              id: responseData.userId,
-                              type: responseData.role,
-                              token: encoded
-                        });
-                        res.status(200).send({
-                              id: responseData.userId,
-                              type: responseData.role,
-                              token: encoded
-                        })
-                  } 
                   else {
                         res.status(400).send("สถานะไม่ถูกต้อง")
                   }

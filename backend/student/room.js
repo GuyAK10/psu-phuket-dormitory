@@ -135,7 +135,6 @@ router.get('/student/room/:floorId', async (req, res) => {
                 result.push(floorList)
 
             })
-            console.log(result)
             res.status(200).send({
                 ...result,
             });
