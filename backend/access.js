@@ -40,11 +40,11 @@ router.post('/', (req, res) => {
             const mockRequestStaff = { headers: { type: "Staffs" } }
             const mockRequestStudent = { headers: { type: "Staffs" } }
             if (username == "staff") {
-                createToken({ username, password: "any", type: "Staffs" }, { userId: "test", role: "Staffs" }, mockRequestStaff, res)
+                createToken({ username, password: "any", type: "Staffs" }, { userId: "Test User", role: "Staffs" }, mockRequestStaff, res)
             }
             //test user student
             else if (username == "student") {
-                createToken({ username, password: "any", type: "Students" }, { userId: "test", role: "Students" }, mockRequestStudent, res)
+                createToken({ username, password: "any", type: "Students" }, { userId: "Test User", role: "Students" }, mockRequestStudent, res)
             }
 
             else {

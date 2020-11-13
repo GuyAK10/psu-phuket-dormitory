@@ -19,13 +19,14 @@ const reserve = () => {
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
+    const [update, setUpdate] = useState(0)
     const floorList = [
         { 1: ["E", "A"] },
         { 2: ["F", "B"] },
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const { get, post, loading } = useFetch(`${ENDPOINT}:${PORT}/student/room`, { ...axiosConfig })
+    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/room`, { ...axiosConfig, cachePolicy: "no-cache" })
 
     const Logout = () => {
         console.log("Logout")
@@ -66,17 +67,21 @@ const reserve = () => {
         setIsLoading(true)
         try {
             const floor0 = await get(`/floor${floor[0]}`)
-            floorDetails[0] = { ...floor0 }
+            if (!error)
+                floorDetails[0] = { ...floor0 }
+            else Logout()
 
             const floor1 = await get(`/floor${floor[1]}`)
-            floorDetails[1] = { ...floor1 }
+            if (!error)
+                floorDetails[1] = { ...floor1 }
+            else Logout()
 
             setFocusListRoom(floorDetails)
             setIsLoading(false)
         }
         catch (e) {
             console.error(e)
-            // Logout()
+            Logout()
         }
     }
 
@@ -168,7 +173,7 @@ const reserve = () => {
                     orderId: student
                 }
 
-                const data = await post(`/`, body, axiosConfig)
+                const data = await post(`/`, body)
 
                 if (!data.success) {
                     message.error(data.message)
@@ -189,6 +194,7 @@ const reserve = () => {
                     })
                     TweenMax.set(event, { filter: "invert(86%) sepia(98%) saturate(734%) hue-rotate(356deg) brightness(102%) contrast(105%)" })
                     onSelectedRoom()
+                    setUpdate(Math.random())
                 }
             }
             catch (e) {
@@ -223,11 +229,34 @@ const reserve = () => {
                     })
                     onDeletedRoom()
                     TweenMax.set(event, { filter: null })
+                    setUpdate(Math.random())
                 }
             }
             catch (e) {
                 console.log(e)
             }
+        }
+
+        const styleStd1 = (room) => {
+            const { id } = JSON.parse(sessionStorage.getItem('token'))
+            if (room.student1) {
+                if (room.student1.id == id) {
+                    return { filter: "invert(10%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" }
+                }
+                return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
+            }
+            return { filter: null }
+        }
+
+        const styleStd2 = (room) => {
+            const { id } = JSON.parse(sessionStorage.getItem('token'))
+            if (room.student2) {
+                if (room.student2.id == id) {
+                    return { filter: "invert(10%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" }
+                }
+                return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
+            }
+            return { filter: null }
         }
 
         return (
@@ -241,7 +270,7 @@ const reserve = () => {
                                 <span className="even-room-item" >
                                     <span className="student1">
                                         <img
-                                            style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
+                                            style={styleStd1(room)}
                                             src="/icon/male.svg" alt="person" className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student1)
@@ -253,7 +282,7 @@ const reserve = () => {
                                     </span>
                                     <span className="student2">
                                         <img
-                                            style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
+                                            style={styleStd2(room)}
                                             src="/icon/male.svg" alt="person" className="person cursor-pointer"
                                             onClick={(e) => {
                                                 if (room.student2)
@@ -279,7 +308,7 @@ const reserve = () => {
                                 <span className="odd-room-item">
                                     <span className="student1">
                                         <img
-                                            style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
+                                            style={styleStd1(room)}
                                             src="/icon/male.svg"
                                             alt="person"
                                             className="person cursor-pointer"
@@ -293,7 +322,7 @@ const reserve = () => {
                                     </span>
                                     <span className="student2">
                                         <img
-                                            style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
+                                            style={styleStd2(room)}
                                             src="/icon/male.svg"
                                             alt="person"
                                             className="person cursor-pointer"
@@ -316,17 +345,27 @@ const reserve = () => {
         )
     }
 
+    const MyRoom = () => {
+        const id = JSON.parse(sessionStorage.getItem('token')).id
+        const result = focusRoomList[0].filter(item => item.floorId.student1.id == id)
+        console.log(result)
+    }
+
     useEffect(() => {
         getHeader()
         verifyLogin()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
         if (!loading) setIsLoading(false)
+        if (error) console.log(error)
     }, [])
 
     if (loading) return <Loading />
+    if (loading) setUpdate(Math.random())
     return (
         <div className="reserve-container">
+            <div>ท่านได้จองห้อง</div>
+
             <h1 className="col-span-full text-center self-end text-xl">เลือกชั้น</h1>
             <div className="floor-select-container col-span-full">
                 <div className="flex flex-row justify-center">{floorList.map((floor, key) =>

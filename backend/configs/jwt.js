@@ -126,7 +126,7 @@ const createToken = async (user, responseData, _req, res) => {
                         student.profile.department = responseData.department
                         student.contact.email = responseData.email
 
-                        if (responseData.role === "Students") {
+                        if (responseData.role === "Students" && user.username !== "student") {
                               const doc = await setProfile.get()
                               if (!doc.exists) {
                                     await setProfile.set(student)

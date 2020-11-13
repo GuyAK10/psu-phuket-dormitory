@@ -10,7 +10,7 @@ const PORT = process.env.PORT
 
 const { Step } = Steps;
 
-const profile = () => {
+const profile = ({ profileId }) => {
     const { AxiosConfig, Token, Modal, MenuBar } = React.useContext(GlobalState)
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
@@ -18,6 +18,7 @@ const profile = () => {
     const [menuBar, setMenuBar] = MenuBar
     const [current, setCurrent] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
+    const [renderResult, setRenderResult] = useState(false)
     const [form, setForm] = React.useState({
         profile: {
             profileImg: "",

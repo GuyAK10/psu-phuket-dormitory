@@ -9,13 +9,15 @@ import LoginModal from '../component/Login'
 import React, { useState } from 'react'
 
 const MyApp = ({ Component, pageProps }) => {
-    const [token, setToken] = useState(null)
+    const [token, setToken] = useState({ id: null, token: null, type: "Students" })
     const [showModal, setShowModal] = useState(false)
     const [axiosConfig, setAxiosConfig] = useState(null)
     const [menuBar, setMenubar] = useState('ลงชื่อเข้าใช้')
     const [previousRoute, setPreviousRoute] = useState(null)
     const [students, setStudents] = useState(null)
     const [staff, setStaff] = useState(false)
+    const [menuName, setMenuName] = useState('ข่าวสาร')
+    const [subMenuName, setSubMenuName] = useState('รายการข่าว')
 
     return (
         <GlobalState.Provider
@@ -26,13 +28,15 @@ const MyApp = ({ Component, pageProps }) => {
                 MenuBar: [menuBar, setMenubar],
                 PreviousRoute: [previousRoute, setPreviousRoute],
                 Students: [students, setStudents],
-                Staff: [staff, setStaff]
+                Staff: [staff, setStaff],
+                MenuName: [menuName, setMenuName],
+                SubMenuName: [subMenuName, setSubMenuName]
             }}>
-            <div className="root-container relative grid grid-cols-5">
+            <div className="root-container relative grid grid-cols-6">
                 <div className="col-span-1 col-start-1">
                     <NavigationBar />
                 </div>
-                <div className="col-span-4 col-start-2">
+                <div className="col-span-5 col-start-2">
                     <UtilitiesBar />
                     <LoginModal>
                         <Component {...pageProps} />
