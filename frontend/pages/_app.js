@@ -3,6 +3,7 @@ import '../styles.css'
 import '../component/NavigationBar'
 import NavigationBar from '../component/NavigationBar'
 import Footer from '../component/Footer'
+import UtilitiesBar from '../component/UtilitiesBar'
 import { GlobalState } from '../utils/context'
 import LoginModal from '../component/Login'
 import React, { useState } from 'react'
@@ -27,12 +28,17 @@ const MyApp = ({ Component, pageProps }) => {
                 Students: [students, setStudents],
                 Staff: [staff, setStaff]
             }}>
-            <div className="root-container relative">
-                <NavigationBar />
-                <LoginModal>
-                    <Component {...pageProps} />
-                    <Footer />
-                </LoginModal >
+            <div className="root-container relative grid grid-cols-5">
+                <div className="col-span-1 col-start-1">
+                    <NavigationBar />
+                </div>
+                <div className="col-span-4 col-start-2">
+                    <UtilitiesBar />
+                    <LoginModal>
+                        <Component {...pageProps} />
+                        <Footer />
+                    </LoginModal >
+                </div>
             </div>
         </GlobalState.Provider>
     )
