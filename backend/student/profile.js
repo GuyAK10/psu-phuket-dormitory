@@ -31,8 +31,8 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
     });
 
     blobStream.on('finish', () => {
-
-      res.status(200).send({ code: 200, success: true, message: `/student/profile/picture/${id}?${Math.random()}` });
+      
+      res.status(200).send({ code: 200, success: true, message: `Upload Complete` });
 
     });
     blobStream.end(req.file.buffer);
@@ -49,6 +49,7 @@ router.get('/student/profile/picture/:studentId', (req, res) => {
     const file = bucket.file(`profile/${studentId}`);
     file.download().then(downloadResponse => {
       res.status(200).send(downloadResponse[0]);
+
     });
   } catch (error) {
     console.log(error)

@@ -2,6 +2,7 @@ const express = require('express');
 const firestore = require('../configs/firebase')
 const { receiptNotify } = require('../configs/line')
 const multer = require('multer');
+const e = require('express');
 
 const router = express.Router();
 const bucket = firestore.storage().bucket()
@@ -13,17 +14,73 @@ const uploader = multer({
   }
 });
 
+const bookInfomation = async (profileData, checkCase) => {
+  try {
+    const floors = [
+      "floorA",
+      "floorB",
+      "floorC",
+      "floorD",
+      "floorE",
+      "floorF",
+      "floorG",
+      "floorH"
+    ]
+
+    const orderId = [
+      "student1",
+      "student2"
+    ]
+
+    let booked = false;
+
+    for (var a in floors) {
+      var b = floors[a];
+      const roomRef = db.collection(b)
+      for (c in orderId) {
+        var d = orderId[c]
+        const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
+
+        if (!result.empty && checkCase === "reserve") {
+          result.forEach((room) => {
+            booked = room.id
+            return booked
+          })
+        }
+
+      }
+    }
+    return booked
+  }
+  catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
 router.get('/student/payment/bill', async (req, res) => {
   try {
 
-    const { body: { semester, year, month, roomId } } = req
-    const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month", "==", month).where("roomId", "==", roomId).get()
+    const { body: { semester, year, month, studentId } } = req
+    const profileData = {
+      profile: {
+        id: studentId
+      }
+    }
+    const checkCase = "reserve"
+    const roomId = await bookInfomation(profileData, checkCase)
+    if (roomId == false) {
+      res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
+    } else {
+      const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month", "==", month).where("roomId", "==", roomId).get()
 
-    let billList = []
-    billRef.docs.map((bill) => {
-      billList.push(bill.data())
-    })
-    res.status(200).send(billList);
+      let billList = []
+      billRef.docs.map((bill) => {
+        billList.push(bill.data())
+      })
+      res.status(200).send(billList);
+    }
+
 
   } catch (error) {
     console.log(error)
@@ -51,32 +108,32 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
       await receiptNotify(semester, year, month, roomId)
       const receiptRef = db.collection(`payment/`).doc(`${roomId}-${month}-${semester}-${year}`)
       await receiptRef.set({
-        status:"รอการยืนยัน"
-      },{merge:true})
+        status: "รอการยืนยัน"
+      }, { merge: true })
       res.status(200).send({ code: 200, success: true, message: `/student/profile/reciept/` });
-     
+
     });
 
     blobStream.end(req.file.buffer);
   } catch (error) {
-      console.log(error)
-      res.sendStatus(400);
+    console.log(error)
+    res.sendStatus(400);
   }
 
 });
 
 router.get('/student/payment/reciept', async (req, res) => {
   try {
-      const { body: { month, semester, year, roomId } } = req
-      const folder = 'receipt'
-      const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
-      file.download().then(downloadResponse => {
-          res.status(200).send(downloadResponse[0]);
-      });
+    const { body: { month, semester, year, roomId } } = req
+    const folder = 'receipt'
+    const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
+    file.download().then(downloadResponse => {
+      res.status(200).send(downloadResponse[0]);
+    });
 
   } catch (error) {
-      console.log(error)
-      res.sendStatus(400);
+    console.log(error)
+    res.sendStatus(400);
   }
 });
 

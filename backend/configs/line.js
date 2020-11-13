@@ -1,6 +1,6 @@
 var request = require('request');
 
-var token = "XmePmrVCTE4dlbGNDHWNffoRSDfOxIXwJOG3iummhXD";
+var token = "kdtLSaDu9YVueeV7M7qKOzboPlbnmPLHKELD03bGbXC";
 
 const lineNotify = {
     paymentNotify: async (semester, year, month) => {

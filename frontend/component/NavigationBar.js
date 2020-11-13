@@ -20,7 +20,7 @@ const NavigationBar = () => {
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
 
     return (
-        <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 fixed to-blue-800 text-white p-2">
+        <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 h-screen to-blue-800 text-white p-2">
             <h1 className="text-2xl text-center text-white">เมนู</h1>
             <Divider />
             {
