@@ -67,7 +67,7 @@ const Login = ({ children }) => {
                 success()
             }
             else if (result.status === 401) {
-                setToken(null)
+                setToken({ id: null, token: null, type: "Students" })
             }
         } catch (e) {
             fail()
