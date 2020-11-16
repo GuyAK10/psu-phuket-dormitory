@@ -20,7 +20,7 @@ const NavigationBar = () => {
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
 
     return (
-        <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 to-blue-800 text-white p-2">
+        <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 h-full to-blue-800 text-white p-2">
             <h1 className="text-2xl text-center text-white">เมนู</h1>
             <Divider />
             {
@@ -137,8 +137,8 @@ const NavigationBar = () => {
                     </span>
                     {menuName === "ชำระค่าน้้ำค่าไฟ" ?
                         <div className="flex flex-col">
-                            <SubMenu menu="เพิ่มรายการ" route="/admin/support" />
-                            <SubMenu menu="ประวัติ" route="/admin/support" />
+                            <SubMenu menu="เพิ่มรายการ" route="/admin/add-payment" />
+                            <SubMenu menu="ประวัติ" route="/admin/payment-history" />
                         </div> : null
                     }
                 </div>
@@ -149,8 +149,8 @@ const NavigationBar = () => {
                         </span>
                         {menuName === "ชำระค่าน้้ำค่าไฟ" ?
                             <div className="flex flex-col">
-                                <SubMenu menu="ชำระค่าน้้ำค่าไฟ" route="/admin/support" />
-                                <SubMenu menu="ประวัติ" route="/admin/support" />
+                                <SubMenu menu="ชำระค่าน้้ำค่าไฟ" route="/payment" />
+                                <SubMenu menu="ประวัติ" route="/payment-history" />
                             </div> : null
                         }
                     </div>
