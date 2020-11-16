@@ -40,7 +40,7 @@ app.use(staffRepair);
 app.use(staffSupport);
 
 //useStudent
-app.use('/student', verifyHeader, studentType)
+// app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);

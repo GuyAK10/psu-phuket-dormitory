@@ -47,6 +47,18 @@ const bookInfomation = async (profileData, checkCase) => {
             return booked
           })
         }
+        else if (!result.empty && checkCase === "count") {
+          result.forEach((room) => {
+            const checkStudent = room.data()
+            if (checkStudent.student1&&checkStudent.student2!==undefined) {
+              booked = 2
+              return booked
+            } else {
+              booked = 1
+              return booked
+            }
+          })
+        }
 
       }
     }
@@ -67,17 +79,20 @@ router.get('/student/payment/bill', async (req, res) => {
         id: studentId
       }
     }
-    const checkCase = "reserve"
-    const roomId = await bookInfomation(profileData, checkCase)
+    const checkCase = ["reserve","count"]
+    const roomId = await bookInfomation(profileData, checkCase[0])
+    const count = await bookInfomation(profileData,checkCase[1])
     if (roomId == false) {
       res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
     } else {
+
       const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month", "==", month).where("roomId", "==", roomId).get()
 
       let billList = []
       billRef.docs.map((bill) => {
         billList.push(bill.data())
       })
+      billList.push({count:count})
       res.status(200).send(billList);
     }
 
@@ -110,7 +125,7 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
       await receiptRef.set({
         status: "รอการยืนยัน"
       }, { merge: true })
-      res.status(200).send({ code: 200, success: true, message: `/student/profile/reciept/` });
+      res.status(200).send({ code: 200, success: true, message: `Upload Complete` });
 
     });
 
