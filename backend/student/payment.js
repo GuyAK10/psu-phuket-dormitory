@@ -15,40 +15,53 @@ const uploader = multer({
 
 const bookInfomation = async (profileData, checkCase) => {
   try {
-    //   const floors = [
-    //     "floorA",
-    //     "floorB",
-    //     "floorC",
-    //     "floorD",
-    //     "floorE",
-    //     "floorF",
-    //     "floorG",
-    //     "floorH"
-    //   ]
+    const floors = [
+      "floorA",
+      "floorB",
+      "floorC",
+      "floorD",
+      "floorE",
+      "floorF",
+      "floorG",
+      "floorH"
+    ]
 
-    //   const orderId = [
-    //     "student1",
-    //     "student2"
-    //   ]
+    const orderId = [
+      "student1",
+      "student2"
+    ]
 
-    //   let booked = false;
+    let booked = false;
 
-    //   for (var a in floors) {
-    //     var b = floors[a];
-    //     const roomRef = db.collection(b)
-    //     for (c in orderId) {
-    //       var d = orderId[c]
-    //       const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
+    for (var a in floors) {
+      var b = floors[a];
+      const roomRef = db.collection(b)
+      for (c in orderId) {
+        var d = orderId[c]
+        const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
 
-    //       if (!result.empty && checkCase === "reserve") {
-    //         result.forEach((room) => {
-    //           booked = room.id
-    //           return booked
-    //         })
-    //       }
-    //     }
-    //   }
-    //   return booked
+        if (!result.empty && checkCase === "reserve") {
+          result.forEach((room) => {
+            booked = room.id
+            return booked
+          })
+        }
+        else if (!result.empty && checkCase === "count") {
+          result.forEach((room) => {
+            const checkStudent = room.data()
+            if (checkStudent.student1&&checkStudent.student2!==undefined) {
+              booked = 2
+              return booked
+            } else {
+              booked = 1
+              return booked
+            }
+          })
+        }
+
+      }
+    }
+    return booked
   }
   catch (error) {
     console.log(error)
@@ -134,7 +147,7 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
       await receiptRef.set({
         status: "รอการยืนยัน"
       }, { merge: true })
-      res.status(200).send({ code: 200, success: true, message: `/student/profile/reciept/` });
+      res.status(200).send({ code: 200, success: true, message: `Upload Complete` });
 
     });
 
