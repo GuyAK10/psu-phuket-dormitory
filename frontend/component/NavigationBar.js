@@ -20,7 +20,7 @@ const NavigationBar = () => {
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
 
     return (
-        <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 fixed to-blue-800 text-white p-2">
+        <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 to-blue-800 text-white p-2">
             <h1 className="text-2xl text-center text-white">เมนู</h1>
             <Divider />
             {
@@ -73,31 +73,6 @@ const NavigationBar = () => {
                             <div className="flex flex-col">
                                 <SubMenu menu="ข้อมูลส่วนตัว" route={`/profile-result?profileId=${sessionStorage.getItem('token') ? JSON.parse(sessionStorage.getItem('token')).id : undefined}`} />
                                 <SubMenu menu="แก้ไขข้อมูล" route="/profile" />
-                            </div> : null
-                        }
-                    </div>
-            }
-            {
-                staff
-                    ? <div className="p-3 cursor-pointer">
-                        <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/mobile-payment.svg" alt="personal infomation" />
-                            <a className="text-lg" onClick={() => toggleDrop("จ่ายค่าหอพัก")}>จ่ายค่าหอพัก</a>
-                        </span>
-                        {menuName === "จ่ายค่าหอพัก" ?
-                            <div className="flex flex-col">
-                                <SubMenu menu="รายการจ่ายเงิน" route="/admin/payment" />
-                            </div> : null
-                        }
-                    </div>
-                    : <div className="p-3 cursor-pointer">
-                        <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/mobile-payment.svg" alt="personal infomation" />
-                            <a className="text-lg" onClick={() => toggleDrop("จ่ายค่าหอพัก")}>จ่ายค่าหอพัก</a>
-                        </span>
-                        {menuName === "จ่ายค่าหอพัก" ?
-                            <div className="flex flex-col">
-                                <SubMenu menu="จ่ายเงิน" route="/payment" />
                             </div> : null
                         }
                     </div>
@@ -174,7 +149,7 @@ const NavigationBar = () => {
                         </span>
                         {menuName === "ชำระค่าน้้ำค่าไฟ" ?
                             <div className="flex flex-col">
-                                <SubMenu menu="เพิ่มรายการ" route="/admin/support" />
+                                <SubMenu menu="ชำระค่าน้้ำค่าไฟ" route="/admin/support" />
                                 <SubMenu menu="ประวัติ" route="/admin/support" />
                             </div> : null
                         }
