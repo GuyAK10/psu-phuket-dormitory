@@ -4,7 +4,7 @@ const router = express.Router()
 const db = firestore()
 const { firestore: { FieldValue } } = require('../configs/firebase')
 
-const bookInfomation = async (profileData, res) => {
+const bookInfomation = async (profileData, checkCase) => {
     try {
         const floors = [
             "floorA",
@@ -31,9 +31,22 @@ const bookInfomation = async (profileData, res) => {
                 var d = orderId[c]
                 const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
 
-                if (!result.empty) {
+                if (!result.empty && checkCase === "reserve") {
                     booked = true
-                    return true
+                    return booked
+                }
+                else if (!result.empty && checkCase === "myroom") {
+                    result.forEach( (room) => {
+                        const roomData ={
+                            roomId:'',
+                            
+                        }
+                        roomData.roomId = room.id
+                        Object.assign(roomData, room.data())
+                        booked = roomData
+                        return booked
+                    })
+
                 }
             }
         }
@@ -48,22 +61,22 @@ const bookInfomation = async (profileData, res) => {
 const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
     try {
         const bookRef = db.collection(floorId).doc(roomId)
-        if (!bookRef.exists &&orderId == "student1") {
-            bookRef.update({ student1: bookRoom },{merge:true})
+        if (!bookRef.exists && orderId == "student1") {
+            bookRef.update({ student1: bookRoom }, { merge: true })
             console.log("booking student1 success")
             res.status(200).send({ code: 200, success: true, message: "booking student1 success" });
         }
         else if (!bookRef.exists && orderId == "student2") {
-            bookRef.set({ student2: bookRoom },{merge:true})
+            bookRef.set({ student2: bookRoom }, { merge: true })
             console.log("booking student2 success")
             res.status(200).send({ code: 200, success: true, message: "booking student2 success" });
         }
-        else if (bookRef.exists &&orderId == "student1") {
+        else if (bookRef.exists && orderId == "student1") {
             bookRef.update({ student1: bookRoom })
             console.log("booking student1 success")
             res.status(200).send({ code: 200, success: true, message: "booking student1 success" });
         }
-        else if (bookRef.exists &&orderId == "student2") {
+        else if (bookRef.exists && orderId == "student2") {
             bookRef.update({ student1: bookRoom })
             console.log("booking student2 success")
             res.status(200).send({ code: 200, success: true, message: "booking student2 success" });
@@ -98,8 +111,8 @@ router.post('/student/room', async (req, res) => {
                 nickname: profileData.profile.nickname,
                 tel: profileData.contact.tel
             }
-
-            const isBooked = await bookInfomation(profileData, res)
+            const checkCase = "reserve"
+            const isBooked = await bookInfomation(profileData, checkCase)
             if (isBooked) {
                 console.log("ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง")
                 res.status(200).send({ code: 200, success: false, message: "ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง" })
@@ -142,6 +155,27 @@ router.get('/student/room/:floorId', async (req, res) => {
             console.log("ระบบยังไม่เปิดจอง")
             res.status(200).send("ระบบยังไม่เปิดจอง");;
         }
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(400);
+    }
+});
+
+router.get('/student/room/', async (req, res) => {
+    try {
+        const profileData = {
+            profile: {
+                id: req.body.studentId
+            }
+        }
+        const checkCase = "myroom"
+        const room = await bookInfomation(profileData,checkCase)
+        if (room == false) {
+            res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
+        } else{
+            res.send(room);
+        }
+        
     } catch (error) {
         console.error(error)
         res.sendStatus(400);
