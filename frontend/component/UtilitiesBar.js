@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { GlobalState } from '../utils/context'
 import Link from 'next/link'
 import Router from 'next/router'
@@ -14,7 +14,9 @@ const UtilitiesBar = () => {
     const [token, setToken] = Token
     const [menuBar, setMenuBar] = MenuBar
     const [showModal, setShowModal] = Modal
-    const { del } = useFetch(`${ENDPOINT}:${PORT}`)
+    const [headers, setHeaders] = useState({})
+
+    const { del } = useFetch(`${ENDPOINT}:${PORT}`, headers)
 
     const LoginOrLogout = () => {
         const session = sessionStorage.getItem('token')
@@ -46,8 +48,18 @@ const UtilitiesBar = () => {
         }
     }
 
+    const getHeaders = () => {
+        setHeaders({
+            headers: {
+                authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                type: JSON.parse(sessionStorage.getItem("token")).type
+            },
+        })
+    }
+
     useEffect(() => {
         LoginOrLogout()
+        getHeaders()
     }, [])
 
     return (

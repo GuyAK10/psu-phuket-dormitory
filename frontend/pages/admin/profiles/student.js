@@ -7,7 +7,9 @@ const PORT = process.env.PORT
 const profile = ({ profileId }) => {
     const { AxiosConfig } = useContext(GlobalState)
     const [axiosConfig] = AxiosConfig
-    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`, axiosConfig)
+    const [headers, setHeaders] = useState({})
+
+    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`, headers)
     const [student, setStudent] = useState({
         profile: {
             id: "",
@@ -125,6 +127,13 @@ const profile = ({ profileId }) => {
     }
 
     useEffect(() => {
+        setHeaders({
+            headers: {
+                authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                type: JSON.parse(sessionStorage.getItem("token")).type
+            },
+            cachePolicy: "no-cache",
+        })
         getStudents()
     }, [])
 

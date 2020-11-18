@@ -11,14 +11,14 @@ const PORT = process.env.PORT
 const { Step } = Steps;
 
 const profile = ({ profileId }) => {
-    const { AxiosConfig, Token, Modal, MenuBar } = React.useContext(GlobalState)
-    const [axiosConfig, setAxiosConfig] = AxiosConfig
+    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
     const [_token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar
     const [current, setCurrent] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
-    const [renderResult, setRenderResult] = useState(false)
+    const [headers, setHeaders] = useState({})
+
     const [form, setForm] = React.useState({
         profile: {
             profileImg: "",
@@ -109,7 +109,7 @@ const profile = ({ profileId }) => {
         }
     })
 
-    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...axiosConfig, cachePolicy: "no-cache" })
+    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, headers)
 
     const handleFormprofile = (e) => {
         setForm({
@@ -224,7 +224,7 @@ const profile = ({ profileId }) => {
         };
 
         try {
-            axios.post(`${ENDPOINT}/student/profile/${id}`, form, axiosConfig).then(res => {
+            axios.post(`${ENDPOINT}/student/profile/${id}`, form, headers).then(res => {
                 if (res.status === 200) {
                     console.log("Submit success")
                     success()
@@ -481,8 +481,14 @@ const profile = ({ profileId }) => {
     ]
 
     useEffect(() => {
+        setHeaders({
+            headers: {
+                authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                type: JSON.parse(sessionStorage.getItem("token")).type
+            },
+            cachePolicy: "no-cache",
+        })
         verifyLogin()
-        getHeader()
         getInitialProfile()
         if (!loading) setIsLoading(false)
     }, [])

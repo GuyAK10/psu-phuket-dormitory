@@ -13,55 +13,78 @@ const uploader = multer({
   }
 });
 
-const bookInfomation = async (profileData, checkCase) => {
+const bookInfomation = async (studentId) => {
   try {
-    const floors = [
-      "floorA",
-      "floorB",
-      "floorC",
-      "floorD",
-      "floorE",
-      "floorF",
-      "floorG",
-      "floorH"
-    ]
+    //   const floors = [
+    //     "floorA",
+    //     "floorB",
+    //     "floorC",
+    //     "floorD",
+    //     "floorE",
+    //     "floorF",
+    //     "floorG",
+    //     "floorH"
+    //   ]
 
-    const orderId = [
-      "student1",
-      "student2"
-    ]
+    //   const orderId = [
+    //     "student1",
+    //     "student2"
+    //   ]
 
-    let booked = false;
+    //   let booked = false;
 
-    for (var a in floors) {
-      var b = floors[a];
-      const roomRef = db.collection(b)
-      for (c in orderId) {
-        var d = orderId[c]
-        const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
+    //   for (var a in floors) {
+    //     var b = floors[a];
+    //     const roomRef = db.collection(b)
+    //     for (c in orderId) {
+    //       var d = orderId[c]
+    //       const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
 
-        if (!result.empty && checkCase === "reserve") {
-          result.forEach((room) => {
-            booked = room.id
-            return booked
-          })
-        }
-        else if (!result.empty && checkCase === "count") {
-          result.forEach((room) => {
-            const checkStudent = room.data()
-            if (checkStudent.student1&&checkStudent.student2!==undefined) {
-              booked = 2
-              return booked
-            } else {
-              booked = 1
-              return booked
-            }
-          })
-        }
+    //       if (!result.empty && checkCase === "reserve") {
+    //         result.forEach((room) => {
+    //           booked = room.id
+    //           return booked
+    //         })
+    //       }
+    //       else if (!result.empty && checkCase === "count") {
+    //         result.forEach((room) => {
+    //           const checkStudent = room.data()
+    //           if (checkStudent.student1 && checkStudent.student2 !== undefined) {
+    //             booked = 2
+    //             return booked
+    //           } else {
+    //             booked = 1
+    //             return booked
+    //           }
+    //         })
+    //       }
 
-      }
+    //     }
+    //   }
+    //   return booked
+
+    let roomList = []
+    const findCollectFloor = await db.listCollections()
+    findCollectFloor.forEach(async database => database.id.startsWith('floor') ? roomList.push(database.id) : "")
+
+    let students = []
+    for (let i in roomList) {
+      const student = await db.collection(roomList[i]).get()
+      student.forEach(data => {
+        if (data.data().student1 || data.data().student2) students.push({ ...data.data(), room: data.id })
+      })
     }
-    return booked
+
+    const stdAndRoom = await students.find(item => {
+      if (item.student1 !== undefined) {
+        if (item.student1.id == studentId) return true
+      }
+      if (item.student2 !== undefined) {
+        if (item.student2.id == studentId) return true
+      }
+    })
+    if (stdAndRoom !== undefined) return stdAndRoom
+    else return { room: false }
   }
   catch (error) {
     console.log(error)
@@ -69,59 +92,36 @@ const bookInfomation = async (profileData, checkCase) => {
   }
 }
 
-router.get('/student/payment/bills/:semester/:year/:month/', async (req, res) => {
-  const { params: { semester, year, month } } = req
-  const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month", "==", month).get()
-  console.log(billRef.docs)
-  res.status.send({})
+router.get('/student/payment/bills/:studentId', async (req, res) => {
+  const { params: { studentId } } = req
+  const billRef = await db.collection(`payment`).where("students", "array-contains", { studentId: studentId }).get()
+  let bills = []
+  billRef.forEach(res =>
+    bills.push(res.data())
+  )
+  res.status(200).send({ code: 200, success: true, message: "พบประวัติ", data: bills })
 })
 
 router.get('/student/payment/bill/:semester/:year/:month/:studentId', async (req, res) => {
   try {
 
     const { params: { semester, year, month, studentId } } = req
-    const profileData = {
-      profile: {
-        id: studentId
-      }
+    const { room } = await bookInfomation(studentId)
+
+    if (room) {
+      const billRef = (await db.doc(`payment/${room}-${month}-${semester}-${year}`).get()).data()
+      if (billRef)
+        res.status(200).send({ code: 200, success: true, message: 'พบรายการชำระเงิน', data: billRef })
+      else
+        res.status(200).send({ code: 200, success: true, message: "ไม่พบรายกายการชำระ" })
     }
-    const checkCase = "reserve"
-    const roomId = 'A03'
-    // const roomId = await bookInfomation(profileData, checkCase)
-    // if (roomId == false) {
-    //   res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
-    // } else {
-    // const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).where("month", "==", month).where("roomId", "==", roomId).get()
-    // const billRef = await db.doc(`payment/${roomId}-${month}-${semester}-${year}`).get()
-    // console.log(billRef.exists)
-    // console.log(billRef.data())
 
-    let data
-    const findCollectFloor = await db.listCollections()
-    findCollectFloor.forEach(async collection => {
-      if (collection.id.startsWith('floor')) {
-        const student1 = await db.doc(`${collection.id}/student1`).get()
-        const student2 = await db.doc(`${collection.id}/student2`).get()
-        if (student1.exists) {
-          data = student1.data()
-        }
-        if (student2.exists) {
-          data = student1.data()
-        }
-      }
-    })
-    console.log(data)
-
-    // let billList = []
-    // billRef.docs.map((bill) => {
-    //   billList.push(bill.data())
-    // })
-    // res.status(200).send(billList);
-    // }
+    else
+      res.status(200).send({ code: 200, success: false, message: "กรุณาจองห้องก่อนชำระค่าน้ำค่าไฟ" })
 
   } catch (error) {
     console.log(error)
-    res.sendStatus(400);
+    res.sendStatus(400).send(error);
   }
 });
 

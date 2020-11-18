@@ -26,7 +26,13 @@ const reserve = () => {
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/room`, { ...axiosConfig, cachePolicy: "no-cache" })
+    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/room`, {
+        headers: {
+            authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+            type: JSON.parse(sessionStorage.getItem("token")).type
+        },
+        cachePolicy: "no-cache",
+    })
 
     const Logout = () => {
         console.log("Logout")

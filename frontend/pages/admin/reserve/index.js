@@ -19,6 +19,7 @@ const reserve = () => {
     const [isLoading, setIsLoading] = React.useState(false)
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
+    const [headers, setHeaders] = useState({})
     const [focusRoomList, setFocusListRoom] = useState([[{ roomId: "E01" }], [{ roomId: "A01" }]])
     const floorList = [
         { 1: ["E", "A"] },
@@ -158,7 +159,7 @@ const reserve = () => {
     }
 
     const FocusFloor = () => {
-        const { post } = useFetch(`${ENDPOINT}/student/room`,axiosConfig)
+        const { post } = useFetch(`${ENDPOINT}/student/room`, headers)
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -288,9 +289,18 @@ const reserve = () => {
         )
     }
 
+    const getHeaders = () => {
+        setHeaders({
+            headers: {
+                authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                type: JSON.parse(sessionStorage.getItem("token")).type
+            },
+        })
+    }
+
     useEffect(() => {
-        getHeader()
         verifyLogin()
+        getHeader()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
     }, [])

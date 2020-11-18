@@ -24,7 +24,6 @@ const staffPayment = require('./staff/payment')
 const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
-
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
