@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import useFetch from 'use-http'
 import { message, Skeleton } from 'antd'
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
-const Payment = () => {
+const PaymentHistory = () => {
     const [headers, setHeaders] = useState({})
-    const [bill, setBill] = useState({
-        message: "ค้นหาเพื่อแสดงผลข้อมูล"
-    })
-    const [isLoading, setIsLoading] = useState(false)
+    const { get, post } = useFetch(`${ENDPOINT}:${PORT}/staff/payment/history`, { ...headers, cachePolicy: "no-cache" })
+    const [payments, setPayments] = useState([])
 
     const years = () => {
         const fullYear = new Date().getFullYear()
@@ -26,33 +24,8 @@ const Payment = () => {
         year: years()[0]
     })
 
-    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/payment`, { ...headers, cachePolicy: "no-cache" })
-
-    const handleChange = (e) => {
-        setSelect(prev => {
-            return {
-                ...prev,
-                [e.target.name]: e.target.value
-            }
-        })
-    }
-
-    const getBill = async () => {
-        setIsLoading(true)
-        const data = await get(`/bill/${select.semester}/${select.year}/${select.month}/${JSON.parse(sessionStorage.getItem('token')).id}`)
-        if (data.success) {
-            message.success(data.message)
-            setBill(data)
-        }
-        else {
-            message.error(data.message)
-            setBill(data.message)
-        }
-        setIsLoading(false)
-    }
-
     const getHeaders = () => {
-        if (sessionStorage.getItem('token'))
+        // if (sessionStorage.getItem('token'))
             setHeaders({
                 headers: {
                     authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
@@ -61,8 +34,29 @@ const Payment = () => {
             })
     }
 
+    const getPayments = async () => {
+        const data = await get(`${select.semester}/${select.month}/${select.year}`)
+        if (data.success) {
+            message.success(data.message)
+            setPayments(data.data)
+            console.log(data)
+        }
+        else
+            message.error(data.message)
+    }
+
+    const handleChange = (e) => {
+        localStorage.removeItem('adminPayment')
+        setSelect(prev => {
+            return {
+                ...prev,
+                [e.target.name]: e.target.value
+            }
+        })
+    }
+
     useEffect(() => {
-        getHeaders()
+        // getHeaders()
     }, [])
 
     return (
@@ -114,57 +108,55 @@ const Payment = () => {
 
             <button
                 className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={getBill}
+                onClick={getPayments}
             >
                 ค้นหา
             </button>
 
-            { isLoading
-                ?
-                <Skeleton />
-                :
-                bill.message === "พบรายการชำระเงิน"
-                    ?
-                    <table class="table-auto">
-                        <thead>
-                            <tr>
-                                <th class="px-4 py-2">ห้อง</th>
-                                <th class="px-4 py-2">เทอม</th>
-                                <th class="px-4 py-2">เดือน</th>
-                                <th class="px-4 py-2">ปี</th>
-                                <th class="px-4 py-2">ค่าไฟ</th>
-                                <th class="px-4 py-2">ค่าน้ำ</th>
-                                <th class="px-4 py-2">สถานะ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="border px-4 py-2">{bill.data.roomId}</td>
-                                <td class="border px-4 py-2">{bill.data.semester}</td>
-                                <td class="border px-4 py-2">{bill.data.month}</td>
-                                <td class="border px-4 py-2">{bill.data.year}</td>
-                                <td class="border px-4 py-2">{bill.data.electronic}</td>
-                                <td class="border px-4 py-2">{bill.data.water}</td>
-                                <td class="border px-4 py-2">{bill.data.status}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    :
-                    <div>{bill.message}</div>
-            }
+            <div className="flex flex-col">
+                <table className="table-auto">
+                    <thead>
+                        <tr>
+                            <th className="px-4 py-2">ห้อง</th>
+                            <th className="px-4 py-2">ค่าน้ำ</th>
+                            <th className="px-4 py-2">ค่าไฟ</th>
+                            <th className="px-4 py-2">สถานะ</th>
+                        </tr>
+                    </thead>
 
-            {bill.message === "พบรายการชำระเงิน"
-                ?
-                <div className="flex flex-col">
-                    <img className="w-32 h-32" src="https://th.qr-code-generator.com/wp-content/themes/qr/new_structure/markets/basic_market/generator/dist/generator/assets/images/websiteQRCode_noFrame.png" alt="qr code" />
-                    <label htmlFor="file">อัพโหลดใบเสร็จ</label>
-                    <input type="file" id="file" />
-                </div>
-                :
-                null
-            }
+                    {
+                        payments.map((item, key) => {
+                            return <tbody key={key}>
+                                <tr>
+                                    <td className="border px-4 py-2">
+                                        {item.roomId}
+                                    </td>
+                                    <td className="border px-4 py-2">
+                                        <div>{item.water}</div>
+                                    </td>
+                                    <td className="border px-4 py-2">
+                                        <div>{item.electric}</div>
+                                    </td>
+                                    {
+                                        item.status == "ค้างชำระ"
+                                            ?
+                                            <td className="border px-4 py-2 bg-red-200">
+                                                <div>{item.status}</div>
+                                            </td>
+                                            :
+                                            <td className="border px-4 py-2 bg-green-200">
+                                                <div>{item.status}</div>
+                                            </td>
+                                    }
+                                </tr>
+                            </tbody>
+                        })
+                    }
+
+                </table>
+            </div>
         </div>
     )
 }
 
-export default Payment
+export default PaymentHistory

@@ -290,12 +290,13 @@ const reserve = () => {
     }
 
     const getHeaders = () => {
-        setHeaders({
-            headers: {
-                authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                type: JSON.parse(sessionStorage.getItem("token")).type
-            },
-        })
+        if (sessionStorage.getItem('token'))
+            setHeaders({
+                headers: {
+                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                    type: JSON.parse(sessionStorage.getItem("token")).type
+                },
+            })
     }
 
     useEffect(() => {

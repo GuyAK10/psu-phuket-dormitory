@@ -248,19 +248,6 @@ const profile = ({ profileId }) => {
         Router.push('login')
     }
 
-    const getHeader = () => {
-        if (sessionStorage.getItem('token')) {
-            setToken(JSON.parse(sessionStorage.getItem('token')))
-            setAxiosConfig({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem('token')).type
-                }
-            })
-        }
-        else Logout()
-    }
-
     const verifyLogin = () => {
         const session = sessionStorage.getItem("token")
         if (!session) {
@@ -480,15 +467,19 @@ const profile = ({ profileId }) => {
         },
     ]
 
+    const getHeader = () => {
+        if (sessionStorage.getItem('token'))
+            setHeaders({
+                headers: {
+                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                    type: JSON.parse(sessionStorage.getItem("token")).type
+                },
+                cachePolicy: "no-cache",
+            })
+        else Logout()
+    }
+
     useEffect(() => {
-        setHeaders({
-            headers: {
-                authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                type: JSON.parse(sessionStorage.getItem("token")).type
-            },
-            cachePolicy: "no-cache",
-        })
-        verifyLogin()
         getInitialProfile()
         if (!loading) setIsLoading(false)
     }, [])

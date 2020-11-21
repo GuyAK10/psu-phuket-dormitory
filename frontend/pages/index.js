@@ -9,7 +9,6 @@ const Index = () => {
             <h1 className="text-4xl p-5">จองห้องพัก</h1>
             <p className="text-xl">ระบบนี้สร้างขึ้นมาเพื่อลดปัญหาการจองห้องพักที่ต้องใช้เอกสาร</p>
             <p className="text-xl">เหลือเพียงแค่การเลือกห้องไม่กี่ขั้นตอนเท่านั้น</p>
-            <img src="http://localhost/student/profile/picture/5835512091"></img>
             <div className="repair flex flex-row flex-wrap p-10">
                 <Card>
                     <img className="h-10 w-10 mb-3 self-center" src="icon/booking.svg" alt="book" />

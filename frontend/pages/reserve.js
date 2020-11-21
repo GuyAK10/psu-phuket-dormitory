@@ -9,11 +9,11 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const reserve = () => {
-    const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
+    const { Modal, Token, MenuBar } = useContext(GlobalState)
     const [menuBar, setMenuBar] = MenuBar
-    const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
+    const [header, setHeader] = useState({})
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(true)
     const [showbuilding, setShowBuilding] = useState([])
@@ -26,13 +26,7 @@ const reserve = () => {
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/room`, {
-        headers: {
-            authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-            type: JSON.parse(sessionStorage.getItem("token")).type
-        },
-        cachePolicy: "no-cache",
-    })
+    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/room`, header)
 
     const Logout = () => {
         console.log("Logout")
@@ -44,16 +38,15 @@ const reserve = () => {
     }
 
     const getHeader = () => {
-        if (sessionStorage.getItem('token')) {
+        if (sessionStorage.getItem('token').length) {
             setToken(JSON.parse(sessionStorage.getItem('token')))
-            setAxiosConfig({
+            setHeader({
                 headers: {
                     authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
                     type: JSON.parse(sessionStorage.getItem('token')).type
                 }
             })
         }
-        else Logout()
     }
 
     const verifyLogin = () => {
@@ -358,8 +351,8 @@ const reserve = () => {
     }
 
     useEffect(() => {
-        getHeader()
-        verifyLogin()
+        // getHeader()
+        // verifyLogin()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
         if (!loading) setIsLoading(false)

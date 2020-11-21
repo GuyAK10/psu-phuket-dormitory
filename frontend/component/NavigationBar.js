@@ -137,8 +137,8 @@ const NavigationBar = () => {
                     </span>
                     {menuName === "ชำระค่าน้้ำค่าไฟ" ?
                         <div className="flex flex-col">
-                            <SubMenu menu="เพิ่มรายการ" route="/admin/add-payment" />
-                            <SubMenu menu="ประวัติ" route="/admin/payment-history" />
+                            <SubMenu menu="เพิ่มรายการ" route="/admin/payment" />
+                            <SubMenu menu="ประวัติ" route="/admin/payment/payment-history" />
                         </div> : null
                     }
                 </div>
