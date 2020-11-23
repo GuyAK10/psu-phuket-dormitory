@@ -5,8 +5,8 @@ const FIREBASE_CONFIG = JSON.parse(process.env.FIREBASE_CONFIG)
 
 admin.initializeApp({
   credential: admin.credential.cert(FIREBASE_CONFIG),
-  databaseURL: 'https://psu-phuket-dormitory.firebaseio.com',
-  storageBucket: "gs://psu-phuket-dormitory.appspot.com"
+  databaseURL: "https://maledormitory-2a8b6.firebaseio.com",
+  storageBucket: "gs://maledormitory-2a8b6.appspot.com"
 });
 
 module.exports = admin;
