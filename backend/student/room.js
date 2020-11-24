@@ -1,9 +1,8 @@
 const express = require('express');
 const { truncate } = require('fs');
-const { firestore } = require('../configs/firebase')
+const { db } = require('../configs/firebase')
 const router = express.Router()
-const db = firestore()
-const { firestore: { FieldValue } } = require('../configs/firebase')
+const { FieldValue } = db
 
 const bookInfomation = async (profileData, checkCase) => {
     try {

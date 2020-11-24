@@ -16,7 +16,7 @@ const reserve = () => {
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(true)
     const [showbuilding, setShowBuilding] = useState([])
-    const [modalFloor, setModalFloor] = useState([])
+    const [modalFloor, setModalFloor] = useState(null)
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const [update, setUpdate] = useState(0)
 
@@ -76,6 +76,8 @@ const reserve = () => {
             if (!error)
                 floorDetails[1] = { ...floor1 }
             else Logout()
+
+            console.log(floorDetails)
 
             setFocusListRoom(floorDetails)
             setIsLoading(false)
@@ -217,7 +219,6 @@ const reserve = () => {
                     orderId: StudentOrder
                 }
             }
-            console.log(body)
 
             const data = await post(`/remove`, body)
 

@@ -1,11 +1,10 @@
 const express = require('express');
-const firestore = require('../configs/firebase')
+const { db, storage } = require('../configs/firebase')
 const { receiptNotify } = require('../configs/line')
 const multer = require('multer');
 
 const router = express.Router();
-const bucket = firestore.storage().bucket()
-const db = firestore.firestore()
+const bucket = storage.bucket()
 const uploader = multer({
   storage: multer.memoryStorage(),
   limits: {

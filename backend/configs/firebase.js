@@ -9,4 +9,12 @@ admin.initializeApp({
   storageBucket: "gs://psu-phuket-dormitory.appspot.com"
 });
 
-module.exports = admin;
+const db = admin.firestore()
+const storage = admin.storage()
+
+if (process.env.DEVELOPMENT) db.settings({ host: "localhost:8080", ssl: false })
+
+module.exports = {
+  db,
+  storage,
+};

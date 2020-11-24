@@ -1,9 +1,8 @@
 const express = require('express');
-const firestore = require('../configs/firebase')
+const { db } = require('../configs/firebase')
 const { repairNotify } = require('../configs/line')
 
 const router = express.Router()
-const db = firestore.firestore()
 
 router.post('/student/repair', (req, res) => {
   try {
@@ -13,10 +12,10 @@ router.post('/student/repair', (req, res) => {
       semester: semester,
       year: year,
       month: month,
-      day:day,
+      day: day,
       roomId: roomId,
       detail: detail,
-      topic:topic
+      topic: topic
     })
     repairNotify()
   } catch (error) {

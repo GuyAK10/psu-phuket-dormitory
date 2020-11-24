@@ -2,12 +2,9 @@ require('tls').DEFAULT_MIN_VERSION = 'TLSv1'   // since TLSv1.3 default disable 
 const express = require('express');
 const soap = require('soap');
 const { userUsecase } = require('./usecase/userUsecase')
-const jwt = require('jsonwebtoken');
-const fs = require('fs')
 const url = 'https://passport.psu.ac.th/authentication/authentication.asmx?wsdl';
 const router = express.Router()
-const firestore = require('./configs/firebase')
-const db = firestore.firestore()
+const { db } = require('./configs/firebase')
 const { createToken } = require('./configs/jwt')
 
 //remove token
@@ -53,13 +50,13 @@ router.post('/', (req, res) => {
                         const responseData = {
                             userId: userUsecase.getStudentId(response),
                             role: userUsecase.getRole(response),
-                            name:userUsecase.getName(response),
-                            surname:userUsecase.getSurname(response),
-                            faculty:userUsecase.getFaculty(response),
-                            department:userUsecase.getDepartment(response),
-                            email:userUsecase.getEmail(response)
+                            name: userUsecase.getName(response),
+                            surname: userUsecase.getSurname(response),
+                            faculty: userUsecase.getFaculty(response),
+                            department: userUsecase.getDepartment(response),
+                            email: userUsecase.getEmail(response)
                         }
-    
+
                         createToken({ username, password, type }, responseData, req, res)
                     } catch (error) {
                         console.log(error)

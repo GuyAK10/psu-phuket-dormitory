@@ -1,9 +1,8 @@
 const express = require('express');
-const firestore = require('../configs/firebase')
+const { db, storage } = require('../configs/firebase')
 
 const router = express.Router();
-const bucket = firestore.storage().bucket()
-const db = firestore.firestore()
+const bucket = storage.bucket()
 
 router.post('/staff/payment', async (req, res) => {
     try {

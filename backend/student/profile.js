@@ -1,10 +1,9 @@
 const express = require('express');
-const firestore = require('../configs/firebase')
+const { db, storage } = require('../configs/firebase')
 const multer = require('multer');
 
 const router = express.Router()
-const db = firestore.firestore()
-const bucket = firestore.storage().bucket()
+const bucket = storage.bucket()
 const uploader = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -30,7 +29,7 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
     });
 
     blobStream.on('finish', () => {
-      
+
       res.status(200).send({ code: 200, success: true, message: `Upload Complete` });
 
     });
@@ -86,7 +85,7 @@ router.post('/student/profile/:studentId', async (req, res) => {
         faculty: req.body.profile.faculty,
         department: req.body.profile.department,
         line: req.body.profile.line,
-        profileImg:req.body.profile.profileImg
+        profileImg: req.body.profile.profileImg
       },
       contact: {
         tel: req.body.contact.tel,
@@ -164,9 +163,9 @@ router.post('/student/profile/:studentId', async (req, res) => {
     }
 
     const docRef = db.collection('students').doc(`${studentId}`)
-    await docRef.update(user) 
+    await docRef.update(user)
     res.status(200).send("add profile success");
-    
+
   } catch (error) {
     console.log(error)
     res.sendStatus(400);

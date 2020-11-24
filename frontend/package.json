@@ -7,6 +7,7 @@
     "antd": "^4.7.3",
     "axios": "^0.20.0",
     "firebase": "^7.20.0",
+    "global": "^4.4.0",
     "gsap": "^3.5.1",
     "next": "^10.0.0",
     "qs": "^6.9.4",
@@ -25,6 +26,6 @@
     "deploy": "yarn out && firebase deploy"
   },
   "devDependencies": {
-    "firebase-tools": "^8.10.0"
+    "firebase-tools": "^8.16.2"
   }
 }
