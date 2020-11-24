@@ -17,4 +17,5 @@ if (process.env.DEVELOPMENT) db.settings({ host: "localhost:8080", ssl: false })
 module.exports = {
   db,
   storage,
+  admin
 };

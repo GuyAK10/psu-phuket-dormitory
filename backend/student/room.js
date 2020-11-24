@@ -1,8 +1,8 @@
 const express = require('express');
-const { truncate } = require('fs');
-const { db } = require('../configs/firebase')
+const { db, admin } = require('../configs/firebase')
 const router = express.Router()
-const { FieldValue } = db
+const { firestore } = admin
+const FieldValue = firestore.FieldValue
 
 const bookInfomation = async (profileData, checkCase) => {
     try {
@@ -114,7 +114,6 @@ router.post('/student/room', async (req, res) => {
             const checkCase = "reserve"
             const isBooked = await bookInfomation(profileData, checkCase)
             if (isBooked) {
-                console.log("ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง")
                 res.status(200).send({ code: 200, success: false, message: "ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง" })
             } else if (!isBooked) {
                 bookingRoom(bookRoom, floorId, roomId, orderId, res)

@@ -69,9 +69,9 @@ const createRoomDb = async () => floors.map(async floorId => {
 })
 
 const checkCheckStatus = async () => {
-    const dormStatus = await db.doc(`domitory/status`)
+    const dormStatus = await db.doc(`dormitory/status`)
     if (!(await dormStatus.get()).exists) {
-        dormStatus.set({ status: true })
+        dormStatus.set({ system: true })
     }
 }
 

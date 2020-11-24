@@ -31,7 +31,6 @@ const reserve = () => {
     const [myRoom, setMyRoom] = useState(null)
 
     const Logout = () => {
-        console.log("Logout")
         setToken(null)
         sessionStorage.removeItem('token')
         setShowModal(false)
@@ -76,8 +75,6 @@ const reserve = () => {
             if (!error)
                 floorDetails[1] = { ...floor1 }
             else Logout()
-
-            console.log(floorDetails)
 
             setFocusListRoom(floorDetails)
             setIsLoading(false)
@@ -189,9 +186,9 @@ const reserve = () => {
                         return temp
                     } else return temp
                 })
-                getMyRoom()
-                setModalFloor(changeStatusReserve)
                 onSelectedRoom()
+
+                setMyRoom({ profileData: { ...item }, roomId: item.floorId })
                 setUpdate(Math.random())
             }
         }
@@ -227,6 +224,8 @@ const reserve = () => {
             }
 
             if (data.success) {
+                onDeletedRoom()
+                setMyRoom(null)
                 let changeStatusReserve = modalFloor
                 changeStatusReserve.map(room => {
                     let temp = room
@@ -235,9 +234,6 @@ const reserve = () => {
                         return temp
                     } else return temp
                 })
-                setModalFloor(changeStatusReserve)
-                onDeletedRoom()
-                getMyRoom()
                 setUpdate(Math.random())
             }
         }
@@ -399,6 +395,7 @@ const reserve = () => {
             const myRoomGet = await get(`myRoom/${JSON.parse(sessionStorage.getItem('token')).id}`)
             if (myRoomGet.success) {
                 setMyRoom(myRoomGet.data)
+                setUpdate(Math.random())
             }
         }
     }
@@ -415,20 +412,22 @@ const reserve = () => {
     }, [])
 
     return (
-        <div className="reserve-container w-full">
+        <div className="reserve-container">
             <div className="floor-select-container col-start-2 col-span-10">
                 {
                     myRoom
-                        ? <div className="text-center">ท่านได้จองห้อง {myRoom.roomId}
+                        ?
+                        <div className="flex flex-col justify-center">
+                            <div className="text-center text-2xl p-5">ท่านได้จองห้อง {myRoom.roomId}</div>
                             <button
                                 onClick={() => removeRoom(myRoom.roomId, myRoom.profileData, "outer")}
-                                className="mt-6 bg-red-200 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                className="col-start-4 col-end-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                                 ยกเลิกการจองห้อง
                             </button>
                         </div>
-                        : <div className="text-center">ท่านยังไม่ได้จองห้อง สามารถจองได้โดยเลือกห้องจากด้านล่าง</div>
+                        : <div className="text-center text-2xl p-5">ท่านยังไม่ได้จองห้อง สามารถจองได้โดยเลือกห้องจากด้านล่าง</div>
                 }
-                <h1 className="text-center self-end text-xl">เลือกชั้น</h1>
+                <h1 className="p-3 text-center text-xl">เลือกชั้น</h1>
                 <div className="flex flex-row justify-center">
                     {floorList.map((floor, key) =>
                         <div
