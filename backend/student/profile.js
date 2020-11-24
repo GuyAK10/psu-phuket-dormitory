@@ -5,7 +5,6 @@ const multer = require('multer');
 const router = express.Router()
 const db = firestore.firestore()
 const bucket = firestore.storage().bucket()
-
 const uploader = multer({
   storage: multer.memoryStorage(),
   limits: {

@@ -1,4 +1,5 @@
 const express = require('express');
+const { truncate } = require('fs');
 const { firestore } = require('../configs/firebase')
 const router = express.Router()
 const db = firestore()
@@ -36,10 +37,10 @@ const bookInfomation = async (profileData, checkCase) => {
                     return booked
                 }
                 else if (!result.empty && checkCase === "myroom") {
-                    result.forEach( (room) => {
-                        const roomData ={
-                            roomId:'',
-                            
+                    result.forEach((room) => {
+                        const roomData = {
+                            roomId: '',
+
                         }
                         roomData.roomId = room.id
                         Object.assign(roomData, room.data())
@@ -161,6 +162,43 @@ router.get('/student/room/:floorId', async (req, res) => {
     }
 });
 
+router.get('/student/room/myRoom/:studentId', async (req, res) => {
+    try {
+
+        const { params: { studentId } } = req
+        const floor = ['floorA', 'floorB', 'floorC', 'floorD', 'floorE', 'floorF', 'floorG', 'floorH']
+
+        const [findStudent] = await Promise.all(
+            floor.map(async item => {
+                const roomRef = await db.collection(item).listDocuments()
+                const student = await Promise.all(
+                    roomRef.map(async data => {
+                        const result = await data.get()
+                        if (result.data().student1) {
+                            if (result.data().student1.id == studentId) {
+                                return { roomId: result.id, profileData: result.data() }
+                            }
+                        }
+                        else if (result.data().student2) {
+                            if (result.data().student2.id == studentId) {
+                                return { roomId: result.id, profileData: result.data() }
+                            }
+                        }
+                    })
+                )
+                if (student) return student
+            })
+        )
+        const [student] = findStudent.filter(notUndefined => notUndefined !== undefined)
+
+        if (student) res.status(200).send({ code: 200, success: true, message: "พบข้อมูลการจองห้อง", data: student })
+        else res.status(200).send({ code: 200, success: false, message: "ไม่พบข้อมูลการจองห้อง" })
+
+    } catch (e) {
+        console.error(e)
+    }
+})
+
 router.get('/student/room/', async (req, res) => {
     try {
         const profileData = {
@@ -169,13 +207,13 @@ router.get('/student/room/', async (req, res) => {
             }
         }
         const checkCase = "myroom"
-        const room = await bookInfomation(profileData,checkCase)
+        const room = await bookInfomation(profileData, checkCase)
         if (room == false) {
             res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
-        } else{
+        } else {
             res.send(room);
         }
-        
+
     } catch (error) {
         console.error(error)
         res.sendStatus(400);

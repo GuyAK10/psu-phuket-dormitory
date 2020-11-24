@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import { Divider } from 'antd';
 import Link from 'next/link'
@@ -7,7 +7,7 @@ const NavigationBar = () => {
     const { Staff, MenuName, SubMenuName } = useContext(GlobalState)
     const [menuName, setMenuName] = MenuName
     const [subMenuName, setSubMenuName] = SubMenuName
-    const [staff] = Staff
+    const [staff, setStaff] = Staff
 
     const SubMenu = ({ menu, route }) => {
         return <Link href={route}>
@@ -18,6 +18,13 @@ const NavigationBar = () => {
     }
 
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
+
+    useEffect(() => {
+        if (sessionStorage.getItem('token')) {
+            if ((sessionStorage.getItem('token')).type == "Staffs") setStaff(true)
+            else setStaff(false)
+        }
+    }, [])
 
     return (
         <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 h-full to-blue-800 text-white p-2">
@@ -156,7 +163,6 @@ const NavigationBar = () => {
                     </div>
             }
 
-            <img className="opacity-25" src="background/psu view.jpg" alt="psu view" />
             <style jsx>{`
                 img{
                     filter:invert(100%);

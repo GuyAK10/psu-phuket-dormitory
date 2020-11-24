@@ -2,9 +2,8 @@ import React, { useState, useEffect, useContext } from 'react'
 import { GlobalState } from '../utils/context'
 import Router from 'next/router'
 import Loading from '../component/Loading'
-import { message } from 'antd';
+import { message, Skeleton } from 'antd';
 import useFetch from 'use-http'
-import { TweenMax } from 'gsap'
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
@@ -20,6 +19,7 @@ const reserve = () => {
     const [modalFloor, setModalFloor] = useState([])
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const [update, setUpdate] = useState(0)
+
     const floorList = [
         { 1: ["E", "A"] },
         { 2: ["F", "B"] },
@@ -27,6 +27,8 @@ const reserve = () => {
         { 4: ["H", "D"] }
     ]
     const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/room`, header)
+    const [myId, setMyId] = useState(null)
+    const [myRoom, setMyRoom] = useState(null)
 
     const Logout = () => {
         console.log("Logout")
@@ -141,106 +143,114 @@ const reserve = () => {
         )
     }
 
+    const onSelectedRoom = () => {
+        message.success('จองห้องแล้ว')
+    }
+
+    const onSelecteRoom = () => {
+        message.warning('กำลังจองห้อง')
+    }
+
+    const onDeletedRoom = () => {
+        message.warn('ยกเลิกการจองแล้ว')
+    }
+
+    const onDeleteRoom = () => {
+        message.warning('กำลังยกเลิกการจอง')
+    }
+
+    const selectRoom = async (item, student) => {
+        try {
+            const body = {
+                floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
+                roomId: item.floorId,
+                studentId: myId,
+                orderId: student
+            }
+
+            const data = await post(`/`, body)
+
+            if (!data.success) {
+                message.error(data.message)
+                if (data.message === "กรุณาบันทึกข้อมูลผู้ใช้ก่อน") {
+                    message.warn("ระบบจะพาคุณไปยังหน้าบันทึกข้อมูล")
+                    Router.push("profile")
+                }
+            }
+
+            if (data.success) {
+                let changeStatusReserve = modalFloor
+                changeStatusReserve.map(room => {
+                    let temp = room
+                    if (temp.floorId === item.floorId) {
+                        temp[`${student}`] = { id: myId }
+                        return temp
+                    } else return temp
+                })
+                getMyRoom()
+                setModalFloor(changeStatusReserve)
+                onSelectedRoom()
+                setUpdate(Math.random())
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
+    const removeRoom = async (item, student, isOuterSelect) => {
+        try {
+            let body = {}
+            if (isOuterSelect !== 'outer')
+                body = {
+                    floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
+                    roomId: item.floorId,
+                    studentId: myId,
+                    orderId: student
+                }
+            else {
+                const StudentOrder = student.student1 ? "student1" : "student2"
+                body = {
+                    floorId: `floor${item.split(0, 1)[0]}`,
+                    roomId: item,
+                    studentId: myId,
+                    orderId: StudentOrder
+                }
+            }
+            console.log(body)
+
+            const data = await post(`/remove`, body)
+
+            if (!data.success) {
+                message.error(data.message)
+            }
+
+            if (data.success) {
+                let changeStatusReserve = modalFloor
+                changeStatusReserve.map(room => {
+                    let temp = room
+                    if (temp.floorId === item.floorId) {
+                        temp[`${student}`] = undefined
+                        return temp
+                    } else return temp
+                })
+                setModalFloor(changeStatusReserve)
+                onDeletedRoom()
+                getMyRoom()
+                setUpdate(Math.random())
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
     const FocusFloor = () => {
 
-        const onSelectedRoom = () => {
-            message.success('จองห้องแล้ว')
-        }
-
-        const onSelecteRoom = () => {
-            message.warning('กำลังจองห้อง')
-        }
-
-        const onDeletedRoom = () => {
-            message.warn('ยกเลิกการจองแล้ว')
-        }
-
-        const onDeleteRoom = () => {
-            message.warning('กำลังยกเลิกการจอง')
-        }
-
-        const oddRoom = modalFloor.filter((_item, key) => key % 2 !== 0)
-        const evenRoom = modalFloor.filter((_item, key) => key % 2 === 0)
-
-        const selectRoom = async (item, student, event) => {
-            try {
-                const { id } = token
-                const body = {
-                    floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
-                    roomId: item.floorId,
-                    studentId: id,
-                    orderId: student
-                }
-
-                const data = await post(`/`, body)
-
-                if (!data.success) {
-                    message.error(data.message)
-                    if (data.message === "กรุณาบันทึกข้อมูลผู้ใช้ก่อน") {
-                        message.warn("ระบบจะพาคุณไปยังหน้าบันทึกข้อมูล")
-                        Router.push("profile")
-                    }
-                }
-
-                if (data.success) {
-                    let changeStatusReserve = modalFloor
-                    changeStatusReserve.map(room => {
-                        let temp = room
-                        if (temp.floorId === item.floorId) {
-                            temp[`${student}`] = id
-                            return temp
-                        } else return temp
-                    })
-                    TweenMax.set(event, { filter: "invert(86%) sepia(98%) saturate(734%) hue-rotate(356deg) brightness(102%) contrast(105%)" })
-                    onSelectedRoom()
-                    setUpdate(Math.random())
-                }
-            }
-            catch (e) {
-                console.log(e)
-            }
-        }
-
-        const removeRoom = async (item, student, event) => {
-            try {
-                const { id } = token
-                const body = {
-                    floorId: `floor${item.floorId.split(0, 1)[0][0]}`,
-                    roomId: item.floorId,
-                    studentId: id,
-                    orderId: student
-                }
-
-                const data = await post(`/remove`, body)
-
-                if (!data.success) {
-                    message.error(data.message)
-                }
-
-                if (data.success) {
-                    let changeStatusReserve = modalFloor
-                    changeStatusReserve.map(room => {
-                        let temp = room
-                        if (temp.floorId === item.floorId) {
-                            temp[`${student}`] = undefined
-                            return temp
-                        } else return temp
-                    })
-                    onDeletedRoom()
-                    TweenMax.set(event, { filter: null })
-                    setUpdate(Math.random())
-                }
-            }
-            catch (e) {
-                console.log(e)
-            }
-        }
-
         const styleStd1 = (room) => {
-            const { id } = JSON.parse(sessionStorage.getItem('token'))
             if (room.student1) {
-                if (room.student1.id == id) {
-                    return { filter: "invert(10%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" }
+                if (room.student1.id == myId) {
+                    return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
                 }
                 return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
             }
@@ -248,10 +258,9 @@ const reserve = () => {
         }
 
         const styleStd2 = (room) => {
-            const { id } = JSON.parse(sessionStorage.getItem('token'))
             if (room.student2) {
-                if (room.student2.id == id) {
-                    return { filter: "invert(10%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" }
+                if (room.student2.id == myId) {
+                    return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
                 }
                 return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
             }
@@ -261,125 +270,178 @@ const reserve = () => {
         return (
             <div className="focus-floor">
                 <img src="icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
-                <div className="modal-content">
-                    <div className="even-room">
-                        {oddRoom ? oddRoom.map((room, key) => {
+                {
+                    loading
+                        ?
+                        <div className="modal-content">กำลังจอง</div>
+                        :
+                        <div className="modal-content">
+                            <div className="even-room">
+                                {modalFloor ? modalFloor.filter((_item, key) => key % 2 !== 0).map((room, key) => {
 
-                            return <div className="room-container" key={key}>
-                                <span className="even-room-item" >
-                                    <span className="student1">
-                                        <img
-                                            style={styleStd1(room)}
-                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                                            onClick={(e) => {
-                                                if (room.student1)
-                                                    removeRoom(room, "student1", e.currentTarget)
-                                                else
-                                                    selectRoom(room, "student1", e.currentTarget)
-                                            }}
-                                        />
-                                    </span>
-                                    <span className="student2">
-                                        <img
-                                            style={styleStd2(room)}
-                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                                            onClick={(e) => {
-                                                if (room.student2)
-                                                    removeRoom(room, "student2", e.currentTarget)
-                                                else
-                                                    selectRoom(room, "student2", e.currentTarget)
-                                            }}
-                                        />
-                                    </span>
-                                </span>
-                                {room.floorId}
+                                    return <div className="room-container" key={key}>
+                                        <span className="even-room-item" >
+                                            <span className="student1">
+                                                <img
+                                                    style={styleStd1(room)}
+                                                    src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                                                    onClick={(e) => {
+                                                        if (room.student1)
+                                                            removeRoom(room, "student1", e.currentTarget)
+                                                        else
+                                                            selectRoom(room, "student1", e.currentTarget)
+                                                    }}
+                                                />
+                                            </span>
+                                            <span className="student2">
+                                                <img
+                                                    style={styleStd2(room)}
+                                                    src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                                                    onClick={(e) => {
+                                                        if (!loading) {
+                                                            if (room.student2)
+                                                                removeRoom(room, "student2", e.currentTarget)
+                                                            else
+                                                                selectRoom(room, "student2", e.currentTarget)
+                                                        }
+                                                    }}
+                                                />
+                                            </span>
+                                        </span>
+                                        {room.floorId}
+                                    </div>
+                                }
+                                ) : null}
                             </div>
-                        }
-                        ) : null}
-                    </div>
 
-                    <span className="space">ทางเดิน</span>
+                            <span className="">
 
-                    <div className="odd-room">
-                        {evenRoom ? evenRoom.map((room, key) => {
-
-                            return <div className="room-container" key={key} >
-                                <span className="odd-room-item">
-                                    <span className="student1">
-                                        <img
-                                            style={styleStd1(room)}
-                                            src="/icon/male.svg"
-                                            alt="person"
-                                            className="person cursor-pointer"
-                                            onClick={(e) => {
-                                                if (room.student1)
-                                                    removeRoom(room, "student1", e.currentTarget)
-                                                else
-                                                    selectRoom(room, "student1", e.currentTarget)
-                                            }}
-                                        />
-                                    </span>
-                                    <span className="student2">
-                                        <img
-                                            style={styleStd2(room)}
-                                            src="/icon/male.svg"
-                                            alt="person"
-                                            className="person cursor-pointer"
-                                            onClick={(e) => {
-                                                if (room.student2)
-                                                    removeRoom(room, "student2", e.currentTarget)
-                                                else
-                                                    selectRoom(room, "student2", e.currentTarget)
-                                            }}
-                                        />
-                                    </span>
+                                <span className="flex">
+                                    <img
+                                        src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                                    />
+                                ห้องว่างสามารถจองได้
                                 </span>
-                                {room.floorId}
-                            </div>
-                        }) : null}
 
-                    </div>
-                </div>
+                                <span className="flex">
+                                    <img
+                                        style={{ filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }}
+                                        src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                                    />
+                                ห้องที่ท่านจอง
+                                </span>
+
+                                <span className="flex">
+                                    <img
+                                        style={{ filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }}
+                                        src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                                    />
+                                ห้องไม่ว่างเนื่องจากจองแล้ว
+                                </span>
+                            </span>
+
+                            <div className="odd-room">
+                                {modalFloor ? modalFloor.filter((_item, key) => key % 2 === 0).map((room, key) => {
+
+                                    return <div className="room-container" key={key} >
+                                        <span className="odd-room-item">
+                                            <span className="student1">
+                                                <img
+                                                    style={styleStd1(room)}
+                                                    src="/icon/male.svg"
+                                                    alt="person"
+                                                    className="person cursor-pointer"
+                                                    onClick={(e) => {
+                                                        if (room.student1)
+                                                            removeRoom(room, "student1", e.currentTarget)
+                                                        else
+                                                            selectRoom(room, "student1", e.currentTarget)
+                                                    }}
+                                                />
+                                            </span>
+                                            <span className="student2">
+                                                <img
+                                                    style={styleStd2(room)}
+                                                    src="/icon/male.svg"
+                                                    alt="person"
+                                                    className="person cursor-pointer"
+                                                    onClick={(e) => {
+                                                        if (!loading) {
+                                                            if (room.student2)
+                                                                removeRoom(room, "student2", e.currentTarget)
+                                                            else
+                                                                selectRoom(room, "student2", e.currentTarget)
+                                                        }
+                                                    }}
+                                                />
+                                            </span>
+                                        </span>
+                                        {room.floorId}
+                                    </div>
+                                }) : null}
+
+                            </div>
+                        </div>
+                }
             </div >
         )
     }
 
-    const MyRoom = () => {
-        const id = JSON.parse(sessionStorage.getItem('token')).id
-        const result = focusRoomList[0].filter(item => item.floorId.student1.id == id)
-        console.log(result)
+    const getMyId = () => {
+        const { id } = JSON.parse(sessionStorage.getItem('token'))
+        if (!id) Logout()
+        setMyId(id)
+    }
+
+    const getMyRoom = async () => {
+        if (sessionStorage.getItem('token')) {
+            const myRoomGet = await get(`myRoom/${JSON.parse(sessionStorage.getItem('token')).id}`)
+            if (myRoomGet.success) {
+                setMyRoom(myRoomGet.data)
+            }
+        }
     }
 
     useEffect(() => {
-        // getHeader()
-        // verifyLogin()
+        getHeader()
+        verifyLogin()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
+        getMyId()
+        getMyRoom()
         if (!loading) setIsLoading(false)
         if (error) console.log(error)
     }, [])
 
-    if (loading) return <Loading />
-    if (loading) setUpdate(Math.random())
     return (
-        <div className="reserve-container">
-            <div>ท่านได้จองห้อง</div>
-
-            <h1 className="col-span-full text-center self-end text-xl">เลือกชั้น</h1>
-            <div className="floor-select-container col-span-full">
-                <div className="flex flex-row justify-center">{floorList.map((floor, key) =>
-                    <div
-                        value={floor}
-                        key={key}
-                        className="shadow-md p-3 bg-gray-200 cursor-pointer"
-                        onClick={() => handleSelectFloor(floor[key + 1])}
-                    >
-                        {Object.keys(floor)}
-                    </div>
-                )}
+        <div className="reserve-container w-full">
+            <div className="floor-select-container col-start-2 col-span-10">
+                {
+                    myRoom
+                        ? <div className="text-center">ท่านได้จองห้อง {myRoom.roomId}
+                            <button
+                                onClick={() => removeRoom(myRoom.roomId, myRoom.profileData, "outer")}
+                                className="mt-6 bg-red-200 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                ยกเลิกการจองห้อง
+                            </button>
+                        </div>
+                        : <div className="text-center">ท่านยังไม่ได้จองห้อง สามารถจองได้โดยเลือกห้องจากด้านล่าง</div>
+                }
+                <h1 className="text-center self-end text-xl">เลือกชั้น</h1>
+                <div className="flex flex-row justify-center">
+                    {floorList.map((floor, key) =>
+                        <div
+                            value={floor}
+                            key={key}
+                            className="shadow-md p-3 bg-gray-200 cursor-pointer"
+                            onClick={() => handleSelectFloor(floor[key + 1])}
+                        >
+                            {Object.keys(floor)}
+                        </div>
+                    )}
                 </div>
             </div>
-            <Building />
+            {Building()}
             {showRoomSelect && <FocusFloor />}
         </div>
     )

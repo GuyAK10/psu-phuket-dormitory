@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs')
-const firebase = require('./firebase')
+const firebase = require('./firebase');
+const { abort } = require('process');
 require('dotenv').config()
 
 const tokenRef = firebase.firestore().collection('token')
 const db = firebase.firestore()
+
 const privateKey = process.env.PRIVATE_KEY
 // const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 

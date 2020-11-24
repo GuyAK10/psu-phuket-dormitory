@@ -10,7 +10,6 @@
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(12, 1fr);
-    width: 100vw;
     min-height: 100vw;
 }
 

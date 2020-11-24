@@ -24,8 +24,8 @@ const PaymentHistory = () => {
         year: years()[0]
     })
 
-    const getHeaders = () => {
-        // if (sessionStorage.getItem('token'))
+    const getHeader = () => {
+        if (sessionStorage.getItem('token'))
             setHeaders({
                 headers: {
                     authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
@@ -56,7 +56,7 @@ const PaymentHistory = () => {
     }
 
     useEffect(() => {
-        // getHeaders()
+        getHeader()
     }, [])
 
     return (

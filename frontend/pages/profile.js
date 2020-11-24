@@ -480,6 +480,7 @@ const profile = ({ profileId }) => {
     }
 
     useEffect(() => {
+        getHeader()
         getInitialProfile()
         if (!loading) setIsLoading(false)
     }, [])
