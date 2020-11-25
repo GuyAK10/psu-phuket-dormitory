@@ -19,15 +19,17 @@ const reserve = () => {
     const [isLoading, setIsLoading] = React.useState(false)
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
-    const [headers, setHeaders] = useState({})
-    const [focusRoomList, setFocusListRoom] = useState([[{ roomId: "E01" }], [{ roomId: "A01" }]])
+    const [header, setHeader] = useState({})
+    const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
+    const [update, setUpdate] = useState(0)
+    const [system, setSystem] = useState(false)
     const floorList = [
         { 1: ["E", "A"] },
         { 2: ["F", "B"] },
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const [_, forceUpdate] = useState(0)
+    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/staff/room`, { ...header, cachePolicy: "no-cache" })
 
     const Logout = () => {
         console.log("Logout")
@@ -41,7 +43,7 @@ const reserve = () => {
     const getHeader = () => {
         if (sessionStorage.getItem('token')) {
             setToken(JSON.parse(sessionStorage.getItem('token')))
-            setAxiosConfig({
+            setHeader({
                 headers: {
                     authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
                     type: JSON.parse(sessionStorage.getItem('token')).type
@@ -66,7 +68,6 @@ const reserve = () => {
         setShowBuilding(floor)
         let floorDetails = []
         setIsLoading(false)
-        console.log(ENDPOINT, PORT)
         try {
             await axios.get(`${ENDPOINT}:${PORT}/staff/room/floor${floor[0]}`, axiosConfig)
                 .then(res => {
@@ -91,7 +92,7 @@ const reserve = () => {
         }
         catch (e) {
             console.error(e)
-            // Logout()
+            Logout()
         }
     }
 
@@ -149,17 +150,16 @@ const reserve = () => {
             )
         else return (
             <div className="building-container">
-                <div className="left" onClick={() => handleModalFloor("l-1-16")}>{left}01 - {left}16</div>
-                <div className="sleft" onClick={() => handleModalFloor("l-17-24")}>{left}17 - {left}24</div>
-                <div className="center">ส่วนกลาง</div>
-                <div className="right" onClick={() => handleModalFloor("r-1-16")}>{right}01 - {right}16</div>
-                <div className="sright" onClick={() => handleModalFloor("r-17-24")}>{right}17 - {right}24</div>
+                <div className="left text-2xl cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("l-1-16")}>{left}01 - {left}16</div>
+                <div className="sleft text-2xl text-white cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("l-17-24")}>{left}17 - {left}24</div>
+                <div className="center text-2xl text-white">ส่วนกลาง</div>
+                <div className="right text-2xl text-white cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("r-1-16")}>{right}01 - {right}16</div>
+                <div className="sright text-2xl cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("r-17-24")}>{right}17 - {right}24</div>
             </div>
         )
     }
 
     const FocusFloor = () => {
-        const { post } = useFetch(`${ENDPOINT}/student/room`, headers)
 
         const onSelectedRoom = () => {
             message.success('จองห้องแล้ว')
@@ -184,6 +184,46 @@ const reserve = () => {
             Router.push({ pathname: "profiles/student", query: { profileId: id } })
         }
 
+        const styleStd1 = (room) => {
+            if (!room.available) {
+                return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
+            }
+            else if (room.student1) {
+                return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
+            }
+            return { filter: null }
+        }
+
+        const styleStd2 = (room) => {
+            if (!room.available) {
+                console.log(room)
+                return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
+            }
+            else if (room.student2) {
+                return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
+            }
+            return { filter: null }
+        }
+
+        const setStatusRoom = async (room, status) => {
+
+            const sendStatus = { ...room, floorId: `floor${room.floorId.slice(0, 1)}`, roomId: room.floorId, available: status }
+            const setStatus = await post("statusRoom", sendStatus)
+            console.log(sendStatus)
+            if (setStatus.success) {
+                let tempModelFloor = modalFloor
+                const keepTempModal = tempModelFloor.map(item => {
+                    if (item.floorId === room.floorId)
+                        return { ...item, available: status }
+                    else return item
+                })
+                setModalFloor(keepTempModal)
+                message.success(`ปิดการจองห้อง ${room.floorId} แล้ว`)
+            }
+            console.log(setStatus)
+            setUpdate(Math.random())
+        }
+
         return (
             <div className="focus-floor">
                 <img src="../icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
@@ -192,7 +232,15 @@ const reserve = () => {
                         {oddRoom ? oddRoom.map((room, key) => {
 
                             return <div className="room-container" key={key}>
-                                <span className="even-room-item" >
+                                <span className="even-room-item">
+                                    {
+                                        room.available
+                                            ?
+                                            <button onClick={() => setStatusRoom(room, false)} className="shadow bg-red-500 hover:bg-red-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">ปิดการจองห้องนี้</button>
+                                            :
+                                            <button onClick={() => setStatusRoom(room, true)} className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">เปิดการจองห้องนี้</button>
+                                    }
+                                    {room.floorId}
                                     <span className="student1">
                                         <Tooltip title={room.student1 ?
                                             `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/
@@ -204,8 +252,8 @@ const reserve = () => {
                                         >
                                             <img
                                                 className="person cursor-pointer"
-                                                style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
-                                                src="/icon/male.svg" alt="person" className="person"
+                                                style={styleStd1(room)}
+                                                src="/icon/male.svg" alt="person"
                                                 onClick={() => routeToStudent(room.student1.id)}
                                             />
                                         </Tooltip>
@@ -222,26 +270,54 @@ const reserve = () => {
                                         >
                                             <img
                                                 className="person cursor-pointer"
-                                                style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
-                                                src="/icon/male.svg" alt="person" className="person"
+                                                style={styleStd2(room)}
+                                                src="/icon/male.svg" alt="person"
                                                 onClick={() => routeToStudent(room.student2.id)}
                                             />
                                         </Tooltip>
                                     </span>
                                 </span>
-                                {room.roomId}
                             </div>
                         }
                         ) : null}
                     </div>
 
-                    <span className="space">ทางเดิน</span>
+                    <span className="">
+                        <span className="flex">
+                            <img
+                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                            />
+                                ห้องว่างสามารถจองได้
+                        </span>
+                        <span className="flex">
+                            <img
+                                style={{ filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }}
+                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                            />
+                                ห้องไม่ว่างเนื่องจากจองแล้ว
+                        </span>
+                        <span className="flex">
+                            <img
+                                style={{ filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }}
+                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                            />
+                                ห้องถูกปิดการจองโดยเจ้าหน้าที่
+                        </span>
+                    </span>
 
                     <div className="odd-room">
                         {evenRoom ? evenRoom.map((room, key) => {
 
                             return <div className="room-container" key={key} >
                                 <span className="odd-room-item">
+                                    {
+                                        room.available
+                                            ?
+                                            <button onClick={() => setStatusRoom(room, false)} className="shadow bg-red-500 hover:bg-red-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">ปิดการจองห้องนี้</button>
+                                            :
+                                            <button onClick={() => setStatusRoom(room, true)} className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">เปิดการจองห้องนี้</button>
+                                    }
+                                    {room.floorId}
                                     <span className="student1">
                                         <Tooltip title={room.student1 ?
                                             `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/
@@ -252,7 +328,7 @@ const reserve = () => {
                                             : null}
                                         >
                                             <img
-                                                style={room.student1 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
+                                                style={styleStd1(room)}
                                                 src="/icon/male.svg"
                                                 alt="person"
                                                 className="person cursor-pointer"
@@ -270,7 +346,7 @@ const reserve = () => {
                                             : null}
                                         >
                                             <img
-                                                style={room.student2 ? { filter: "invert(68%) sepia(59%) saturate(5804%) hue-rotate(83deg) brightness(107%) contrast(123%)" } : null}
+                                                style={styleStd2(room)}
                                                 src="/icon/male.svg"
                                                 alt="person"
                                                 className="person cursor-pointer"
@@ -279,7 +355,6 @@ const reserve = () => {
                                         </Tooltip>
                                     </span>
                                 </span>
-                                {room.roomId}
                             </div>
                         }) : null}
 
@@ -289,14 +364,21 @@ const reserve = () => {
         )
     }
 
-    const getHeaders = () => {
-        if (sessionStorage.getItem('token'))
-            setHeaders({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem("token")).type
-                },
-            })
+    const checkSystem = async () => {
+        const system = await get('system')
+        if (system.success) {
+            setSystem(system.data.system)
+        } else {
+            message.error(system.message)
+        }
+    }
+
+    const changeStatusSystem = async (status) => {
+        const changeStatus = await post("system", { system: status })
+        if (changeStatus.success) {
+            message.success(changeStatus.message)
+            setSystem(changeStatus.data.system)
+        }
     }
 
     useEffect(() => {
@@ -304,21 +386,49 @@ const reserve = () => {
         getHeader()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
+        checkSystem()
     }, [])
 
     return (
         <div className="reserve-container">
-            <div className="floor-select-container">
-                {floorList.map((floor, key) =>
-                    <div
-                        value={floor}
-                        key={key}
-                        className="floor-select-block"
-                        onClick={() => handleSelectFloor(floor[key + 1])}
-                    >
-                        {Object.keys(floor)}
-                    </div>
-                )}
+            <div className="floor-select-container col-start-2 col-span-10">
+                <div className="flex flex-col floor-select-container col-start-2 col-span-10 justify-center justify-items-center pl-8 pr-8">
+                    {
+                        system
+                            ?
+                            <div className="flex flex-row justify-center text-center text-2xl p-5"><p>สถานะ : </p> <p className="bg-green-200">เปิดจองห้อง</p></div>
+                            :
+                            <div className="flex flex-row justify-center text-center text-2xl p-5"><p>สถานะ : </p> <p className="bg-red-200">ปิดจองห้อง</p></div>
+                    }
+                    {
+                        system
+                            ?
+                            <button
+                                onClick={() => changeStatusSystem(false)}
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                ปิดการจองห้อง
+                            </button>
+                            :
+                            <button
+                                onClick={() => changeStatusSystem(true)}
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                เปิดการจองห้อง
+                            </button>
+                    }
+                </div>
+                <h1 className="p-3 text-center text-xl">เลือกชั้น</h1>
+                <div className="flex flex-row justify-center">
+                    {floorList.map((floor, key) =>
+                        <div
+                            value={floor}
+                            key={key}
+                            className="shadow-md p-3 bg-gray-200 cursor-pointer"
+                            onClick={() => handleSelectFloor(floor[key + 1])}
+                        >
+                            {Object.keys(floor)}
+                        </div>
+                    )}
+                </div>
             </div>
             <Building />
             {showRoomSelect && <FocusFloor />}

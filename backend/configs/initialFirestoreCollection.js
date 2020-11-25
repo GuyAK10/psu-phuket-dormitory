@@ -55,15 +55,16 @@ const floors = [
             name: "floorH",
             room: ["H01", "H02", "H03", "H04", "H05", "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H13", "H14", "H15", "H16", "H17", "H18", "H19", "H20", "H21", "H22", "H23", "H24"]
         }
-    }]
+    }
+]
 
 const createRoomDb = async () => floors.map(async floorId => {
     const checkFloors = await db.collection(floorId.floor.name).get()
     if (checkFloors.empty) {
         floorId.floor.room.map(async roomName => {
             const addFloor = await db.collection(`${floorId.floor.name}`).doc(`${roomName}`)
-            addFloor.set({ status: true })
-                .then(result => console.log(`add new floor ${floorId.floor.name} and room ${roomName}`))
+            addFloor.set({ available: true })
+                .then(result => console.log(`add new ${floorId.floor.name} and room ${roomName}`))
         })
     }
 })

@@ -1,15 +1,19 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState, useRef } from 'react'
 import { GlobalState } from '../../../utils/context'
 import useFetch from 'use-http'
+import { useReactToPrint } from 'react-to-print';
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
-const profile = ({ profileId }) => {
+const Profile = ({ profileId }) => {
     const { AxiosConfig } = useContext(GlobalState)
     const [axiosConfig] = AxiosConfig
     const [headers, setHeaders] = useState({})
-
     const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`, headers)
+    const printRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => printRef.current,
+    });
     const [student, setStudent] = useState({
         profile: {
             id: "",
@@ -161,8 +165,18 @@ const profile = ({ profileId }) => {
     }
 
     if (!loading) return (
-        <div className="flex flex-row flex-wrap justify-center">
-            <div className="border-4 border-blue-500 mb-5">
+        <div className="container">
+            <button className="self-start" onClick={handlePrint}>Print</button>
+            <div className="flex flex-col">
+                <img className="psuLogo self-center" src="../../icon/psuLogo.png" alt="psu logo" />
+            </div>
+
+            <p>สำนักงานหอพักนักศึกษาชาย มหาวิทยาลัยสงขลานครินทร์ วิทยาเขตภูเก็ต</p>
+
+            <div className="border">ทะเบียนประวัตินักศึกษาชาย</div>
+
+            {/* <div className="border-4 border-blue-500 mb-5">
+                <div style={{ width: "210cm", height: "270cm", background: "pink" }}>ทดสอบ</div>
                 <div className="px-4 py-2 text-center border-4 border-blue-500">ข้อมูลเบื้องต้น</div>
                 <TableList data={[
                     { "รหัสนักศึกษา": id },
@@ -276,16 +290,16 @@ const profile = ({ profileId }) => {
                     { "อุปนิสัยส่วนตัว": character },
                     { "เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน": position },
                 ]} />
-            </div>
+            </div> */}
         </div>
     )
     else return <div>Loading</div>
 }
 
-profile.getInitialProps = async ({ query }) => {
+Profile.getInitialProps = async ({ query }) => {
     return {
         profileId: query.profileId,
     }
 }
 
-export default profile
+export default Profile

@@ -1,4 +1,3 @@
-import './styles.css'
 import '../styles.css'
 import '../component/NavigationBar'
 import NavigationBar from '../component/NavigationBar'
@@ -33,10 +32,10 @@ const MyApp = ({ Component, pageProps }) => {
                 SubMenuName: [subMenuName, setSubMenuName]
             }}>
             <div className="root-container relative grid grid-cols-6">
-                <div className="col-span-1 col-start-1">
+                <div className="nav-bar-container col-span-1 col-start-1">
                     <NavigationBar />
                 </div>
-                <div className="col-span-5 col-start-2">
+                <div className="body-container col-span-5 col-start-2">
                     <UtilitiesBar />
                     <LoginModal>
                         <Component {...pageProps} />

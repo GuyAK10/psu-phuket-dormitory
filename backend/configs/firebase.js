@@ -1,6 +1,7 @@
 require('dotenv').config()
 const admin = require('firebase-admin');
 const FIREBASE_CONFIG = JSON.parse(process.env.FIREBASE_CONFIG)
+const isDevelopment = process.env.DEVELOPMENT || false
 // const serviceAccount = require('./serviceAccountKey.json')
 
 admin.initializeApp({
@@ -12,7 +13,7 @@ admin.initializeApp({
 const db = admin.firestore()
 const storage = admin.storage()
 
-if (process.env.DEVELOPMENT) db.settings({ host: "localhost:8080", ssl: false })
+if (isDevelopment) db.settings({ host: "localhost:8080", ssl: false })
 
 module.exports = {
   db,

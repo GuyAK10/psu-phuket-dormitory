@@ -15,6 +15,7 @@ const UtilitiesBar = () => {
     const [menuBar, setMenuBar] = MenuBar
     const [showModal, setShowModal] = Modal
     const [headers, setHeaders] = useState({})
+    const [adminPath, setAdminPath] = useState(false)
 
     const { del } = useFetch(`${ENDPOINT}:${PORT}`, headers)
 
@@ -58,18 +59,25 @@ const UtilitiesBar = () => {
             })
     }
 
+    const checkPathName = () => {
+        const { location: { pathname } } = window
+        const checkAdminPath = pathname.includes('/admin/')
+        setAdminPath(checkAdminPath)
+    }
+
     useEffect(() => {
         getHeaders()
         LoginOrLogout()
+        checkPathName()
     }, [])
 
     return (
-        <div className="flex flex-row justify-between shadow w-full flex flex-row bg-gray-200 text-xl p-3">
-            <div>{subMenuName}</div>
+        <div className="utillities flex flex-row justify-between shadow w-full flex flex-row bg-gray-200 text-xl p-3">
+            {/* <div>{subMenuName}</div> */}
             <div className="self-end">{token ? token.id : null}</div>
             <div className="cursor-pointer">
                 <span className="flex">
-                    <img className="w-5 h-5 mr-2" src="icon/login.svg" alt="personal infomation" />
+                    <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/login.svg` : `icon/login.svg`} alt="personal infomation" />
                     <Link href="/">
                         <a onClick={handleLogin}>{menuBar}</a>
                     </Link>

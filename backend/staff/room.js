@@ -3,6 +3,37 @@ const { db } = require('../configs/firebase')
 
 const router = express.Router()
 
+router.get('/staff/room/system', async (req, res) => {
+      try {
+            const docRef = await db.collection(`dormitory`).doc(`status`).get()
+            if (docRef.exists) {
+                  if (docRef.data())
+                        res.status(200).send({ code: 200, success: true, message: `ระบบเปิดการจอง`, data: docRef.data() });
+                  else
+                        res.status(200).send({ code: 200, success: true, message: `ระบบไม่เปิดการจอง`, data: docRef.data() });
+            }
+      } catch (error) {
+            console.log(error)
+            res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
+      }
+});
+
+router.post('/staff/room/system', async (req, res) => {
+      try {
+            const { body: { system } } = req
+            console.log(system)
+            const docRef = await db.collection(`dormitory`).doc(`status`)
+            docRef.update({ system: system })
+            if ((await docRef.get()).data().system)
+                  res.status(200).send({ code: 200, success: true, message: `เปิดระบบการจองแล้ว`, data: (await docRef.get()).data() });
+            else
+                  res.status(200).send({ code: 200, success: true, message: `ปิดระบบการจองแล้ว`, data: (await docRef.get()).data() });
+      } catch (error) {
+            console.log(error)
+            res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
+      }
+});
+
 router.post('/staff/room/', (req, res) => {
       try {
             const statusDormitory = {
@@ -59,29 +90,26 @@ router.post('/staff/room/remove', async (req, res) => {
       } catch (error) {
             console.log(error)
             res.status(200).send({ code: 200, success: false, message: "ผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
-
       }
 })
 
 // เผื่อใช้ในอนาคต
-// router.post('/staff/room/statusRoom',  async (req, res) => {
-//       try {
+// อนาคตมาถึงแล้ว
+router.post('/staff/room/statusRoom', async (req, res) => {
+      try {
+            const { body: { floorId, roomId, available } } = req
+            const docRef = await db.collection(`${floorId}`).doc(`${roomId}`)
 
-//             const { body: { floorId, roomId, studentId, orderId } } = req
-//             const statusRoom = {
-//                   roomStatus: req.body.roomStatus
-//             }
+            await docRef.update({ ...req.body })
+            if ((await docRef.get()).data().available)
+                  res.status(200).send({ code: 200, success: true, message: `เปิดการจองห้อง ${docRef.id} แล้ว` });
+            else
+                  res.status(200).send({ code: 200, success: true, message: `ปิดการจองห้อง ${docRef.id} แล้ว` });
 
-
-//             const docRef = db.collection(`${floorId}`).doc(`${roomId}`)
-//             await docRef.update(statusRoom)
-//             res.status(200).send("change status");
-
-//       } catch (error) {
-//             console.log(error)
-//             res.sendStatus(400)
-//       }
-// });
-
+      } catch (error) {
+            console.log(error)
+            res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
+      }
+});
 
 module.exports = router;

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { GlobalState } from '../utils/context'
 import { Divider } from 'antd';
 import Link from 'next/link'
@@ -8,6 +8,7 @@ const NavigationBar = () => {
     const [menuName, setMenuName] = MenuName
     const [subMenuName, setSubMenuName] = SubMenuName
     const [staff, setStaff] = Staff
+    const [adminPath, setAdminPath] = useState(false)
 
     const SubMenu = ({ menu, route }) => {
         return <Link href={route}>
@@ -19,22 +20,29 @@ const NavigationBar = () => {
 
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
 
+    const checkPathName = () => {
+        const { location: { pathname } } = window
+        const checkAdminPath = pathname.includes('/admin/')
+        setAdminPath(checkAdminPath)
+    }
+
     useEffect(() => {
         if (sessionStorage.getItem('token')) {
             if ((sessionStorage.getItem('token')).type == "Staffs") setStaff(true)
             else setStaff(false)
         }
+        checkPathName()
     }, [])
 
     return (
-        <div className="shadow flex flex-col bg-gradient-to-r from-blue-700 h-full to-blue-800 text-white p-2">
+        <div className="nav-bar shadow flex flex-col bg-gradient-to-r from-blue-700 h-full to-blue-800 text-white p-2">
             <h1 className="text-2xl text-center text-white">เมนู</h1>
             <Divider />
             {
                 staff
                     ? <div className="cursor-pointer p-3">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/newspaper.svg" alt="news" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/newspaper.svg` : `icon/newspaper.svg`} alt="news" />
                             <a className="text-lg" onClick={() => toggleDrop('ข่าวสาร')}>ข่าวสาร</a>
                         </span>
                         {menuName === "ข่าวสาร" ?
@@ -47,7 +55,7 @@ const NavigationBar = () => {
                     :
                     <div className="cursor-pointer p-3">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/newspaper.svg" alt="news" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/newspaper.svg` : `icon/newspaper.svg`} alt="news" />
                             <a className="text-lg" onClick={() => toggleDrop('ข่าวสาร')}>ข่าวสาร</a>
                         </span>
                         {menuName === "ข่าวสาร" ?
@@ -62,7 +70,7 @@ const NavigationBar = () => {
                     ?
                     <div className="p-3 cursor-pointer">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/identification.svg" alt="personal infomation" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/identification.svg` : `icon/identification.svg`} alt="personal infomation" />
                             <a className="text-lg" onClick={() => toggleDrop("ข้อมูลส่วนตัว")}>ข้อมูลส่วนตัว</a>
                         </span>
                         {menuName === "ข้อมูลส่วนตัว" ?
@@ -73,7 +81,7 @@ const NavigationBar = () => {
                     </div>
                     : <div className="p-3 cursor-pointer">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/identification.svg" alt="personal infomation" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/identification.svg` : `icon/identification.svg`} alt="personal infomation" />
                             <a className="text-lg" onClick={() => toggleDrop("ข้อมูลส่วนตัว")}>ข้อมูลส่วนตัว</a>
                         </span>
                         {menuName === "ข้อมูลส่วนตัว" ?
@@ -88,7 +96,7 @@ const NavigationBar = () => {
                 staff
                     ? <div className="p-3 cursor-pointer">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/online-booking.svg" alt="personal infomation" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/online-booking.svg` : `icon/online-booking.svg`} alt="personal infomation" />
                             <a className="text-lg" onClick={() => toggleDrop("จองห้องพัก")}>จองห้องพัก</a>
                         </span>
                         {menuName === "จองห้องพัก" ?
@@ -100,7 +108,7 @@ const NavigationBar = () => {
                     </div>
                     : <div className="p-3 cursor-pointer">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/online-booking.svg" alt="personal infomation" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/online-booking.svg` : `icon/online-booking.svg`} alt="personal infomation" />
                             <a className="text-lg" onClick={() => toggleDrop("จองห้องพัก")}>จองห้องพัก</a>
                         </span>
                         {menuName === "จองห้องพัก" ?
@@ -113,20 +121,22 @@ const NavigationBar = () => {
                     </div>
             }
             {
-                staff ? <div className="p-3 cursor-pointer">
-                    <span className="flex">
-                        <img className="w-5 h-5 mr-2" src="icon/mechanic.svg" alt="personal infomation" />
-                        <a className="text-lg" onClick={() => toggleDrop("แจ้งซ่อมแซม")}>แจ้งซ่อมแซม</a>
-                    </span>
-                    {menuName === "แจ้งซ่อมแซม" ?
-                        <div className="flex flex-col">
-                            <SubMenu menu="ประวัติการแจ้งซ่อมแซม" route="/admin/support" />
-                        </div> : null
-                    }
-                </div>
+                staff
+                    ?
+                    <div className="p-3 cursor-pointer">
+                        <span className="flex">
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/mechanic.svg` : `icon/mechanic.svg`} alt="personal infomation" />
+                            <a className="text-lg" onClick={() => toggleDrop("แจ้งซ่อมแซม")}>แจ้งซ่อมแซม</a>
+                        </span>
+                        {menuName === "แจ้งซ่อมแซม" ?
+                            <div className="flex flex-col">
+                                <SubMenu menu="ประวัติการแจ้งซ่อมแซม" route="/admin/support" />
+                            </div> : null
+                        }
+                    </div>
                     : <div className="p-3 cursor-pointer">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/mechanic.svg" alt="personal infomation" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/mechanic.svg` : `icon/mechanic.svg`} alt="personal infomation" />
                             <a className="text-lg" onClick={() => toggleDrop("แจ้งซ่อมแซม")}>แจ้งซ่อมแซม</a>
                         </span>
                         {menuName === "แจ้งซ่อมแซม" ?
@@ -137,21 +147,23 @@ const NavigationBar = () => {
                     </div>
             }
             {
-                staff ? <div className="p-3 cursor-pointer">
-                    <span className="flex">
-                        <img className="w-5 h-5 mr-2" src="icon/bill.svg" alt="personal infomation" />
-                        <a className="text-lg" onClick={() => toggleDrop("ชำระค่าน้้ำค่าไฟ")}>ชำระค่าน้้ำค่าไฟ</a>
-                    </span>
-                    {menuName === "ชำระค่าน้้ำค่าไฟ" ?
-                        <div className="flex flex-col">
-                            <SubMenu menu="เพิ่มรายการ" route="/admin/payment" />
-                            <SubMenu menu="ประวัติ" route="/admin/payment/payment-history" />
-                        </div> : null
-                    }
-                </div>
+                staff
+                    ?
+                    <div className="p-3 cursor-pointer">
+                        <span className="flex">
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/bill.svg` : `icon/bill.svg`} alt="personal infomation" />
+                            <a className="text-lg" onClick={() => toggleDrop("ชำระค่าน้้ำค่าไฟ")}>ชำระค่าน้้ำค่าไฟ</a>
+                        </span>
+                        {menuName === "ชำระค่าน้้ำค่าไฟ" ?
+                            <div className="flex flex-col">
+                                <SubMenu menu="เพิ่มรายการ" route="/admin/payment" />
+                                <SubMenu menu="ประวัติ" route="/admin/payment/payment-history" />
+                            </div> : null
+                        }
+                    </div>
                     : <div className="p-3 cursor-pointer">
                         <span className="flex">
-                            <img className="w-5 h-5 mr-2" src="icon/bill.svg" alt="personal infomation" />
+                            <img className="w-5 h-5 mr-2" src={adminPath ? `../../icon/bill.svg` : `icon/bill.svg`} alt="personal infomation" />
                             <a className="text-lg" onClick={() => toggleDrop("ชำระค่าน้้ำค่าไฟ")}>ชำระค่าน้้ำค่าไฟ</a>
                         </span>
                         {menuName === "ชำระค่าน้้ำค่าไฟ" ?

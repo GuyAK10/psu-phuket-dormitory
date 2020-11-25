@@ -58,39 +58,56 @@ const bookInfomation = async (profileData, checkCase) => {
     }
 }
 
-const bookingRoom = (bookRoom, floorId, roomId, orderId, res) => {
+const bookingRoom = async (bookRoom, floorId, roomId, orderId, res) => {
     try {
         const bookRef = db.collection(floorId).doc(roomId)
-        if (!bookRef.exists && orderId == "student1") {
+        if (!(await bookRef.get()).data().available) {
+            res.status(200).send({ code: 200, success: false, message: "ไม่สามารถจองห้องได้เนื่องจากห้องนี้ปิดการจองโดยเจ้าหน้าที่" });
+        }
+        else if (!bookRef.exists && orderId == "student1") {
             bookRef.update({ student1: bookRoom }, { merge: true })
             console.log("booking student1 success")
-            res.status(200).send({ code: 200, success: true, message: "booking student1 success" });
+            res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else if (!bookRef.exists && orderId == "student2") {
             bookRef.set({ student2: bookRoom }, { merge: true })
             console.log("booking student2 success")
-            res.status(200).send({ code: 200, success: true, message: "booking student2 success" });
+            res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else if (bookRef.exists && orderId == "student1") {
             bookRef.update({ student1: bookRoom })
             console.log("booking student1 success")
-            res.status(200).send({ code: 200, success: true, message: "booking student1 success" });
+            res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else if (bookRef.exists && orderId == "student2") {
             bookRef.update({ student1: bookRoom })
             console.log("booking student2 success")
-            res.status(200).send({ code: 200, success: true, message: "booking student2 success" });
+            res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else {
             console.log("booking failed")
-            res.status(400).send({ code: 200, success: false, message: "booking failed" });
+            res.status(400).send({ code: 200, success: false, message: "จองห้องไม่สำเร็จโปรดติดต่อเจ้าหน้าที่" });
         }
     } catch (error) {
         console.log(error)
         throw error
     }
-
 }
+
+router.get('/student/room/system', async (req, res) => {
+    try {
+        const docRef = await db.doc(`dormitory/status`).get()
+        if (docRef.exists) {
+            if (docRef.data())
+                res.status(200).send({ code: 200, success: true, message: `ระบบเปิดการจอง`, data: docRef.data() });
+            else
+                res.status(200).send({ code: 200, success: true, message: `ระบบไม่เปิดการจอง`, data: docRef.data() });
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
+    }
+});
 
 router.post('/student/room', async (req, res) => {
     try {
@@ -116,7 +133,7 @@ router.post('/student/room', async (req, res) => {
             if (isBooked) {
                 res.status(200).send({ code: 200, success: false, message: "ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง" })
             } else if (!isBooked) {
-                bookingRoom(bookRoom, floorId, roomId, orderId, res)
+                await bookingRoom(bookRoom, floorId, roomId, orderId, res)
             }
         }
     } catch (error) {
