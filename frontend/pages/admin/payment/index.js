@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { GlobalState } from '../../../utils/context'
 import useFetch from 'use-http'
 import Router from 'next/router'
 import { message, Skeleton } from 'antd'
@@ -164,6 +165,7 @@ const Payment = () => {
                             <th className="px-4 py-2">ห้อง</th>
                             <th className="px-4 py-2">ค่าน้ำ</th>
                             <th className="px-4 py-2">ค่าไฟ</th>
+                            <th className="px-4 py-2">รวม</th>
                             <th className="px-4 py-2">สถานะ</th>
                         </tr>
                     </thead>
@@ -191,6 +193,15 @@ const Payment = () => {
                                             name="electric"
                                             onChange={e => handleForm(e, key)}
                                             value={item.electric}
+                                            required
+                                        />
+                                    </td>
+                                    <td className="border px-4 py-2">
+                                        <input
+                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                            type="text"
+                                            name="total"
+                                            value={+item.electric+ +item.water}
                                             required
                                         />
                                     </td>

@@ -34,21 +34,6 @@ router.post('/staff/room/system', async (req, res) => {
       }
 });
 
-router.post('/staff/room/', (req, res) => {
-      try {
-            const statusDormitory = {
-                  system: req.body.system,
-            };
-            const docRef = db.doc('/dormitory/status')
-            docRef.set(statusDormitory)
-            res.status(200).send("change status");
-
-      } catch (error) {
-            console.log(error)
-            res.sendStatus(400)
-      }
-});
-
 router.get('/staff/room/:floorId', async (req, res) => {
       try {
             const floorId = req.params.floorId
@@ -93,8 +78,6 @@ router.post('/staff/room/remove', async (req, res) => {
       }
 })
 
-// เผื่อใช้ในอนาคต
-// อนาคตมาถึงแล้ว
 router.post('/staff/room/statusRoom', async (req, res) => {
       try {
             const { body: { floorId, roomId, available } } = req
@@ -111,5 +94,23 @@ router.post('/staff/room/statusRoom', async (req, res) => {
             res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
       }
 });
+
+//ใช้ในอนาคต
+// router.post('/staff/room/statusAllRoom', async (req, res) => {
+//       try {
+//             const { body: { floorId, roomId, available } } = req
+//             const docRef = await db.collection(`${floorId}`).doc(`${roomId}`)
+
+//             await docRef.update({ ...req.body })
+//             if ((await docRef.get()).data().available)
+//                   res.status(200).send({ code: 200, success: true, message: `เปิดการจองห้อง ${docRef.id} แล้ว` });
+//             else
+//                   res.status(200).send({ code: 200, success: true, message: `ปิดการจองห้อง ${docRef.id} แล้ว` });
+
+//       } catch (error) {
+//             console.log(error)
+//             res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
+//       }
+// });
 
 module.exports = router;
