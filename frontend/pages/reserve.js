@@ -417,9 +417,12 @@ const reserve = () => {
     }
 
     const getMyId = () => {
-        const { id } = JSON.parse(sessionStorage.getItem('token'))
-        if (!id) Logout()
-        setMyId(id)
+        if (sessionStorage.getItem('token')) {
+            const { id } = JSON.parse(sessionStorage.getItem('token'))
+            setMyId(id)
+        }
+        else Logout()
+        
     }
 
     const getMyRoom = async () => {

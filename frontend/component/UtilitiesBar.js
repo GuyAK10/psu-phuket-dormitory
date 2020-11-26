@@ -9,11 +9,12 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const UtilitiesBar = () => {
-    const { SubMenuName, Token, Modal, MenuBar } = useContext(GlobalState)
+    const { SubMenuName, Token, Modal, MenuBar,Staff } = useContext(GlobalState)
     const [subMenuName] = SubMenuName
     const [token, setToken] = Token
     const [menuBar, setMenuBar] = MenuBar
     const [showModal, setShowModal] = Modal
+    const [staff, setStaff] = Staff
     const [headers, setHeaders] = useState({})
     const [adminPath, setAdminPath] = useState(false)
 
@@ -37,6 +38,7 @@ const UtilitiesBar = () => {
             setToken({ id: null, token: null, type: "Students" })
             sessionStorage.removeItem('token')
             setMenuBar('ลงชื่อเข้าใช้')
+            setStaff(false)
             try {
                 del(`/logout/${token}`)
                     .then((res) => {

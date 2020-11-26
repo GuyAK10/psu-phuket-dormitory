@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import useFetch from 'use-http'
+import Router from 'next/router'
 import { message, Skeleton } from 'antd'
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Payment = () => {
+    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
+    const [_token, setToken] = Token
+    const [showModal, setShowModal] = Modal
+    const [menuBar, setMenuBar] = MenuBar
     const [headers, setHeaders] = useState({})
     const [form, setForm] = useState([])
     const [autoSave, setAutoSave] = useState(true)
@@ -60,7 +65,7 @@ const Payment = () => {
         setIsLoading(false)
     }
 
-    const getHeaders = () => {
+    const getHeader = () => {
         if (sessionStorage.getItem('token'))
             setHeaders({
                 headers: {
@@ -111,9 +116,19 @@ const Payment = () => {
             setForm(JSON.parse(localStorage.getItem('adminPayment')))
         }
     }
-
+    const verifyLogin = () => {
+        const session = sessionStorage.getItem("token")
+        if (!session) {
+            sessionStorage.removeItem('token')
+            setToken(null)
+            setShowModal(false)
+            setMenuBar('ลงชื่อเข้าใช้')
+            Router.push('login')
+        }
+    }
     useEffect(() => {
-        getHeaders()
+        getHeader()
+        verifyLogin()
         getRoom(0)
         keepLocalStorage()
     }, [])

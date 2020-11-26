@@ -332,20 +332,20 @@ const profile = ({ profileId }) => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.email} name="email" onChange={handleFormContact} />
                 <label>ชื่อ Facebook</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.facebook} name="facebook" onChange={handleFormContact} />
-                <label>ที่อยู่</label>
+                <label>ชื่อระบบเครือข่ายโทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.network} name="network" onChange={handleFormContact} />
                 <label>บ้านเลขที่</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.village} name="houseno" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.village} name="village" onChange={handleFormContact} />
                 <label>หมู่บ้าน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.villageno} name="village" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.villageno} name="villageno" onChange={handleFormContact} />
                 <label>หมู่ที่</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.houseno} name="villageno" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.houseno} name="houseno" onChange={handleFormContact} />
                 <label>ถนน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.road} name="road" onChange={handleFormContact} />
                 <label>ตำบล</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.district} name="subdistrinct" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.district} name="district" onChange={handleFormContact} />
                 <label>อำเภอ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.subdistrict} name="district" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.subdistrict} name="subdistrict" onChange={handleFormContact} />
                 <label>จังหวัด</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.province} name="province" onChange={handleFormContact} />
                 <label>รหัสไปรษณีย์</label>
@@ -359,7 +359,7 @@ const profile = ({ profileId }) => {
                 <label>จบจากโรงเรียน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.school} name="school" onChange={handleFormInformation} />
                 <label>จังหวัด</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.county} name="country" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.county} name="county" onChange={handleFormInformation} />
                 <label>เกรดเฉลี่ย</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.gpa} name="gpa" onChange={handleFormInformation} />
                 <label>แผนการศึกษา</label>
@@ -371,7 +371,7 @@ const profile = ({ profileId }) => {
                 <label>กรุ๊บเลือด</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.blood} name="blood" onChange={handleFormInformation} />
                 <label>โรคประจำตัว</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.disease} name="desease" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.disease} name="disease" onChange={handleFormInformation} />
                 <label>แพ้ยา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.drugallergy} name="drugallergy" onChange={handleFormInformation} />
             </div> : null
@@ -474,12 +474,12 @@ const profile = ({ profileId }) => {
                     type: JSON.parse(sessionStorage.getItem("token")).type
                 },
                 cachePolicy: "no-cache",
-            })
-        else Logout()
+        })
     }
 
     useEffect(() => {
         getHeader()
+        verifyLogin()
         getInitialProfile()
         if (!loading) setIsLoading(false)
         if (sessionStorage.getItem('token')) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Router from 'next/router'
 import useFetch from 'use-http'
 import { message, Skeleton } from 'antd'
 const ENDPOINT = process.env.ENDPOINT
@@ -8,6 +9,10 @@ const PaymentHistory = () => {
     const [headers, setHeaders] = useState({})
     const { get, post } = useFetch(`${ENDPOINT}:${PORT}/staff/payment/history`, { ...headers, cachePolicy: "no-cache" })
     const [payments, setPayments] = useState([])
+    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
+    const [_token, setToken] = Token
+    const [showModal, setShowModal] = Modal
+    const [menuBar, setMenuBar] = MenuBar
 
     const years = () => {
         const fullYear = new Date().getFullYear()
@@ -53,9 +58,20 @@ const PaymentHistory = () => {
             }
         })
     }
+    const verifyLogin = () => {
+        const session = sessionStorage.getItem("token")
+        if (!session) {
+            sessionStorage.removeItem('token')
+            setToken(null)
+            setShowModal(false)
+            setMenuBar('ลงชื่อเข้าใช้')
+            Router.push('login')
+        }
+    }
 
     useEffect(() => {
         getHeader()
+        verifyLogin()
     }, [])
 
     return (

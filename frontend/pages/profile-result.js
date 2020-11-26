@@ -1,12 +1,16 @@
 import React, { useEffect, useContext, useState, useRef } from 'react'
 import { GlobalState } from '../utils/context'
+import Router from 'next/router'
 import useFetch from 'use-http'
 import { useReactToPrint } from 'react-to-print';
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const ProfileResult = ({ profileId }) => {
-    const { AxiosConfig } = useContext(GlobalState)
+    const { AxiosConfig,Modal, Token, MenuBar } = useContext(GlobalState)
+    const [menuBar, setMenuBar] = MenuBar
+    const [token, setToken] = Token
+    const [showModal, setShowModal] = Modal
     const [axiosConfig] = AxiosConfig
     const [headers, setHeaders] = useState({})
     const { get, loading } = useFetch(`${ENDPOINT}:${PORT}/student`, { ...headers, cachePolicy: "no-cache" })
@@ -125,14 +129,29 @@ const ProfileResult = ({ profileId }) => {
         }
     }
 
-    useEffect(() => {
-        setHeaders({
-            headers: {
-                authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                type: JSON.parse(sessionStorage.getItem("token")).type
-            },
-            cachePolicy: "no-cache",
+    const getHeader = () => {
+        if (sessionStorage.getItem('token'))
+            setHeaders({
+                headers: {
+                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                    type: JSON.parse(sessionStorage.getItem("token")).type
+                },
+                cachePolicy: "no-cache",
         })
+    }
+    const verifyLogin = () => {
+        const session = sessionStorage.getItem("token")
+        if (!session) {
+            sessionStorage.removeItem('token')
+            setToken(null)
+            setShowModal(false)
+            setMenuBar('ลงชื่อเข้าใช้')
+            Router.push('login')
+        }
+    }
+    useEffect(() => {
+        getHeader()
+        verifyLogin()
         getStudents()
     }, [])
 

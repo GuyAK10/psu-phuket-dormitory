@@ -22,9 +22,11 @@ const NavigationBar = () => {
 
     const checkIsStaff = () => {
         const { location: { pathname } } = window
-        const checkAdminPath = (JSON.parse(sessionStorage.getItem('token'))).type == "Staffs" || pathname.includes('/admin/')
-        setAdminPath(checkAdminPath)
-        setStaff(true)
+        if (sessionStorage.getItem('token')) {
+            const checkAdminPath = (JSON.parse(sessionStorage.getItem('token'))).type == "Staffs" || pathname.includes('/admin/')
+            setAdminPath(checkAdminPath)
+            setStaff(checkAdminPath)
+        }    
     }
 
     useEffect(() => {

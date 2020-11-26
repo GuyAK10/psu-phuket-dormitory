@@ -49,7 +49,6 @@ const reserve = () => {
                 }
             })
         }
-        else Logout()
     }
 
     const verifyLogin = () => {

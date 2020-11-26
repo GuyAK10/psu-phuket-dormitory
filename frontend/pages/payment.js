@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect ,useContext } from 'react'
+import { GlobalState } from '../utils/context'
+import Router from 'next/router'
 import useFetch from 'use-http'
 import { message, Skeleton } from 'antd'
 const ENDPOINT = process.env.ENDPOINT
@@ -9,8 +11,11 @@ const Payment = () => {
     const [bill, setBill] = useState({
         message: "ค้นหาเพื่อแสดงผลข้อมูล"
     })
+    const { Modal, Token, MenuBar } = useContext(GlobalState)
+    const [menuBar, setMenuBar] = MenuBar
     const [isLoading, setIsLoading] = useState(false)
-
+    const [token, setToken] = Token
+    const [showModal, setShowModal] = Modal
     const years = () => {
         const fullYear = new Date().getFullYear()
         const years = []
@@ -61,8 +66,20 @@ const Payment = () => {
             })
     }
 
+    const verifyLogin = () => {
+        const session = sessionStorage.getItem("token")
+        if (!session) {
+            sessionStorage.removeItem('token')
+            setToken(null)
+            setShowModal(false)
+            setMenuBar('ลงชื่อเข้าใช้')
+            Router.push('login')
+        }
+    }
+
     useEffect(() => {
         getHeaders()
+        verifyLogin()
     }, [])
 
     return (
