@@ -179,8 +179,11 @@
 }
 
 .psuLogo{
-    /* width: 100px; */
-    height: 150px;
+    height: 100px;
+}
+
+.print-student{
+    font-family: 'Sarabun', sans-serif;
 }
 
 @media print {
