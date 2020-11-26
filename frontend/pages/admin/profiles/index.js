@@ -140,7 +140,6 @@ const profile = () => {
     const getStudent = async () => {
         try {
             const result = await axios.get(`${ENDPOINT}:${PORT}/staff/profile/`, axiosConfig)
-            console.log(result.data)
             setStudents(result.data)
         } catch (e) {
             console.error(e)

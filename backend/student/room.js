@@ -154,13 +154,13 @@ router.get('/student/room/:floorId', async (req, res) => {
             const roomRef = await docRef.get()
             let result = [];
 
-            roomRef.forEach(floors => {
+            roomRef.forEach(roomId => {
                 let floorList = {
-                    floorId: '',
+                    roomId: '',
                 }
 
-                floorList.floorId = floors.id
-                Object.assign(floorList, floors.data())
+                floorList.roomId = roomId.id
+                Object.assign(floorList, roomId.data())
                 result.push(floorList)
 
             })

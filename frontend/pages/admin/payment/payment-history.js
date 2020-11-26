@@ -39,7 +39,6 @@ const PaymentHistory = () => {
         if (data.success) {
             message.success(data.message)
             setPayments(data.data)
-            console.log(data)
         }
         else
             message.error(data.message)

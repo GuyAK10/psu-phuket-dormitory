@@ -18,6 +18,7 @@ const profile = ({ profileId }) => {
     const [current, setCurrent] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
     const [headers, setHeaders] = useState({})
+    const [myId, setMyId] = useState('')
 
     const [form, setForm] = React.useState({
         profile: {
@@ -109,7 +110,7 @@ const profile = ({ profileId }) => {
         }
     })
 
-    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, headers)
+    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
 
     const handleFormprofile = (e) => {
         setForm({
@@ -226,7 +227,6 @@ const profile = ({ profileId }) => {
         try {
             axios.post(`${ENDPOINT}/student/profile/${id}`, form, headers).then(res => {
                 if (res.status === 200) {
-                    console.log("Submit success")
                     success()
                     Router.push('/')
                 }
@@ -279,7 +279,6 @@ const profile = ({ profileId }) => {
         let data = new FormData()
         data.append('img', file)
         const resImg = await post(`/student/profile/upload/${token.id}`, data)
-        console.log(resImg)
         if (resImg.success) {
             setForm({ ...form, profile: { ...form.profile, profileImg: resImg.message } })
         }
@@ -483,6 +482,9 @@ const profile = ({ profileId }) => {
         getHeader()
         getInitialProfile()
         if (!loading) setIsLoading(false)
+        if (sessionStorage.getItem('token')) {
+            setMyId(JSON.parse(sessionStorage.getItem("token")).id)
+        }
     }, [])
 
     if (isLoading) return <Loading />

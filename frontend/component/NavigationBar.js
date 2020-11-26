@@ -20,18 +20,15 @@ const NavigationBar = () => {
 
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
 
-    const checkPathName = () => {
+    const checkIsStaff = () => {
         const { location: { pathname } } = window
-        const checkAdminPath = pathname.includes('/admin/')
+        const checkAdminPath = (JSON.parse(sessionStorage.getItem('token'))).type == "Staffs" || pathname.includes('/admin/')
         setAdminPath(checkAdminPath)
+        setStaff(true)
     }
 
     useEffect(() => {
-        if (sessionStorage.getItem('token')) {
-            if ((sessionStorage.getItem('token')).type == "Staffs") setStaff(true)
-            else setStaff(false)
-        }
-        checkPathName()
+        checkIsStaff()
     }, [])
 
     return (

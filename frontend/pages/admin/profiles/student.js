@@ -9,7 +9,7 @@ const Profile = ({ profileId }) => {
     const { AxiosConfig } = useContext(GlobalState)
     const [axiosConfig] = AxiosConfig
     const [headers, setHeaders] = useState({})
-    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`, headers)
+    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}/staff`, headers)
     const printRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => printRef.current,
@@ -26,7 +26,8 @@ const Profile = ({ profileId }) => {
             birthday: "",
             faculty: "",
             department: "",
-            line: ""
+            line: "",
+            profileImg: ""
         },
         contact: {
             tel: "",
@@ -104,7 +105,7 @@ const Profile = ({ profileId }) => {
 
     const {
         profile:
-        { id, name, surname, nickname, religion, race, nationality, birthday, faculty, department, line },
+        { id, name, surname, nickname, religion, race, nationality, birthday, faculty, department, line, profileImg },
         contact:
         { tel, email, facebook, network, houseno, village, villageno, road, district, subdistrict, province, postalcode },
         information:
@@ -118,7 +119,7 @@ const Profile = ({ profileId }) => {
 
     const getStudents = async () => {
         try {
-            const data = await get(`/staff/profile/`)
+            const data = await get(`profile`)
             filterStudent(data)
         } catch (e) {
             console.error(e)
@@ -179,7 +180,12 @@ const Profile = ({ profileId }) => {
                 <p className="text-center m-4">สำนักงานหอพักนักศึกษาชาย มหาวิทยาลัยสงขลานครินทร์ วิทยาเขตภูเก็ต</p>
 
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
-                <ul className="list-disc">
+                <ul className="list-disc flex flex-col">
+                    {
+                        profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}${profileImg}`} alt="profileImg" />
+                            :
+                            <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
+                    }
                     <div className="m-4">
                         <li>
                             ข้อมูลเบื้องต้นของนักศึกษา

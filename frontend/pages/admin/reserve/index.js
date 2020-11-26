@@ -32,7 +32,6 @@ const reserve = () => {
     const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/staff/room`, { ...header, cachePolicy: "no-cache" })
 
     const Logout = () => {
-        console.log("Logout")
         setToken(null)
         sessionStorage.removeItem('token')
         setShowModal(false)
@@ -196,7 +195,6 @@ const reserve = () => {
 
         const styleStd2 = (room) => {
             if (!room.available) {
-                console.log(room)
                 return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
             }
             else if (room.student2) {
@@ -207,9 +205,8 @@ const reserve = () => {
 
         const setStatusRoom = async (room, status) => {
 
-            const sendStatus = { ...room, floorId: `floor${room.floorId.slice(0, 1)}`, roomId: room.floorId, available: status }
+            const sendStatus = { floorId: `floor${room.floorId.slice(0, 1)}`, roomId: room.floorId, available: status }
             const setStatus = await post("statusRoom", sendStatus)
-            console.log(sendStatus)
             if (setStatus.success) {
                 let tempModelFloor = modalFloor
                 const keepTempModal = tempModelFloor.map(item => {
@@ -220,7 +217,6 @@ const reserve = () => {
                 setModalFloor(keepTempModal)
                 message.success(`ปิดการจองห้อง ${room.floorId} แล้ว`)
             }
-            console.log(setStatus)
             setUpdate(Math.random())
         }
 
@@ -240,7 +236,7 @@ const reserve = () => {
                                             :
                                             <button onClick={() => setStatusRoom(room, true)} className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">เปิดการจองห้องนี้</button>
                                     }
-                                    {room.floorId}
+                                    {room.roomId}
                                     <span className="student1">
                                         <Tooltip title={room.student1 ?
                                             `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/
@@ -317,7 +313,7 @@ const reserve = () => {
                                             :
                                             <button onClick={() => setStatusRoom(room, true)} className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">เปิดการจองห้องนี้</button>
                                     }
-                                    {room.floorId}
+                                    {room.roomId}
                                     <span className="student1">
                                         <Tooltip title={room.student1 ?
                                             `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/

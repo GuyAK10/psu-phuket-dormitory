@@ -75,6 +75,5 @@ const checkCheckStatus = async () => {
         dormStatus.set({ system: true })
     }
 }
-
 createRoomDb()
 checkCheckStatus()
