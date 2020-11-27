@@ -186,6 +186,7 @@ const reserve = () => {
                         return temp
                     } else return temp
                 })
+                console.log(changeStatusReserve)
                 onSelectedRoom()
                 setModalFloor(changeStatusReserve)
                 setMyRoom({ profileData: { ...item }, roomId: item.roomId })
@@ -199,7 +200,7 @@ const reserve = () => {
 
     const removeRoom = async (item, student, isOuterSelect) => {
         try {
-            console.log(student)
+            console.log(item, student, isOuterSelect)
             let body = {}
             if (isOuterSelect !== 'outer')
                 body = {
@@ -209,12 +210,25 @@ const reserve = () => {
                     orderId: student
                 }
             else {
-                const StudentOrder = student.student1 ? "student1" : "student2"
+                console.log(student)
+                const StudentOrder = () => {
+                    const myId = JSON.parse(sessionStorage.getItem('token')).id
+                    if (student.student1) {
+                        if (student.student1.id == myId) {
+                            return "student1"
+                        }
+                    }
+                    if (student.student2) {
+                        if (student.student2.id == myId) {
+                            return "student2"
+                        }
+                    }
+                }
                 body = {
                     floorId: `floor${item[0]}`,
                     roomId: item,
                     studentId: myId,
-                    orderId: StudentOrder
+                    orderId: StudentOrder()
                 }
             }
 
@@ -228,11 +242,10 @@ const reserve = () => {
                 let changeStatusReserve = modalFloor.map(room => {
                     let temp = room
                     if (temp.roomId === item.roomId) {
-                        temp[`${body.student}`] = undefined
+                        temp[`${isOuterSelect == 'outer' ? StudentOrder : student}`] = undefined
                         return temp
                     } else return temp
                 })
-                console.log(changeStatusReserve)
                 setModalFloor(changeStatusReserve)
                 onDeletedRoom()
                 setMyRoom(null)
@@ -422,13 +435,15 @@ const reserve = () => {
             setMyId(id)
         }
         else Logout()
-        
+
     }
 
     const getMyRoom = async () => {
         if (sessionStorage.getItem('token')) {
-            const myRoomGet = await get(`myRoom/${JSON.parse(sessionStorage.getItem('token')).id}`)
+            const myId = JSON.parse(sessionStorage.getItem('token')).id
+            const myRoomGet = await get(`myRoom/${myId}`)
             if (myRoomGet.success) {
+                filterMyid()
                 setMyRoom(myRoomGet.data)
                 setUpdate(Math.random())
             }

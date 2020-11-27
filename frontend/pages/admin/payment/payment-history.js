@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { GlobalState } from '../../../utils/context'
 import Router from 'next/router'
 import useFetch from 'use-http'
 import { message, Skeleton } from 'antd'
