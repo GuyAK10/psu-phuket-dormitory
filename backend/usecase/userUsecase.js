@@ -24,6 +24,11 @@ class UserUsecase {
      
     }
 
+    getLastArray(array = []) {
+        const lastArray = array[array.length - 1]
+        return lastArray
+    }
+    
     getName(dataFromSoup) {
         try {
             let result = dataFromSoup.GetUserDetailsResult.string[1];
@@ -78,10 +83,6 @@ class UserUsecase {
      
     }
 
-    getLastArray(array = []) {
-        const lastArray = array[array.length - 1]
-        return lastArray
-    }
 }
 
 

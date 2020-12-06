@@ -23,7 +23,7 @@ router.post('/staff/room/system', async (req, res) => {
             const { body: { system } } = req
             console.log(system)
             const docRef = await db.collection(`dormitory`).doc(`status`)
-            docRef.update({ system: system })
+            docRef.set({ system: system })
             if ((await docRef.get()).data().system)
                   res.status(200).send({ code: 200, success: true, message: `เปิดระบบการจองแล้ว`, data: (await docRef.get()).data() });
             else

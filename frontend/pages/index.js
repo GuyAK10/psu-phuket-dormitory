@@ -1,7 +1,30 @@
-import React from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import Head from "next/head"
 import Card from '../component/Card'
+import Router from 'next/router'
+import useFetch from 'use-http'
+
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const Index = () => {
+    const [news, setNews] = useState(null)
+    const [newnew, setNew] = useState(null)
+    const { get } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", })
+
+    const newsList = async () => {
+        try {
+            const resNews = await get('/news/listname')
+            setNews(resNews)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        newsList()
+        document.title = "Psu Phuket Dormitory"
+    }, [])
 
     return (
         <div className="min-h-screen flex flex-col items-center">
@@ -30,7 +53,13 @@ const Index = () => {
                     <div className="flex flex-row"><img className="w-5 h-5" src="icon/check.svg" alt="check" /><p>แจ้งผลผ่าน Line</p></div>
                 </Card>
             </div>
+            {news !== null ? news.data.map((item, key) => (
+                <div>
+                    <a href={`http://localhost/news/${item.newsName}`} target="_blank">{item.newsId}</a>
+                </div>
+            )) :""}
         </div>
+
     )
 }
 

@@ -6,15 +6,14 @@ const { newsNotify } = require('../configs/line')
 
 const router = express.Router()
 const bucket = storage.bucket()
-const uploader = multer({
-    storage: storage
-});
+const uploader = multer();
 
-router.post('/staff/new/upload/', uploader.single('pdf'), async (req, res) => {
+router.post('/staff/news/upload/:newName', uploader.single('pdf'), async (req, res) => {
+    console.log(req.body)
     try {
-        const { body: { newName } } = req
+        const { params: { newName } } = req
         const folder = 'news'
-        const fileName = `${newName}`
+        const fileName = req.file.originalname
         const fileUpload = bucket.file(`${folder}/` + fileName);
         const blobStream = fileUpload.createWriteStream({
             metadata: {
@@ -29,7 +28,11 @@ router.post('/staff/new/upload/', uploader.single('pdf'), async (req, res) => {
 
         blobStream.on('finish', async () => {
             await newsNotify(newName)
-            res.status(200).send({ code: 200, success: true, message: `อัพเดทข่าวแล้ว` });;
+            const newsRef =  db.collection("news").doc(`${newName}`)
+            await newsRef.set({
+                newsName:fileName
+            })
+            res.status(200).send({ code: 200, success: true, message: `อัพเดทข่าวแล้ว` });
         });
 
         blobStream.end(req.file.buffer);
@@ -40,7 +43,7 @@ router.post('/staff/new/upload/', uploader.single('pdf'), async (req, res) => {
 
 });
 
-router.get('/staff/new/', (req, res) => {
+router.get('/staff/news/', (req, res) => {
     try {
         const { body: { newName } } = req
         const file = bucket.file(`news/${newName}`);
@@ -54,5 +57,26 @@ router.get('/staff/new/', (req, res) => {
         res.sendStatus(400);
     }
 });
+
+router.get('/staff/news/listname', async (req, res) => {
+    try {
+        const newsRef = db.collection("news");
+        const listName =  await newsRef.get()
+        let newNameset = []
+        listName.forEach(newsName => {
+            let dataList = {
+                newsId: '',
+            }
+
+            dataList.newsId = newsName.id
+            Object.assign(dataList, newsName.data())
+            newNameset.push(dataList)
+
+        })
+        res.status(200).send({ code: 200, success: true, data:newNameset });
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 module.exports = router;

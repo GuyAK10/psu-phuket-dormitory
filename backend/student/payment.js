@@ -106,7 +106,6 @@ router.get('/student/payment/bill/:semester/:year/:month/:studentId', async (req
 
     const { params: { semester, year, month, studentId } } = req
     const { room } = await bookInfomation(studentId)
-
     if (room) {
       const billRef = (await db.doc(`payment/${room}-${month}-${semester}-${year}`).get()).data()
       if (billRef)

@@ -422,7 +422,7 @@ const reserve = () => {
             setMyId(id)
         }
         else Logout()
-        
+
     }
 
     const getMyRoom = async () => {

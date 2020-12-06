@@ -5,6 +5,7 @@ import Loading from '../component/Loading'
 import { message, Steps, Button, } from 'antd';
 import Router from 'next/router';
 import useFetch from 'use-http'
+
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 

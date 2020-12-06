@@ -151,6 +151,7 @@ const Payment = () => {
                                 <th className="px-4 py-2">ปี</th>
                                 <th className="px-4 py-2">ค่าไฟ</th>
                                 <th className="px-4 py-2">ค่าน้ำ</th>
+                                <th className="px-4 py-2">รวม</th>
                                 <th className="px-4 py-2">สถานะ</th>
                             </tr>
                         </thead>
@@ -160,8 +161,9 @@ const Payment = () => {
                                 <td className="border px-4 py-2">{bill.data.semester}</td>
                                 <td className="border px-4 py-2">{bill.data.month}</td>
                                 <td className="border px-4 py-2">{bill.data.year}</td>
-                                <td className="border px-4 py-2">{bill.data.electronic}</td>
+                                <td className="border px-4 py-2">{bill.data.electric}</td>
                                 <td className="border px-4 py-2">{bill.data.water}</td>
+                                <td className="border px-4 py-2">{+bill.data.water+ +bill.data.electric}</td>
                                 <td className="border px-4 py-2">{bill.data.status}</td>
                             </tr>
                         </tbody>
