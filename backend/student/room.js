@@ -194,7 +194,7 @@ router.get('/student/room/myRoom/:studentId', async (req, res) => {
                                 return { roomId: result.id, profileData: result.data() }
                             }
                         }
-                        else if (result.data().student2) {
+                        if (result.data().student2) {
                             if (result.data().student2.id == studentId) {
                                 return { roomId: result.id, profileData: result.data() }
                             }

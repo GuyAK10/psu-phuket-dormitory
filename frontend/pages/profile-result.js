@@ -7,7 +7,7 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const ProfileResult = ({ profileId }) => {
-    const { AxiosConfig,Modal, Token, MenuBar } = useContext(GlobalState)
+    const { AxiosConfig, Modal, Token, MenuBar } = useContext(GlobalState)
     const [menuBar, setMenuBar] = MenuBar
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
@@ -18,112 +18,102 @@ const ProfileResult = ({ profileId }) => {
     const handlePrint = useReactToPrint({
         content: () => printRef.current,
     });
-    const [student, setStudent] = useState({
-        profile: {
-            id: "",
-            name: "",
-            surname: "",
-            nickname: "",
-            religion: "",
-            race: "",
-            nationality: "",
-            birthday: "",
-            faculty: "",
-            department: "",
-            line: ""
-        },
-        contact: {
-            tel: "",
-            network: "",
-            email: "",
-            facebook: "",
-            houseno: "",
-            village: "",
-            villageno: "",
-            road: "",
-            subdistrict: "",
-            district: "",
-            province: "",
-            postalcode: ""
-        },
-        information: {
-            school: "",
-            county: "",
-            gpa: "",
-            plan: "",
-            height: "",
-            weight: "",
-            blood: "",
-            disease: "",
-            drugallergy: ""
-        },
-        friend: {
-            name: "",
-            surname: "",
-            nickname: "",
-            tel: "",
-            faculty: "",
-            department: ""
-        },
-        family: {
-            dad: {
-                name: "",
-                surname: "",
-                age: "",
-                career: "",
-                workplace: "",
-                position: "",
-                income: "",
-                tel: "",
-                network: ""
-            },
-            mom: {
-                name: "",
-                surname: "",
-                age: "",
-                career: "",
-                workplace: "",
-                position: "",
-                income: "",
-                tel: "",
-                network: ""
-            },
-            emergency: {
-                name: "",
-                surname: "",
-                age: "",
-                concerned: "",
-                career: "",
-                tel: "",
-                network: ""
-            },
-            status: ""
-        },
-        other: {
-            talent: "",
-            character: "",
-            position: ""
-        }
-    })
-
-    const {
-        profile:
-        { id, name, surname, nickname, religion, race, nationality, birthday, faculty, department, line, profileImg },
-        contact:
-        { tel, email, facebook, network, houseno, village, villageno, road, district, subdistrict, province, postalcode },
-        information:
-        { school, county, gpa, plan, height, weight, blood, disease, drugallergy },
-        friend,
-        family:
-        { dad, mom, status, emergency },
-        other:
-        { talent, character, position },
-    } = student
+    const [student, setStudent] = useState(null)
+    //({
+    //     profile: {
+    //         id: "",
+    //         name: "",
+    //         surname: "",
+    //         nickname: "",
+    //         religion: "",
+    //         race: "",
+    //         nationality: "",
+    //         birthday: "",
+    //         faculty: "",
+    //         department: "",
+    //         line: ""
+    //     },
+    //     contact: {
+    //         tel: "",
+    //         network: "",
+    //         email: "",
+    //         facebook: "",
+    //         houseno: "",
+    //         village: "",
+    //         villageno: "",
+    //         road: "",
+    //         subdistrict: "",
+    //         district: "",
+    //         province: "",
+    //         postalcode: ""
+    //     },
+    //     information: {
+    //         school: "",
+    //         county: "",
+    //         gpa: "",
+    //         plan: "",
+    //         height: "",
+    //         weight: "",
+    //         blood: "",
+    //         disease: "",
+    //         drugallergy: ""
+    //     },
+    //     friend: {
+    //         name: "",
+    //         surname: "",
+    //         nickname: "",
+    //         tel: "",
+    //         faculty: "",
+    //         department: ""
+    //     },
+    //     family: {
+    //         dad: {
+    //             name: "",
+    //             surname: "",
+    //             age: "",
+    //             career: "",
+    //             workplace: "",
+    //             position: "",
+    //             income: "",
+    //             tel: "",
+    //             network: ""
+    //         },
+    //         mom: {
+    //             name: "",
+    //             surname: "",
+    //             age: "",
+    //             career: "",
+    //             workplace: "",
+    //             position: "",
+    //             income: "",
+    //             tel: "",
+    //             network: ""
+    //         },
+    //         emergency: {
+    //             name: "",
+    //             surname: "",
+    //             age: "",
+    //             concerned: "",
+    //             career: "",
+    //             tel: "",
+    //             network: ""
+    //         },
+    //         status: ""
+    //     },
+    //     other: {
+    //         talent: "",
+    //         character: "",
+    //         position: ""
+    //     }
+    // })
 
     const getStudents = async () => {
         try {
-            const data = await get(`profile/${profileId}`)
-            setStudent(data)
+            if (!profileId) Router.push("login")
+            else {
+                const data = await get(`profile/${profileId}`)
+                setStudent(data)
+            }
         } catch (e) {
             console.error(e)
         }
@@ -137,7 +127,7 @@ const ProfileResult = ({ profileId }) => {
                     type: JSON.parse(sessionStorage.getItem("token")).type
                 },
                 cachePolicy: "no-cache",
-        })
+            })
     }
     const verifyLogin = () => {
         const session = sessionStorage.getItem("token")
@@ -178,7 +168,7 @@ const ProfileResult = ({ profileId }) => {
         </table>
     }
 
-    if (!loading) return (
+    if (student) return (
         <div className="container flex flex-col">
             <button
                 className="w-32 m-5 self-center bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded self-start"
@@ -195,7 +185,7 @@ const ProfileResult = ({ profileId }) => {
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
                 <ul className="list-disc flex flex-col">
                     {
-                        profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}${profileImg}`} alt="profileImg" />
+                        student.profile.profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}${student.profile.profileImg}`} alt="profileImg" />
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }
@@ -204,7 +194,7 @@ const ProfileResult = ({ profileId }) => {
                             ข้อมูลเบื้องต้นของนักศึกษา
                     </li>
                         <p>
-                            {`ชื่อ-สกุล ${name} ${surname} ชื่อเล่น ${nickname} ศาสนา ${religion} เชื้อชาติ ${race} สัญชาติ ${nationality} วัน/เดือน/ปีเกิด ${birthday} คณะ ${faculty} สาขา/ภาควิชา ${department} Line ID ${line} เบอร์โทรศัพท์ ${tel} อีเมล์ ${email}`}
+                            {`ชื่อ-สกุล ${student.profile.name} ${student.profile.surname} ชื่อเล่น ${student.profile.nickname} ศาสนา ${student.profile.religion} เชื้อชาติ ${student.profile.race} สัญชาติ ${student.profile.nationality} วัน/เดือน/ปีเกิด ${student.profile.birthday} คณะ ${student.profile.faculty} สาขา/ภาควิชา ${student.profile.department} Line ID ${student.profile.line} เบอร์โทรศัพท์ ${student.profile.tel} อีเมล์ ${student.profile.email}`}
                         </p>
                     </div>
                     <div className="m-4">
@@ -212,14 +202,14 @@ const ProfileResult = ({ profileId }) => {
                             ข้อมูลติดต่อ
                     </li>
                         <p>
-                            {`เบอร์โทร ${tel} อีเมล์ ${email} ชื่อ facebook ${facebook} ที่อยู่ ${network} บ้านเลขที่ ${houseno} หมู่บ้าน ${village} หมู่ที่ ${villageno} ถนน ${road} ตำบล ${district} อำเภอ ${subdistrict} จังหวัด ${province} รหัสไปรษณีย์ ${postalcode}`}
+                            {`เบอร์โทร ${student.contact.tel} อีเมล์ ${student.contact.email} ชื่อ facebook ${student.contact.facebook} ที่อยู่ ${student.contact.network} บ้านเลขที่ ${student.contact.houseno} หมู่บ้าน ${student.contact.village} หมู่ที่ ${student.contact.villageno} ถนน ${student.contact.road} ตำบล ${student.contact.district} อำเภอ ${student.contact.subdistrict} จังหวัด ${student.contact.province} รหัสไปรษณีย์ ${student.contact.postalcode}`}
                         </p>
                     </div>
                     <div className="m-4">
                         <li>
                             ข้อมูลการศึกษา
                     </li>
-                        <p>{`จบจากโรงเรียน ${school} จังหวัด ${county} เกรดเฉลี่ย ${gpa} แผนการศึกษา ${plan} ส่วนสูง(ซ.ม.) ${height}  น้ำหนัก(ก.ก.) ${weight} กรุ๊บเลือด ${blood} โรคประจำตัว ${disease} แพ้ยา ${drugallergy}          
+                        <p>{`จบจากโรงเรียน ${student.information.school} จังหวัด ${student.information.county} เกรดเฉลี่ย ${student.information.gpa} แผนการศึกษา ${student.information.plan} ส่วนสูง(ซ.ม.) ${student.information.height}  น้ำหนัก(ก.ก.) ${student.information.weight} กรุ๊บเลือด ${student.information.blood} โรคประจำตัว ${student.information.disease} แพ้ยา ${student.information.drugallergy}          
                     `}
                         </p>
                     </div>
@@ -228,7 +218,7 @@ const ProfileResult = ({ profileId }) => {
                             เพื่อนสนิท
                     </li>
                         <p>
-                            {` ชื่อจริง ${friend.name} นามสกุล ${friend.surname} ชื่อเล่น ${friend.nickname} เบอร์โทร ${friend.tel} คณะ ${friend.faculty} สาขา/ภาควิชา ${friend.department}
+                            {` ชื่อจริง ${student.friend.name} นามสกุล ${student.friend.surname} ชื่อเล่น ${student.friend.nickname} เบอร์โทร ${student.friend.tel} คณะ ${student.friend.faculty} สาขา/ภาควิชา ${student.friend.department}
                         `}
                         </p>
                     </div>
@@ -237,16 +227,16 @@ const ProfileResult = ({ profileId }) => {
                             เกี่ยวกับครอบครัว
                     </li>
                         <p>
-                            {`ชื่อจริงบิดา ${dad.name} นามสกุล ${dad.surname} อายุ ${dad.age} สถานที่ทำงาน ${dad.workplace} ตำแหน่ง ${dad.position} สถานที่ ${dad.network} รายได้/เดือน ${dad.income} เบอร์โทร ${dad.tel} ชื่อระบบเครือข่ายโทรศัพท์ ${dad.tel}`}
+                            {`ชื่อจริงบิดา ${student.family.dad.name} นามสกุล ${student.family.dad.surname} อายุ ${student.family.dad.age} สถานที่ทำงาน ${student.family.dad.workplace} ตำแหน่ง ${student.family.dad.position} สถานที่ ${student.family.dad.network} รายได้/เดือน ${student.family.dad.income} เบอร์โทร ${student.family.dad.tel} ชื่อระบบเครือข่ายโทรศัพท์ ${student.family.dad.tel}`}
                         </p>
                         <p>
-                            {`ชื่อจริงมารดา ${mom.name} นามสกุล ${mom.surname} อายุ ${mom.age} สถานที่ทำงาน ${mom.workplace} ตำแหน่ง ${mom.position} สถานที่ ${mom.network} รายได้/เดือน ${mom.income} เบอร์โทร ${mom.tel} ชื่อระบบเครือข่ายโทรศัพท์ ${mom.tel}`}
+                            {`ชื่อจริงมารดา ${student.family.mom.name} นามสกุล ${student.family.mom.surname} อายุ ${student.family.mom.age} สถานที่ทำงาน ${student.family.mom.workplace} ตำแหน่ง ${student.family.mom.position} สถานที่ ${student.family.mom.network} รายได้/เดือน ${student.family.mom.income} เบอร์โทร ${student.family.mom.tel} ชื่อระบบเครือข่ายโทรศัพท์ ${student.family.mom.tel}`}
                         </p>
                         <p>
-                            {`มีความเกี่ยวข้องเป็น  ${status}`}
+                            {`มีความเกี่ยวข้องเป็น  ${student.family.status}`}
                         </p>
                         <p>
-                            {`ติดต่อฉุกเฉินชื่อจริง${emergency.name} สกุล${emergency.surname} อายุ${emergency.age} มีความเกี่ยวข้องเป็น${emergency.concerned} อาชีพ${emergency.career} เบอร์โทร${emergency.tel} ระบบเครือข่ายโทรศัพท์${emergency.network}`}
+                            {`ติดต่อฉุกเฉินชื่อจริง ${student.family.emergency.name} สกุล ${student.family.emergency.surname} อายุ ${student.family.emergency.age} มีความเกี่ยวข้องเป็น ${student.family.emergency.concerned} อาชีพ ${student.family.emergency.career} เบอร์โทร ${student.family.emergency.tel} ระบบเครือข่ายโทรศัพท์ ${student.family.emergency.network}`}
                         </p>
                     </div>
                     <div className="m-4">
@@ -254,7 +244,7 @@ const ProfileResult = ({ profileId }) => {
                             อื่น ๆ
                     </li>
                         <p>
-                            {`ความสามารถพิเศษ ${talent} อุปนิสัยส่วนตัว ${character} เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน ${position}`}
+                            {`ความสามารถพิเศษ ${student.other.talent} อุปนิสัยส่วนตัว ${student.other.character} เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน ${student.other.position}`}
                         </p>
                     </div>
                 </ul>
