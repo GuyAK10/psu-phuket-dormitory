@@ -443,7 +443,7 @@ const reserve = () => {
             const myId = JSON.parse(sessionStorage.getItem('token')).id
             const myRoomGet = await get(`myRoom/${myId}`)
             if (myRoomGet.success) {
-                filterMyid()
+                // filterMyid()
                 setMyRoom(myRoomGet.data)
                 setUpdate(Math.random())
             }

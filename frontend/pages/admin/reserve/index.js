@@ -203,18 +203,18 @@ const reserve = () => {
         }
 
         const setStatusRoom = async (room, status) => {
-
-            const sendStatus = { floorId: `floor${room.floorId.slice(0, 1)}`, roomId: room.floorId, available: status }
+            console.log(room)
+            const sendStatus = { floorId: `floor${room.roomId.slice(0, 1)}`, roomId: room.roomId, available: status }
             const setStatus = await post("statusRoom", sendStatus)
             if (setStatus.success) {
                 let tempModelFloor = modalFloor
                 const keepTempModal = tempModelFloor.map(item => {
-                    if (item.floorId === room.floorId)
+                    if (item.roomId === room.roomId)
                         return { ...item, available: status }
                     else return item
                 })
                 setModalFloor(keepTempModal)
-                message.success(`ปิดการจองห้อง ${room.floorId} แล้ว`)
+                message.success(`ปิดการจองห้อง ${room.roomId} แล้ว`)
             }
             setUpdate(Math.random())
         }
@@ -336,7 +336,7 @@ const reserve = () => {
                                             `${room.student2.id ? room.student2.id : "ไม่ได้กรอกข้อมูล"}\n/
                                             ${room.student2.name ? room.student2.name : "ไม่ได้กรอกข้อมูล"}\n/
                                             ${room.student2.surname ? room.student2.surname : "ไม่ได้กรอกข้อมูล"}\n/
-                                            ${room.student2.nickname ? room.studen2.nickname : "ไม่ได้กรอกข้อมูล"}\n/
+                                            ${room.student2.nickname ? room.student2.nickname : "ไม่ได้กรอกข้อมูล"}\n/
                                             ${room.student2.tel ? room.student2.tel : "ไม่ได้กรอกข้อมูล"}`
                                             : null}
                                         >

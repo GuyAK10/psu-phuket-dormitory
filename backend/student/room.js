@@ -112,9 +112,7 @@ router.get('/student/room/system', async (req, res) => {
 router.post('/student/room', async (req, res) => {
     try {
         const { body: { floorId, roomId, studentId, orderId } } = req
-
         const profileRef = db.collection('students').doc(`${studentId}`)
-
         const studentRef = await profileRef.get()
         if (!studentRef.exists) {
             res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใช้ก่อน" })
