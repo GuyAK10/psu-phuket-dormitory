@@ -4,50 +4,58 @@ const router = express.Router()
 const { firestore } = admin
 const FieldValue = firestore.FieldValue
 
-const bookInfomation = async (profileData, checkCase) => {
+const myRoom = async(studentId) => {
     try {
-        const floors = [
-            "floorA",
-            "floorB",
-            "floorC",
-            "floorD",
-            "floorE",
-            "floorF",
-            "floorG",
-            "floorH"
-        ]
-
         const orderId = [
             "student1",
             "student2"
         ]
-
         let booked = false;
+        const dormitory = db.collection("dormitory")
+        const status = await dormitory.doc("status").get()
+        const semester = status.data().semester
+        const year = status.data().year
+        for (i in orderId) {
+            var student = orderId[i]
+            const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where(`${student}.id`, "==", studentId).get()
+            if (!reserveRef.empty) {
+                reserveRef.forEach((room)=>{
+                    const roomData = {
+                        docID: '',
 
-        for (var a in floors) {
-            var b = floors[a];
-            const roomRef = db.collection(b)
-            for (c in orderId) {
-                var d = orderId[c]
-                const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
+                    }
+                    roomData.docID = room.id
+                    Object.assign(roomData, room.data())
+                    booked = roomData
+                     return booked
+                })
+            }
+        }
+        return booked
+    }
+    catch (error) {
+        console.log(error)
+        throw error
+    }
+}
 
-                if (!result.empty && checkCase === "reserve") {
-                    booked = true
-                    return booked
-                }
-                else if (!result.empty && checkCase === "myroom") {
-                    result.forEach((room) => {
-                        const roomData = {
-                            roomId: '',
-
-                        }
-                        roomData.roomId = room.id
-                        Object.assign(roomData, room.data())
-                        booked = roomData
-                        return booked
-                    })
-
-                }
+const reserveInfomation = async (profileData) => {
+    try {
+        const orderId = [
+            "student1",
+            "student2"
+        ]
+        let booked = false;
+        const dormitory = db.collection("dormitory")
+        const status = await dormitory.doc("status").get()
+        const semester = status.data().semester
+        const year = status.data().year
+        for (i in orderId) {
+            var student = orderId[i]
+            const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where(`${student}.id`, "==", profileData.profile.id).get()
+            if (!reserveRef.empty) {
+                booked = true
+                return booked
             }
         }
         return booked
@@ -60,17 +68,34 @@ const bookInfomation = async (profileData, checkCase) => {
 
 const bookingRoom = async (bookRoom, floorId, roomId, orderId, res) => {
     try {
-        const bookRef = db.collection(floorId).doc(roomId)
-        if (!(await bookRef.get()).data().available) {
+        const dormitory = db.collection('dormitory')
+        const status = await dormitory.doc('status').get()
+        const semester = status.data().semester
+        const year = status.data().year
+        const bookRef = dormitory.doc(`${year}-${semester}-${roomId}`)
+        const available = (await bookRef.get()).data().available
+        if (!available) {
             res.status(200).send({ code: 200, success: false, message: "ไม่สามารถจองห้องได้เนื่องจากห้องนี้ปิดการจองโดยเจ้าหน้าที่" });
         }
         else if (!bookRef.exists && orderId == "student1") {
-            bookRef.update({ student1: bookRoom }, { merge: true })
+            bookRef.set({
+                floor: floorId,
+                room: roomId,
+                semester: semester,
+                year: year,
+                student1: bookRoom
+            }, { merge: true })
             console.log("booking student1 success")
             res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else if (!bookRef.exists && orderId == "student2") {
-            bookRef.set({ student2: bookRoom }, { merge: true })
+            bookRef.set({
+                floor: floorId,
+                room: roomId,
+                semester: semester,
+                year: year,
+                student2: bookRoom
+            }, { merge: true })
             console.log("booking student2 success")
             res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
@@ -80,7 +105,7 @@ const bookingRoom = async (bookRoom, floorId, roomId, orderId, res) => {
             res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else if (bookRef.exists && orderId == "student2") {
-            bookRef.update({ student1: bookRoom })
+            bookRef.update({ student2: bookRoom })
             console.log("booking student2 success")
             res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
@@ -93,21 +118,6 @@ const bookingRoom = async (bookRoom, floorId, roomId, orderId, res) => {
         throw error
     }
 }
-
-router.get('/student/room/system', async (req, res) => {
-    try {
-        const docRef = await db.doc(`dormitory/status`).get()
-        if (docRef.exists) {
-            if (docRef.data())
-                res.status(200).send({ code: 200, success: true, message: `ระบบเปิดการจอง`, data: docRef.data() });
-            else
-                res.status(200).send({ code: 200, success: true, message: `ระบบไม่เปิดการจอง`, data: docRef.data() });
-        }
-    } catch (error) {
-        console.log(error)
-        res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
-    }
-});
 
 router.post('/student/room', async (req, res) => {
     try {
@@ -126,8 +136,7 @@ router.post('/student/room', async (req, res) => {
                 nickname: profileData.profile.nickname,
                 tel: profileData.contact.tel
             }
-            const checkCase = "reserve"
-            const isBooked = await bookInfomation(profileData, checkCase)
+            const isBooked = await reserveInfomation(profileData)
             if (isBooked) {
                 res.status(200).send({ code: 200, success: false, message: "ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง" })
             } else if (!isBooked) {
@@ -140,35 +149,34 @@ router.post('/student/room', async (req, res) => {
     }
 })
 
+router.get('/student/room/system', async (req, res) => {
+    try {
+        const docRef = await db.doc(`dormitory/status`).get()
+        if (docRef.exists) {
+            if (docRef.data() )
+                res.status(200).send({ code: 200, success: true, message: `ระบบเปิดการจอง`, data: docRef.data() });
+            else
+                res.status(200).send({ code: 200, success: true, message: `ระบบไม่เปิดการจอง`, data: docRef.data() });
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(200).send({ code: 200, success: false, message: `เกิดปัญหาในการปิดการจองห้องโปรดติดต่อผู้ดูแลระบบ` });
+    }
+});
+
 router.get('/student/room/:floorId', async (req, res) => {
     try {
-        const floorId = req.params.floorId
-        const checkRef = db.collection('dormitory').doc('status');
-        const checkStatus = await checkRef.get()
-        const check = Object.values(checkStatus.data())
-        const checkDormitory = check[0]
-        if (checkDormitory) {
-            const docRef = db.collection(`${floorId}`);
-            const roomRef = await docRef.get()
-            let result = [];
-
-            roomRef.forEach(roomId => {
-                let floorList = {
-                    roomId: '',
-                }
-
-                floorList.roomId = roomId.id
-                Object.assign(floorList, roomId.data())
-                result.push(floorList)
-
-            })
-            res.status(200).send({
-                ...result,
-            });
-        } else {
-            console.log("ระบบยังไม่เปิดจอง")
-            res.status(200).send("ระบบยังไม่เปิดจอง");;
-        }
+        const { params: { floorId } } = req
+        const dormitory = db.collection('dormitory')
+        const status = await dormitory.doc('status').get()
+        const semester = status.data().semester
+        const year = status.data().year
+        const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where("floor", "==", floorId).get()
+        let floorInformation = []
+        reserveRef.forEach(async(floor)=>{
+            floorInformation.push(floor.data())
+        })
+        res.status(200).send(floorInformation);
     } catch (error) {
         console.error(error)
         res.sendStatus(400);
@@ -179,75 +187,36 @@ router.get('/student/room/myRoom/:studentId', async (req, res) => {
     try {
 
         const { params: { studentId } } = req
-        const floor = ['floorA', 'floorB', 'floorC', 'floorD', 'floorE', 'floorF', 'floorG', 'floorH']
-
-        const [findStudent] = await Promise.all(
-            floor.map(async item => {
-                const roomRef = await db.collection(item).listDocuments()
-                const student = await Promise.all(
-                    roomRef.map(async data => {
-                        const result = await data.get()
-                        if (result.data().student1) {
-                            if (result.data().student1.id == studentId) {
-                                return { roomId: result.id, profileData: result.data() }
-                            }
-                        }
-                        if (result.data().student2) {
-                            if (result.data().student2.id == studentId) {
-                                return { roomId: result.id, profileData: result.data() }
-                            }
-                        }
-                    })
-                )
-                if (student) return student
-            })
-        )
-        const [student] = findStudent.filter(notUndefined => notUndefined !== undefined)
-
-        if (student) res.status(200).send({ code: 200, success: true, message: "พบข้อมูลการจองห้อง", data: student })
-        else res.status(200).send({ code: 200, success: false, message: "ไม่พบข้อมูลการจองห้อง" })
-
-    } catch (e) {
-        console.error(e)
+        const roomInformation = await myRoom(studentId)
+        if (roomInformation == false) {
+            res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
+        } else {
+            res.send(roomInformation);
+        }
+    } catch (error) {
+        console.error(error)
     }
 })
 
-router.get('/student/room/', async (req, res) => {
-    try {
-        const profileData = {
-            profile: {
-                id: req.body.studentId
-            }
-        }
-        const checkCase = "myroom"
-        const room = await bookInfomation(profileData, checkCase)
-        if (room == false) {
-            res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
-        } else {
-            res.send(room);
-        }
-
-    } catch (error) {
-        console.error(error)
-        res.sendStatus(400);
-    }
-});
 
 router.post('/student/room/remove', async (req, res) => {
     try {
-        const { body: { floorId, roomId, studentId, orderId } } = req
-        const profileRef = db.doc(`${floorId}/${roomId}`);
-        await profileRef.get().then(async data => {
-            if (data.data()[orderId].id === studentId) {
-                await profileRef.update({ [orderId]: FieldValue.delete() })
-                console.log("deleted")
-                res.status(200).send({ code: 200, success: true, message: "deleted" })
-            }
-            else {
-                console.log("ไม่สามารถยกเลิกการจองของผู้อื่นได้")
-                res.status(200).send({ code: 200, success: false, message: "ไม่สามารถยกเลิกการจองของผู้อื่นได้" })
-            }
-        })
+        const { body: { roomId, studentId, orderId } } = req
+        const dormotory = db.collection('dormitory')
+        const status = await dormotory.doc('status').get()
+        const semester = status.data().semester
+        const year = status.data().year
+        const reserveRef = db.doc(`dormitory/${year}-${semester}-${roomId}`)
+        const profileRef = await reserveRef.get()
+        if (profileRef.data()[orderId].id === studentId) {
+            await reserveRef.update({ [orderId]: FieldValue.delete() })
+            console.log("deleted")
+            res.status(200).send({ code: 200, success: true, message: "deleted" })
+        }
+        else {
+            console.log("ไม่สามารถยกเลิกการจองของผู้อื่นได้")
+            res.status(200).send({ code: 200, success: false, message: "ไม่สามารถยกเลิกการจองของผู้อื่นได้" })
+        }
     } catch (error) {
         console.log(error)
         res.status(200).send({ code: 200, success: false, message: "ผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })

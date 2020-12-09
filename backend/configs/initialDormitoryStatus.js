@@ -58,22 +58,29 @@ const floors = [
     }
 ]
 
-const createRoomDb = async () => floors.map(async floorId => {
-    const checkFloors = await db.collection(floorId.floor.name).get()
-    if (checkFloors.empty) {
-        floorId.floor.room.map(async roomName => {
-            const addFloor = await db.collection(`${floorId.floor.name}`).doc(`${roomName}`)
-            addFloor.set({ available: true })
-                .then(result => console.log(`add new ${floorId.floor.name} and room ${roomName}`))
+const createRoomDb = async (year,semester) => {
+    try {
+        floors.map(async(floorId)=>{
+            const floorName = floorId.floor.name
+            floorId.floor.room.map(async(roomId)=>{
+                const roomRef = db.collection("dormitory").doc(`${year}-${semester}-${roomId}`)
+                const roomDocument = await roomRef.get()
+                if (!roomDocument.exists) {
+                    roomRef.set({
+                        floor:floorName,
+                        room:roomId,
+                        year:year,
+                        semester:semester,
+                        available:true
+                    })
+                }
+            })
+            
         })
-    }
-})
-
-const checkCheckStatus = async () => {
-    const dormStatus = await db.doc(`dormitory/status`)
-    if (!(await dormStatus.get()).exists) {
-        dormStatus.set({ system: true })
+    } catch (error) {
+        throw error
     }
 }
-createRoomDb()
-checkCheckStatus()
+
+module.exports = createRoomDb;
+

@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const PORT = process.env.PORT || 80
-const test = require('./configs/initialFirestoreCollection')
+
 require('dotenv').config()
 
 const { verifyHeader } = require("./configs/jwt");
