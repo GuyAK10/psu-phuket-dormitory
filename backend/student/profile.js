@@ -11,6 +11,34 @@ const uploader = multer({
   }
 });
 
+const historyReserve = async (studentId) => {
+  try {
+    const orderId = [
+      "student1",
+      "student2"
+    ]
+    let historyList = []
+    let booked = false;
+    const dormitory = db.collection("dormitory")
+    const status = await dormitory.doc("status").get()
+    const year = status.data().year
+    for (i in orderId) {
+      var student = orderId[i]
+      const reserveRef = await dormitory.where("year", "==", year).where(`${student}.id`, "==", studentId).get()
+      if (!reserveRef.empty) {
+        reserveRef.forEach(async (room) => {
+          historyList.push(room.id)
+          booked = historyList
+          return booked
+        })
+      }
+    }
+    return booked
+  } catch (error) {
+    throw error
+  }
+}
+
 router.post('/student/profile/upload/:studentId', uploader.single('img'), async (req, res) => {
   try {
     const id = req.params.studentId
@@ -60,11 +88,17 @@ router.get('/student/profile/picture/:studentId', (req, res) => {
 
 router.get('/student/profile/:studentId', async (req, res) => {
   try {
-
     const studentId = req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
-    const profile = await docRef.get();
-    res.status(200).send(profile.data());
+    const profileRef = await docRef.get();
+    const myProfile = profileRef.data()
+    const historyRoom = await historyReserve(studentId)
+    if (historyRoom == false) {
+      res.status(200).send(myProfile);
+    } else {
+      const result = Object.assign(myProfile, { historyRoom: historyRoom })
+      res.status(200).send(result);
+    }
   }
   catch (error) {
     console.log(error)
