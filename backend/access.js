@@ -70,6 +70,7 @@ router.post('/', (req, res) => {
         res.status(400).send(error);
     }
 })
+
 router.post('/test', (req, res) => {
     let listFloor = ["A", "B", "C", "D", "E", "F", "G", "H"]
     listFloor.forEach(async (floor) => {
