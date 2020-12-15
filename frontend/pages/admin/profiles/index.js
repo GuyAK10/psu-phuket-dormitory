@@ -6,7 +6,9 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const profile = () => {
-    const { AxiosConfig, Token, Students } = useContext(GlobalState)
+    const { AxiosConfig, Token, Students,Modal,MenuBar} = useContext(GlobalState)
+    const [showModal, setShowModal] = Modal
+    const [menuBar, setMenuBar] = MenuBar
     const [students, setStudents] = Students
     const [axiosConfig, setAxiosConfig] = AxiosConfig
     const [_token, setToken] = Token
@@ -104,7 +106,7 @@ const profile = () => {
         sessionStorage.removeItem('token')
         setShowModal(false)
         setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('login')
+        Router.push('../../login')
     }
 
     const getHeader = () => {
@@ -117,7 +119,6 @@ const profile = () => {
                 }
             })
         }
-        else Logout()
     }
 
     const verifyLogin = () => {
@@ -140,7 +141,6 @@ const profile = () => {
     const getStudent = async () => {
         try {
             const result = await axios.get(`${ENDPOINT}:${PORT}/staff/profile/`, axiosConfig)
-            console.log(result.data)
             setStudents(result.data)
         } catch (e) {
             console.error(e)

@@ -1,22 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import axios from 'axios'
+import Loading from '../component/Loading'
 import { message, Steps, Button, } from 'antd';
 import Router from 'next/router';
 import useFetch from 'use-http'
+import { useForm } from "react-hook-form";
+
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const { Step } = Steps;
 
 const profile = () => {
-    const { AxiosConfig, Token } = React.useContext(GlobalState)
-    const [axiosConfig, setAxiosConfig] = AxiosConfig
+    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
     const [_token, setToken] = Token
+    const [showModal, setShowModal] = Modal
+    const [menuBar, setMenuBar] = MenuBar
     const [current, setCurrent] = useState(0)
-    const [img, setImg] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [headers, setHeaders] = useState({})
+    const [myId, setMyId] = useState('')
+    const [blur, setBlur] = useState([])
+    const { register, handleSubmit, errors, getValues } = useForm();
+
     const [form, setForm] = React.useState({
         profile: {
+            profileImg: "",
             id: "",
             name: "",
             surname: "",
@@ -42,7 +52,6 @@ const profile = () => {
             district: "",
             province: "",
             postalcode: ""
-
         },
         information: {
             school: "",
@@ -56,159 +65,142 @@ const profile = () => {
             drugallergy: ""
         },
         friend: {
-            name: "",
-            surname: "",
-            nickname: "",
-            tel: "",
-            faculty: "",
-            department: ""
+            friendName: "",
+            friendSurname: "",
+            friendNickname: "",
+            friendTel: "",
+            friendFaculty: "",
+            friendDepartment: ""
         },
         family: {
             dad: {
-                name: "",
-                surname: "",
-                age: "",
-                career: "",
-                workplace: "",
-                position: "",
-                income: "",
-                tel: "",
-                network: ""
+                dadName: "",
+                dadSurname: "",
+                dadAge: "",
+                dadCareer: "",
+                dadWorkplace: "",
+                dadPosition: "",
+                dadIncome: "",
+                dadTel: "",
+                dadNetwork: ""
             },
             mom: {
-                name: "",
-                surname: "",
-                age: "",
-                career: "",
-                workplace: "",
-                position: "",
-                income: "",
-                tel: "",
-                network: ""
+                momName: "",
+                momSurname: "",
+                momAge: "",
+                momCareer: "",
+                momWorkplace: "",
+                momPosition: "",
+                momIncome: "",
+                momTel: "",
+                momNetwork: ""
             },
             emergency: {
-                name: "",
-                surname: "",
-                age: "",
-                concerned: "",
-                career: "",
-                tel: "",
-                network: ""
+                emergencyName: "",
+                emergencySurname: "",
+                emergencyAge: "",
+                emergencyConcerned: "",
+                emergencyCareer: "",
+                emergencyTel: "",
+                emergencyNetwork: ""
             },
             status: ""
         },
         other: {
-            talent: "",
-            character: "",
-            position: ""
-        }
+            otherTalent: "",
+            otherCharacter: "",
+            otherPosition: ""
+        },
+        agreement: false
     })
 
-    const { get, post, response } = useFetch(`${ENDPOINT}:${PORT}/student/profile`, axiosConfig)
+    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
 
-    const handleFormprofile = (e) => {
+    const handleFormProfile = (val) => {
+        setCurrent(prev => prev + 1)
         setForm({
             ...form,
-            profile: {
-                ...form.profile,
-                [e.target.name]: e.target.value
-            }
+            profile: val
         })
     }
 
-    const handleFormContact = (e) => {
+    const handleFormContact = (val) => {
+        setCurrent(prev => prev + 1)
         setForm({
             ...form,
-            contact: {
-                ...form.contact,
-                [e.target.name]: e.target.value
-            }
+            contact: val
         })
     }
 
-    const handleFormInformation = (e) => {
+    const handleFormInformation = (val) => {
+        setCurrent(prev => prev + 1)
         setForm({
             ...form,
-            information: {
-                ...form.information,
-                [e.target.name]: e.target.value
-            }
+            information: val
         })
     }
 
-    const handleFormFriend = (e) => {
+    const handleFormFriend = (val) => {
+        setCurrent(prev => prev + 1)
         setForm({
             ...form,
-            friend: {
-                ...form.friend,
-                [e.target.name]: e.target.value
-            }
+            friend: val
         })
     }
 
     const handleFormFamily = {
-        dad: (e) => {
+        dad: (val) => {
+            setCurrent(prev => prev + 1)
             setForm({
                 ...form,
                 family: {
                     ...form.family,
-                    dad: {
-                        ...form.family.dad,
-                        [e.target.name]: e.target.value
-                    }
+                    dad: val
                 }
             })
         },
-        mom: (e) => {
+        mom: (val) => {
+            setCurrent(prev => prev + 1)
             setForm({
                 ...form,
                 family: {
                     ...form.family,
-                    mom: {
-                        ...form.family.mom,
-                        [e.target.name]: e.target.value
-                    }
+                    mom: val
                 }
             })
         },
-        emergency: (e) => {
+        emergency: (val) => {
+            setCurrent(prev => prev + 1)
             setForm({
                 ...form,
                 family: {
                     ...form.family,
-                    emergency: {
-                        ...form.family.emergency,
-                        [e.target.name]: e.target.value
-                    }
+                    emergency: val
                 }
             })
         },
-        status: (e) => {
+        status: (val) => {
+            setCurrent(prev => prev + 1)
             setForm({
                 ...form,
                 family: {
                     ...form.family,
-                    status: {
-                        ...form.family.status,
-                        [e.target.name]: e.target.value
-                    }
+                    status: val
                 }
             })
         }
     }
 
-    const handleFormOther = (e) => {
+    const handleFormOther = (val) => {
+        setCurrent(prev => prev + 1)
         setForm({
             ...form,
-            other: {
-                ...form.other,
-                [e.target.name]: e.target.value
-            }
+            other: val
         })
     }
 
-    const handleSubmit = (e) => {
-        const { id } = JSON.parse(sessionStorage.getItem('token')) || token
+    const postData = (e) => {
+        const { id } = JSON.parse(sessionStorage.getItem('token'))
 
         const success = () => {
             message.success('บันทึกข้อมูลเรียบร้อยแล้ว');
@@ -219,9 +211,8 @@ const profile = () => {
         };
 
         try {
-            axios.post(`${ENDPOINT}/student/profile/${id}`, form, axiosConfig).then(res => {
+            axios.post(`${ENDPOINT}/student/profile/${id}`, form, headers).then(res => {
                 if (res.status === 200) {
-                    console.log("Submit success")
                     success()
                     Router.push('/')
                 }
@@ -243,19 +234,6 @@ const profile = () => {
         Router.push('login')
     }
 
-    const getHeader = () => {
-        if (sessionStorage.getItem('token')) {
-            setToken(JSON.parse(sessionStorage.getItem('token')))
-            setAxiosConfig({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem('token')).type
-                }
-            })
-        }
-        else Logout()
-    }
-
     const verifyLogin = () => {
         const session = sessionStorage.getItem("token")
         if (!session) {
@@ -271,9 +249,8 @@ const profile = () => {
         try {
             if (sessionStorage.getItem('token')) {
                 const token = await JSON.parse(sessionStorage.getItem('token'))
-                const studentProfile = await get(`/${token.id}`)
-                if (studentProfile) {
-                    console.log(studentProfile)
+                const studentProfile = await get(`/student/profile/${token.id}`)
+                if (response.ok) {
                     setForm(studentProfile)
                 }
             }
@@ -283,193 +260,586 @@ const profile = () => {
         }
     }
 
-    useEffect(() => {
-        verifyLogin()
-        getHeader()
-        getInitialProfile()
-    }, [])
+    const handleFile = async (file) => {
+        const token = JSON.parse(sessionStorage.getItem('token'))
+        let data = new FormData()
+        data.append('img', file)
+        const resImg = await post(`/student/profile/upload/${token.id}`, data)
+        if (resImg.success) {
+            setForm({ ...form, profile: { ...form.profile, profileImg: resImg.message } })
+        }
+    }
 
     const steps = [
         {
             title: 'ข้อมูลเบื้องต้น',
-            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormProfile)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเบื้องต้น</h2>
 
                 <label>รูปภาพ</label>
-                <button onClick={() => console.log(img)}>file</button>
-                <input type="file" onChange={e => {
-                    setImg(e.target.files[0])
-                }} />
+
+                {form.profile.profileImg ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}${form.profile.profileImg}`} alt="profileImg" />
+                    :
+                    <img className="w-20 h-20" src="icon/mockProfile.png" alt="mock profile" />}
+
+                <input type="file" name="file" onChange={(e) => handleFile(e.target.files[0])} />
+
                 <label>รหัสนักศึกษา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.id} name="id" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="id"
+                    defaultValue={form.profile.id}
+                    ref={register({ required: true })}
+                />
+                {errors.line && <p className="text-red-500">โปรดกรอกข้อมูล รหัสนักศึกษา</p>}
                 <label>ชื่อจริง</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.name} name="name" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="name"
+                    defaultValue={form.profile.name}
+                    ref={register({ required: true })}
+                />
+                {errors.name && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริง</p>}
                 <label>นามสกุล</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.surname} name="surname" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="surname"
+                    defaultValue={form.profile.surname}
+                    ref={register({ required: true })}
+                />
+                {errors.surname && <p className="text-red-500">โปรดกรอกข้อมูล นามสกุล</p>}
                 <label>ชื่อเล่น</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.nickname} name="nickname" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="nickname"
+                    defaultValue={form.profile.nickname}
+                    ref={register({ required: true })}
+                />
+                {errors.nickname && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อเล่น</p>}
                 <label>ศาสนา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.religion} name="religion" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="religion"
+                    defaultValue={form.profile.religion}
+                    ref={register({ required: true })}
+                />
+                {errors.religion && <p className="text-red-500">โปรดกรอกข้อมูล ศาสนา</p>}
                 <label>สัญชาติ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.race} name="race" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="race"
+                    defaultValue={form.profile.race}
+                    ref={register({ required: true })}
+                />
+                {errors.race && <p className="text-red-500">โปรดกรอกข้อมูล สัญชาติ</p>}
                 <label>เชื่อชาติ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.nationality} name="nationality" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="nationality"
+                    defaultValue={form.profile.nationality}
+                    ref={register({ required: true })}
+                />
+                {errors.nationality && <p className="text-red-500">โปรดกรอกข้อมูล เชื่อชาติ</p>}
                 <label>วัน/เดือน/ปีเกิด</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.birthday} name="birthday" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="birthday"
+                    defaultValue={form.profile.birthday}
+                    ref={register({ required: true })}
+                />
+                {errors.birthday && <p className="text-red-500">โปรดกรอกข้อมูล วัน/เดือน/ปีเกิด</p>}
                 <label>คณะ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.faculty} name="faculty" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="faculty"
+                    defaultValue={form.profile.faculty}
+                    ref={register({ required: true })}
+                />
+                {errors.faculty && <p className="text-red-500">โปรดกรอกข้อมูล คณะ</p>}
                 <label>สาขา/ภาควิชา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.department} name="department" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="department"
+                    defaultValue={form.profile.department}
+                    ref={register({ required: true })}
+                />
+                {errors.department && <p className="text-red-500">โปรดกรอกข้อมูล สาขา/ภาควิชา</p>}
                 <label>Line ID</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.line} name="line" onChange={handleFormprofile} />
-            </div> : null
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="line"
+                    defaultValue={form.profile.line}
+                    ref={register({ required: true })}
+                />
+                {errors.line && <p className="text-red-500">โปรดกรอกข้อมูล line</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form>
+                : null
         },
         {
             title: 'ข้อมูลติดต่อ',
-            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormContact)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลติดต่อ</h2>
                 <label>เบอร์โทรศัพท์</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.tel} name="tel" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.tel}
+                    name="tel"
+                    ref={register({ required: true })}
+                />
+                {errors.tel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทรศัพท์</p>}
                 <label>อีเมล์</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.email} name="email" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.email}
+                    name="email"
+                    ref={register({ required: true })}
+                />
+                {errors.email && <p className="text-red-500">โปรดกรอกข้อมูล อีเมล์</p>}
                 <label>ชื่อ Facebook</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.facebook} name="facebook" onChange={handleFormContact} />
-                <label>ที่อยู่</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.network} name="network" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.facebook}
+                    name="facebook"
+                    ref={register({ required: true })}
+                />
+                {errors.facebook && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อ Facebook</p>}
+                <label>ชื่อระบบเครือข่ายโทรศัพท์</label>
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.network}
+                    name="network"
+                    ref={register({ required: true })}
+                />
+                {errors.network && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อระบบเครือข่ายโทรศัพท์</p>}
                 <label>บ้านเลขที่</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.village} name="houseno" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.village}
+                    name="village"
+                    ref={register({ required: true })}
+                />
+                {errors.village && <p className="text-red-500">โปรดกรอกข้อมูล บ้านเลขที่</p>}
                 <label>หมู่บ้าน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.villageno} name="village" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.villageno}
+                    name="villageno"
+                    ref={register({ required: true })}
+                />
+                {errors.villageno && <p className="text-red-500">โปรดกรอกข้อมูล หมู่บ้าน</p>}
                 <label>หมู่ที่</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.houseno} name="villageno" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.houseno}
+                    name="houseno"
+                    ref={register({ required: true })}
+                />
+                {errors.houseno && <p className="text-red-500">โปรดกรอกข้อมูล หมู่ที่</p>}
                 <label>ถนน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.road} name="road" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.road}
+                    name="road"
+                    ref={register({ required: true })}
+                />
+                {errors.road && <p className="text-red-500">โปรดกรอกข้อมูล ถนน</p>}
                 <label>ตำบล</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.district} name="subdistrinct" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.district}
+                    name="district"
+                    ref={register({ required: true })}
+                />
+                {errors.district && <p className="text-red-500">โปรดกรอกข้อมูล ตำบล</p>}
                 <label>อำเภอ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.subdistrict} name="district" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.subdistrict}
+                    name="subdistrict"
+                    ref={register({ required: true })}
+                />
+                {errors.subdistrict && <p className="text-red-500">โปรดกรอกข้อมูล อำเภอ</p>}
                 <label>จังหวัด</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.province} name="province" onChange={handleFormContact} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.province}
+                    name="province"
+                    ref={register({ required: true })}
+                />
+                {errors.province && <p className="text-red-500">โปรดกรอกข้อมูล จังหวัด</p>}
                 <label>รหัสไปรษณีย์</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.contact.postalcode} name="postalcode" onChange={handleFormContact} />
-            </div> : null
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.contact.postalcode}
+                    name="postalcode"
+                    ref={register({ required: true })}
+                />
+                {errors.postalcode && <p className="text-red-500">โปรดกรอกข้อมูล รหัสไปรษณีย์</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form> : null
         },
         {
             title: 'ข้อมูลการศึกษา',
-            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormInformation)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลการศึกษา</h2>
                 <label>จบจากโรงเรียน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.school} name="school" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.school}
+                    name="school"
+                    ref={register({ required: true })}
+                />
+                {errors.line && <p className="text-red-500">โปรดกรอกข้อมูล line</p>}
                 <label>จังหวัด</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.county} name="country" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.county}
+                    name="county"
+                    ref={register({ required: true })}
+                />
+                {errors.county && <p className="text-red-500">โปรดกรอกข้อมูล จังหวัด</p>}
                 <label>เกรดเฉลี่ย</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.gpa} name="gpa" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.gpa}
+                    name="gpa"
+                    ref={register({ required: true })}
+                />
+                {errors.gpa && <p className="text-red-500">โปรดกรอกข้อมูล เกรดเฉลี่ย</p>}
                 <label>แผนการศึกษา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.plan} name="plan" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.plan}
+                    name="plan"
+                    ref={register({ required: true })}
+                />
+                {errors.plan && <p className="text-red-500">โปรดกรอกข้อมูล แผนการศึกษา</p>}
                 <label>ส่วนสูง(ซ.ม.)</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.height} name="height" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.height}
+                    name="height"
+                    ref={register({ required: true })}
+                />
+                {errors.height && <p className="text-red-500">โปรดกรอกข้อมูล ส่วนสูง(ซ.ม.)</p>}
                 <label>น้ำหนัก(ก.ก.)</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.weight} name="weight" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.weight}
+                    name="weight"
+                    ref={register({ required: true })}
+                />
+                {errors.weight && <p className="text-red-500">โปรดกรอกข้อมูล น้ำหนัก(ก.ก.)</p>}
                 <label>กรุ๊บเลือด</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.blood} name="blood" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.blood}
+                    name="blood"
+                    ref={register({ required: true })}
+                />
+                {errors.blood && <p className="text-red-500">โปรดกรอกข้อมูล กรุ๊บเลือด</p>}
                 <label>โรคประจำตัว</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.disease} name="desease" onChange={handleFormInformation} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.disease}
+                    name="disease"
+                    ref={register({ required: true })}
+                />
+                {errors.disease && <p className="text-red-500">โปรดกรอกข้อมูล โรคประจำตัว</p>}
                 <label>แพ้ยา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.information.drugallergy} name="drugallergy" onChange={handleFormInformation} />
-            </div> : null
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.information.drugallergy}
+                    name="drugallergy"
+                    ref={register({ required: true })}
+                />
+                {errors.drugallergy && <p className="text-red-500">โปรดกรอกข้อมูล แพ้ยา</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form> : null
         },
         {
             title: 'เพื่อนสนิท',
-            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: <form onSubmit={handleSubmit(handleFormFriend)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>เพื่อนสนิท</h2>
                 <label>ชื่อจริง</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.name} name="name" onChange={handleFormFriend} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.friend.name}
+                    name="friendName"
+                    ref={register({ required: true })}
+                />{errors.friendName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริง</p>}
                 <label>นามสกุล</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.surname} name="surname" onChange={handleFormFriend} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.friend.surname}
+                    name="friendSurname"
+                    ref={register({ required: true })}
+                />
+                {errors.friendSurname && <p className="text-red-500">โปรดกรอกข้อมูล นามสกุล</p>}
                 <label>ชื่อเล่น</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.nickname} name="nickname" onChange={handleFormFriend} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.friend.nickname}
+                    name="friendNickname"
+                    ref={register({ required: true })}
+                />
+                {errors.friendNickname && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อเล่น</p>}
                 <label>เบอร์โทร</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.tel} name="tel" onChange={handleFormFriend} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.friend.tel}
+                    name="friendTel"
+                    ref={register({ required: true })}
+                />
+                {errors.friendTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>คณะ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.faculty} name="faculty" onChange={handleFormFriend} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.friend.faculty}
+                    name="friendFaculty"
+                    ref={register({ required: true })}
+                />
+                {errors.friendFaculty && <p className="text-red-500">โปรดกรอกข้อมูล คณะ</p>}
                 <label>สาขา/ภาควิชา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.friend.department} name="department" onChange={handleFormFriend} />
-            </div> : null
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.friend.department}
+                    name="friendDepartment"
+                    ref={register({ required: true })}
+                />
+                {errors.friendDepartment && <p className="text-red-500">โปรดกรอกข้อมูล สาขา/ภาควิชา</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form>
         },
         {
-            title: 'ข้อมูลเกี่ยวกับครอบครัว',
-            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h2>ข้อมูลเกี่ยวกับครอบครัว</h2>
+            title: 'ข้อมูลเกี่ยวกับครอบครัว (บิดา)',
+            content: <form onSubmit={handleSubmit(handleFormFamily.dad)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <h2>ข้อมูลเกี่ยวกับครอบครัว (บิดา)</h2>
                 <label>ชื่อจริงบิดา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.name} name="name" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.name}
+                    name="dadName"
+                    ref={register({ required: true })}
+                />
+                {errors.dadName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริงบิดา</p>}
                 <label>นามสกุล</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.surname} name="surname" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.surname}
+                    name="dadSurname"
+                    ref={register({ required: true })}
+                />
+                {errors.dadSurname && <p className="text-red-500">โปรดกรอกข้อมูล นามสกุล</p>}
                 <label>อายุ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.age} name="age" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.age}
+                    name="dadAge"
+                    ref={register({ required: true })}
+                />
+                {errors.dadAge && <p className="text-red-500">โปรดกรอกข้อมูล อายุ</p>}
                 <label>อาชีพ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.career} name="career" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.career}
+                    name="dadCareer"
+                    ref={register({ required: true })}
+                />
+                {errors.dadCareer && <p className="text-red-500">โปรดกรอกข้อมูล อาชีพ</p>}
                 <label>สถานที่ทำงาน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.workplace} name="workplace" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.workplace}
+                    name="dadWorkplace"
+                    ref={register({ required: true })}
+                />
+                {errors.dadWorkplace && <p className="text-red-500">โปรดกรอกข้อมูล สถานที่ทำงาน</p>}
                 <label>ตำแหน่ง</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.position} name="position" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.position}
+                    name="dadPosition"
+                    ref={register({ required: true })}
+                />
+                {errors.dadPosition && <p className="text-red-500">โปรดกรอกข้อมูล ตำแหน่ง</p>}
                 <label>รายได้/เดือน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.income} name="income" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.income}
+                    name="dadIncome"
+                    ref={register({ required: true })}
+                />
+                {errors.dadIncome && <p className="text-red-500">โปรดกรอกข้อมูล รายได้/เดือน</p>}
                 <label>เบอร์โทร</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.tel} name="tel" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.tel}
+                    name="dadTel"
+                    ref={register({ required: true })}
+                />
+                {errors.dadTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>ชื่อระบบเครือข่ายโทรศัพท์</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.dad.network} name="network" onChange={handleFormFamily.dad} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.dad.network}
+                    name="dadNetwork"
+                    ref={register({ required: true })}
+                />
+                {errors.dadNetwork && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อระบบเครือข่ายโทรศัพท์</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form>
+        },
+        {
+            title: "ข้อมูลเกี่ยวกับครอบครัว (มารดา)",
+            content: <form onSubmit={handleSubmit(handleFormFamily.mom)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <label>ชื่อจริงมารดา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.name} name="name" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.name}
+                    name="momName"
+                    ref={register({ required: true })}
+                />
+                {errors.momName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริงมารดา</p>}
                 <label>นามสกุล</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.surname} name="surname" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.surname}
+                    name="momSurname"
+                    ref={register({ required: true })}
+                />
+                {errors.momSurname && <p className="text-red-500">โปรดกรอกข้อมูล นามสกุล</p>}
                 <label>อายุ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.age} name="age" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.age}
+                    name="momAge"
+                    ref={register({ required: true })}
+                />
+                {errors.momAge && <p className="text-red-500">โปรดกรอกข้อมูล อายุ</p>}
                 <label>อาชีพ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.career} name="career" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.career}
+                    name="momCareer"
+                    ref={register({ required: true })}
+                />
+                {errors.momCareer && <p className="text-red-500">โปรดกรอกข้อมูล อาชีพ</p>}
                 <label>สถานที่ทำงาน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.workplace} name="workplace" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.workplace}
+                    name="momWorkplace"
+                    ref={register({ required: true })}
+                />
+                {errors.momWorkplace && <p className="text-red-500">โปรดกรอกข้อมูล สถานที่ทำงาน</p>}
                 <label>ตำแหน่ง</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.position} name="position" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.position}
+                    name="momPosition"
+                    ref={register({ required: true })}
+                />
+                {errors.momPosition && <p className="text-red-500">โปรดกรอกข้อมูล ตำแหน่ง</p>}
                 <label>รายได้/เดือน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.income} name="income" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.income}
+                    name="momIncome"
+                    ref={register({ required: true })}
+                />
+                {errors.momIncome && <p className="text-red-500">โปรดกรอกข้อมูล รายได้/เดือน</p>}
                 <label>เบอร์โทร</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.tel} name="tel" onChange={handleFormFamily.mom} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.tel}
+                    name="momTel"
+                    ref={register({ required: true })}
+                />
+                {errors.momTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>ชื่อระบบเครือข่ายโทรศัพท์</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.mom.network} name="network" onChange={handleFormFamily.mom} />
-
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.mom.network}
+                    name="momNetwork"
+                    ref={register({ required: true })}
+                />
+                {errors.momNetwork && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อระบบเครือข่ายโทรศัพท์</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form>
+        },
+        {
+            title: "ข้อมูลเกี่ยวกับครอบครัว (ติดต่อฉุกเฉิน)",
+            content: <form onSubmit={handleSubmit(handleFormFamily.emergency)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <label>ติดต่อฉุกเฉิน</label>
                 <label>ชื่อจริง</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.name} name="name" onChange={handleFormFamily.emergency} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.emergency.name}
+                    name="emergencyName"
+                    ref={register({ required: true })}
+                />
+                {errors.emergencyName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริง</p>}
                 <label>สกุล</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.surname} name="surname" onChange={handleFormFamily.emergency} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.emergency.surname}
+                    name="emergencySurname"
+                    ref={register({ required: true })}
+                />
+                {errors.emergencySurname && <p className="text-red-500">โปรดกรอกข้อมูล สกุล</p>}
                 <label>อายุ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.age} name="age" onChange={handleFormFamily.emergency} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.emergency.age}
+                    name="emergencyAge"
+                    ref={register({ required: true })}
+                />
+                {errors.emergencyAge && <p className="text-red-500">โปรดกรอกข้อมูล อายุ</p>}
                 <label>มีความเกี่ยวข้องเป็น</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.concerned} name="concerned" onChange={handleFormFamily.emergency} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.emergency.concerned}
+                    name="emergencyConcerned"
+                    ref={register({ required: true })}
+                />
+                {errors.emergencyConcerned && <p className="text-red-500">โปรดกรอกข้อมูล มีความเกี่ยวข้องเป็น</p>}
                 <label>อาชีพ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.career} name="career" onChange={handleFormFamily.emergency} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.emergency.career}
+                    name="emergencyCareer"
+                    ref={register({ required: true })}
+                />
+                {errors.emergencyCareer && <p className="text-red-500">โปรดกรอกข้อมูล อาชีพ</p>}
                 <label>เบอร์โทร</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.tel} name="tel" onChange={handleFormFamily.emergency} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.emergency.tel}
+                    name="emergencyTel"
+                    ref={register({ required: true })}
+                />
+                {errors.emergencyTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>ระบบเครือข่ายโทรศัพท์</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.family.emergency.network} name="network" onChange={handleFormFamily.emergency} />
-            </div> : null
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.family.emergency.network}
+                    name="emergencyNetwork"
+                    ref={register({ required: true })}
+                />
+                {errors.emergencyNetwork && <p className="text-red-500">โปรดกรอกข้อมูล ระบบเครือข่ายโทรศัพท์</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form>
         },
         {
             title: 'ข้อมูลอื่น ๆ',
-            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: <form onSubmit={handleSubmit(handleFormOther)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลอื่น ๆ</h2>
                 <label>ความสามารถพิเศษ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.talent} name="talent" onChange={handleFormOther} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.other.talent}
+                    name="otherTalent"
+                    ref={register({ required: true })}
+                />
+                {errors.otherTalent && <p className="text-red-500">โปรดกรอกข้อมูล ความสามารถพิเศษ</p>}
                 <label>อุปนิสัยส่วนตัว</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.character} name="character" onChange={handleFormOther} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.other.character}
+                    name="otherCharacter"
+                    ref={register({ required: true })}
+                />
+                {errors.otherCharacter && <p className="text-red-500">โปรดกรอกข้อมูล อุปนิสัยส่วนตัว</p>}
                 <label>เคยได้รับตำแหน่งใดในมหาวิทยาลัย/โรงเรียน</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.position} name="position" onChange={handleFormOther} />
-            </div> : null
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={form.other.position}
+                    name="otherPosition"
+                    ref={register({ required: true })}
+                />
+                {errors.otherPosition && <p className="text-red-500">โปรดกรอกข้อมูล เคยได้รับตำแหน่งใดในมหาวิทยาลัย/โรงเรียน</p>}
+                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+            </form>
         },
-    ];
+        {
+            title: "กฎระเบียบการใช้งานหอพัก",
+            content: <form className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <div className="md:flex md:items-center mb-6">
+                    <div className="md:w-1/3"></div>
+                    <label className="md:w-2/3 block text-gray-500 font-bold">
+                        <input
+                            className="mr-2 leading-tight"
+                            type="checkbox"
+                            value={form.agreement} onChange={e => {
+                                setForm({ ...form, agreement: e.target.checked })
+                            }}
+                        />
+                        <span className="text-sm">
+                            ยอมรับข้อตกลงหอพัก
+                        </span>
+                    </label>
+                </div>
+            </form>
+        }
+    ]
+
+    const getHeader = () => {
+        if (sessionStorage.getItem('token'))
+            setHeaders({
+                headers: {
+                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                    type: JSON.parse(sessionStorage.getItem("token")).type
+                },
+            })
+    }
+
+    useEffect(() => {
+        getHeader()
+        verifyLogin()
+        getInitialProfile()
+        if (sessionStorage.getItem('token')) {
+            setMyId(JSON.parse(sessionStorage.getItem("token")).id)
+        }
+    }, [])
 
     return (
-        <div className="profile-container h-auto flex flex-col items-center">
+        <div className="profile-container h-auto flex flex-col items-center px-4 py-4">
             <Steps current={current}>
                 {steps.map(item => (
                     <Step key={item.title} title={item.title} />
@@ -477,23 +847,17 @@ const profile = () => {
             </Steps>
             <div className="steps-content">{steps[current].content}</div>
             <div className="steps-action">
-                {current < steps.length - 1 && (
-                    <Button type="primary" onClick={() => {
-                        setCurrent(prev => prev + 1)
-                    }}>
-                        Next
+                {current > 0 && (
+                    <Button style={{ margin: '0 8px' }} onClick={() => setCurrent(prev => prev - 1)}>
+                        ก่อนหน้า
                     </Button>
                 )}
                 {current === steps.length - 1 && (
                     <Button type="primary" onClick={() => {
-                        handleSubmit()
+                        if (form.agreement) postData()
+                        else message.warning("โปรดอ่านและยอมรับกฎระเบียบของหอพัก")
                     }}>
-                        Done
-                    </Button>
-                )}
-                {current > 0 && (
-                    <Button style={{ margin: '0 8px' }} onClick={() => setCurrent(prev => prev - 1)}>
-                        Previous
+                        บันทึกข้อมูล
                     </Button>
                 )}
             </div>

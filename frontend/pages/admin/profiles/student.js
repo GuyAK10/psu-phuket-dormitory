@@ -1,13 +1,22 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState, useRef } from 'react'
 import { GlobalState } from '../../../utils/context'
+import Router from 'next/router'
 import useFetch from 'use-http'
+import { useReactToPrint } from 'react-to-print';
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
-const profile = ({ profileId }) => {
-    const { AxiosConfig } = useContext(GlobalState)
-    const [axiosConfig] = AxiosConfig
-    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}`, axiosConfig)
+const Profile = ({ profileId }) => {
+    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
+    const [_token, setToken] = Token
+    const [showModal, setShowModal] = Modal
+    const [menuBar, setMenuBar] = MenuBar
+    const [headers, setHeaders] = useState({})
+    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}/staff`, headers)
+    const printRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => printRef.current,
+    });
     const [student, setStudent] = useState({
         profile: {
             id: "",
@@ -20,7 +29,8 @@ const profile = ({ profileId }) => {
             birthday: "",
             faculty: "",
             department: "",
-            line: ""
+            line: "",
+            profileImg: ""
         },
         contact: {
             tel: "",
@@ -98,7 +108,7 @@ const profile = ({ profileId }) => {
 
     const {
         profile:
-        { id, name, surname, nickname, religion, race, nationality, birthday, faculty, department, line },
+        { id, name, surname, nickname, religion, race, nationality, birthday, faculty, department, line, profileImg },
         contact:
         { tel, email, facebook, network, houseno, village, villageno, road, district, subdistrict, province, postalcode },
         information:
@@ -112,7 +122,7 @@ const profile = ({ profileId }) => {
 
     const getStudents = async () => {
         try {
-            const data = await get(`/staff/profile/`)
+            const data = await get(`profile`)
             filterStudent(data)
         } catch (e) {
             console.error(e)
@@ -123,8 +133,30 @@ const profile = ({ profileId }) => {
         const studentFiltered = students.filter(item => item.studentId === profileId)
         setStudent(studentFiltered[0])
     }
-
+    const getHeader = () => {
+        if (sessionStorage.getItem('token')) {
+            setToken(JSON.parse(sessionStorage.getItem('token')))
+            setHeaders({
+                headers: {
+                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
+                    type: JSON.parse(sessionStorage.getItem('token')).type
+                }
+            })
+        }
+    }
+    const verifyLogin = () => {
+        const session = sessionStorage.getItem("token")
+        if (!session) {
+            sessionStorage.removeItem('token')
+            setToken(null)
+            setShowModal(false)
+            setMenuBar('ลงชื่อเข้าใช้')
+            Router.push('login')
+        }
+    }
     useEffect(() => {
+       getHeader()
+       verifyLogin()
         getStudents()
     }, [])
 
@@ -152,131 +184,95 @@ const profile = ({ profileId }) => {
     }
 
     if (!loading) return (
-        <div className="flex flex-row flex-wrap justify-center">
-            <div className="border-4 border-blue-500 mb-5">
-                <div className="px-4 py-2 text-center border-4 border-blue-500">ข้อมูลเบื้องต้น</div>
-                <TableList data={[
-                    { "รหัสนักศึกษา": id },
-                    { "ชื่อจริง": name },
-                    { "นามสกุล": surname },
-                    { "ชื่อเล่น": nickname },
-                    { "ศาสนา": religion },
-                    { "สัญชาติ": nationality },
-                    { "เชื้อชาติ": race },
-                    { "วัน/เดือน/ปีเกิด": birthday },
-                    { "คณะ": faculty },
-                    { "สาขา/ภาควิชา": department },
-                    { "Line ID": line },
-                    { "เบอร์โทรศัพท์": tel },
-                    { "อีเมล์": email }
-                ]} />
-            </div>
-            <div className="border-4 border-blue-500 mb-5">
-                <div className="px-4 py-2 text-center border-4 border-blue-500">ข้อมูลติดต่อ</div>
-                <TableList data={[
-                    { "เบอร์โทร": tel },
-                    { "อีเมล์": email },
-                    { "ชื่อ Facebook": facebook },
-                    { "ที่อยู่": network },
-                    { "บ้านเลขที่": houseno },
-                    { "หมู่บ้าน": village },
-                    { "หมู่ที่": villageno },
-                    { "ถนน": road },
-                    { "ตำบล": district },
-                    { "อำเภอ": subdistrict },
-                    { "จังหวัด": province },
-                    { "รหัสไปรษณีย์": postalcode },
-                ]} />
-            </div>
-            <div className="border-4 border-blue-500 mb-5">
-                <div className="px-4 py-2 text-center border-4 border-blue-500">ข้อมูลการศึกษา</div>
-                <TableList data={[
-                    { "จบจากโรงเรียน": school },
-                    { "จังหวัด": county },
-                    { "เกรดเฉลี่ย": gpa },
-                    { "แผนการศึกษา": plan },
-                    { "ส่วนสูง(ซ.ม.)": height },
-                    { "น้ำหนัก(ก.ก.)": weight },
-                    { "กรุ๊บเลือด": blood },
-                    { "โรคประจำตัว": disease },
-                    { "แพ้ยา": drugallergy }
-                ]} />
-            </div>
-            <div className="border-4 border-blue-500 mb-5">
-                <div className="px-4 py-2 text-center border-4 border-blue-500">เพื่อนสนิท</div>
-                <TableList data={[
-                    { "ชื่อจริง": friend.name },
-                    { "นามสกุล": friend.surname },
-                    { "ชื่อเล่น": friend.nickname },
-                    { "เบอร์โทร": friend.tel },
-                    { "คณะ": friend.faculty },
-                    { "สาขา/ภาควิชา": friend.department },
-                ]} />
-            </div>
-            <div className="border-4 border-blue-500">
-                <div className="px-4 py-2 text-center border-4 border-blue-500">เกี่ยวกับครอบครัว</div>
-                <div className="flex flex-row flex-no-wrap">
-                    <div className="border-2 border-blue-500">
-                        <TableList data={[
-                            { "ชื่อจริงบิดา": dad.name },
-                            { "นามสกุล": dad.surname },
-                            { "อายุ": dad.age },
-                            { "สถานที่ทำงาน": dad.workplace },
-                            { "ตำแหน่ง": dad.position },
-                            { "สถานที่": dad.network },
-                            { "รายได้/เดือน": dad.income },
-                            { "เบอร์โทร": dad.tel },
-                            { "ชื่อระบบเครือข่ายโทรศัพท์": dad.tel },
-                        ]} />
+        <div className="container flex flex-col">
+            <button
+                className="w-32 m-5 self-center bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded self-start"
+                onClick={handlePrint}
+            >
+                Print
+            </button>
+            <div ref={printRef} className="print-student text-black flex flex-col pt-10 pb-10 pr-16 pl-16">
+
+                <img className="psuLogo self-center" src="../../icon/psuLogo.png" alt="psu logo" />
+
+                <p className="text-center m-4">สำนักงานหอพักนักศึกษาชาย มหาวิทยาลัยสงขลานครินทร์ วิทยาเขตภูเก็ต</p>
+
+                <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
+                <ul className="list-disc flex flex-col">
+                    {
+                        profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}${profileImg}`} alt="profileImg" />
+                            :
+                            <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
+                    }
+                    <div className="m-4">
+                        <li>
+                            ข้อมูลเบื้องต้นของนักศึกษา
+                    </li>
+                        <p>
+                            {`ชื่อ-สกุล ${name} ${surname} ชื่อเล่น ${nickname} ศาสนา ${religion} เชื้อชาติ ${race} สัญชาติ ${nationality} วัน/เดือน/ปีเกิด ${birthday} คณะ ${faculty} สาขา/ภาควิชา ${department} Line ID ${line} เบอร์โทรศัพท์ ${tel} อีเมล์ ${email}`}
+                        </p>
                     </div>
-                    <div className="border-2 border-blue-500">
-                        <TableList data={[
-                            { "ชื่อจริงมารดา": mom.name },
-                            { "นามสกุล": mom.surname },
-                            { "อายุ": mom.age },
-                            { "สถานที่ทำงาน": mom.workplace },
-                            { "ตำแหน่ง": mom.position },
-                            { "สถานที่": mom.network },
-                            { "รายได้/เดือน": mom.income },
-                            { "เบอร์โทร": mom.tel },
-                            { "ชื่อระบบเครือข่ายโทรศัพท์": mom.tel },
-                        ]} />
+                    <div className="m-4">
+                        <li>
+                            ข้อมูลติดต่อ
+                    </li>
+                        <p>
+                            {`เบอร์โทร ${tel} อีเมล์ ${email} ชื่อ facebook ${facebook} ที่อยู่ ${network} บ้านเลขที่ ${houseno} หมู่บ้าน ${village} หมู่ที่ ${villageno} ถนน ${road} ตำบล ${district} อำเภอ ${subdistrict} จังหวัด ${province} รหัสไปรษณีย์ ${postalcode}`}
+                        </p>
                     </div>
-                    <div className="border-2 border-blue-500">
-                        <TableList data={[
-                            { "มีความเกี่ยวข้องเป็น": status },
-                        ]} />
+                    <div className="m-4">
+                        <li>
+                            ข้อมูลการศึกษา
+                    </li>
+                        <p>{`จบจากโรงเรียน ${school} จังหวัด ${county} เกรดเฉลี่ย ${gpa} แผนการศึกษา ${plan} ส่วนสูง(ซ.ม.) ${height}  น้ำหนัก(ก.ก.) ${weight} กรุ๊บเลือด ${blood} โรคประจำตัว ${disease} แพ้ยา ${drugallergy}          
+                    `}
+                        </p>
                     </div>
-                    <div className="border-2 border-blue-500">
-                        <TableList data={[
-                            { "ติดต่อฉุกเฉินชื่อจริง": emergency.name },
-                            { "สกุล": emergency.surname },
-                            { "อายุ": emergency.age },
-                            { "มีความเกี่ยวข้องเป็น": emergency.concerned },
-                            { "อาชีพ": emergency.career },
-                            { "เบอร์โทร": emergency.tel },
-                            { "ระบบเครือข่ายโทรศัพท์": emergency.network },
-                        ]} />
+                    <div className="m-4">
+                        <li>
+                            เพื่อนสนิท
+                    </li>
+                        <p>
+                            {` ชื่อจริง ${friend.name} นามสกุล ${friend.surname} ชื่อเล่น ${friend.nickname} เบอร์โทร ${friend.tel} คณะ ${friend.faculty} สาขา/ภาควิชา ${friend.department}
+                        `}
+                        </p>
                     </div>
-                </div>
-            </div>
-            <div className="border-4 border-blue-500">
-                <div className="px-4 py-2 text-center border-4 border-blue-500">อื่น ๆ</div>
-                <TableList data={[
-                    { "ความสามารถพิเศษ": talent },
-                    { "อุปนิสัยส่วนตัว": character },
-                    { "เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน": position },
-                ]} />
+                    <div className="m-4">
+                        <li>
+                            เกี่ยวกับครอบครัว
+                    </li>
+                        <p>
+                            {`ชื่อจริงบิดา ${dad.name} นามสกุล ${dad.surname} อายุ ${dad.age} สถานที่ทำงาน ${dad.workplace} ตำแหน่ง ${dad.position} สถานที่ ${dad.network} รายได้/เดือน ${dad.income} เบอร์โทร ${dad.tel} ชื่อระบบเครือข่ายโทรศัพท์ ${dad.tel}`}
+                        </p>
+                        <p>
+                            {`ชื่อจริงมารดา ${mom.name} นามสกุล ${mom.surname} อายุ ${mom.age} สถานที่ทำงาน ${mom.workplace} ตำแหน่ง ${mom.position} สถานที่ ${mom.network} รายได้/เดือน ${mom.income} เบอร์โทร ${mom.tel} ชื่อระบบเครือข่ายโทรศัพท์ ${mom.tel}`}
+                        </p>
+                        <p>
+                            {`มีความเกี่ยวข้องเป็น  ${status}`}
+                        </p>
+                        <p>
+                            {`ติดต่อฉุกเฉินชื่อจริง${emergency.name} สกุล${emergency.surname} อายุ${emergency.age} มีความเกี่ยวข้องเป็น${emergency.concerned} อาชีพ${emergency.career} เบอร์โทร${emergency.tel} ระบบเครือข่ายโทรศัพท์${emergency.network}`}
+                        </p>
+                    </div>
+                    <div className="m-4">
+                        <li>
+                            อื่น ๆ
+                    </li>
+                        <p>
+                            {`ความสามารถพิเศษ ${talent} อุปนิสัยส่วนตัว ${character} เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน ${position}`}
+                        </p>
+                    </div>
+                </ul>
             </div>
         </div>
     )
     else return <div>Loading</div>
 }
 
-profile.getInitialProps = async ({ query }) => {
+Profile.getInitialProps = async ({ query }) => {
     return {
         profileId: query.profileId,
     }
 }
 
-export default profile
+export default Profile

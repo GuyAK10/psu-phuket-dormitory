@@ -1,11 +1,13 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs')
-const firebase = require('./firebase')
+const { db } = require('./firebase');
+const { abort } = require('process');
 require('dotenv').config()
-const tokenRef = firebase.firestore().collection('token')
-const db = firebase.firestore()
-// const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
-const privateKey = process.env.PRIVATE_KEY
+
+const tokenRef = db.collection('token')
+// const privateKey = process.env.PRIVATE_KEY
+const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
+
 let student = {
       profile: {
             id: "",
@@ -108,8 +110,7 @@ const createToken = async (user, responseData, _req, res) => {
                         }
 
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
-                        const docRef = db.collection('token');
-                        const register = docRef.doc(`${responseData.userId}`)
+                        const register = tokenRef.doc(`${responseData.userId}`)
                         const setProfile = db.collection('students').doc(`${responseData.userId}`);
 
                         await register.set({
@@ -119,11 +120,32 @@ const createToken = async (user, responseData, _req, res) => {
                         });
 
                         student.profile.id = responseData.userId
+                        student.profile.name = responseData.name
+                        student.profile.surname = responseData.surname
+                        student.profile.faculty = responseData.faculty
+                        student.profile.department = responseData.department
+                        student.contact.email = responseData.email
 
-                        await setProfile.set(student)
+                        if (responseData.role === "Students" && user.username !== "student") {
+                              const doc = await setProfile.get()
+                              if (!doc.exists) {
+                                    await setProfile.set(student)
+                              } else {
+                                    await setProfile.update({
+                                          'profile.id ': responseData.userId,
+                                          'profile.name': responseData.name,
+                                          'profile.surname': responseData.surname,
+                                          'profile.faculty': responseData.faculty,
+                                          'profile.department': responseData.department,
+                                          'contact.email': responseData.email
+                                    })
+                              }
+                        }
 
                         res.status(200).send({
                               id: responseData.userId,
+                              name: responseData.name,
+                              surname: responseData.surname,
                               type: responseData.role,
                               token: encoded
                         })
@@ -132,9 +154,9 @@ const createToken = async (user, responseData, _req, res) => {
                         res.status(400).send("สถานะไม่ถูกต้อง")
                   }
             }
-      } catch (e) {
-            console.error(e)
-            res.status(400).send({ code: 400, success: false, message: "เกิดข้อผิดพลาด" + e })
+      } catch (error) {
+            console.error(error)
+            res.status(400).send({ code: 400, success: false, message: "เกิดข้อผิดพลาด" + error })
       }
 }
 
@@ -147,25 +169,25 @@ const verifyHeader = async (req, res, next) => {
                   let isExpToken = {}
                   const decode = jwt.decode(token, privateKey)
                   if (!verifyHeaderToken.empty) {
-                        await verifyHeaderToken.forEach(result => isExpToken = { ...result.data() })
+                        verifyHeaderToken.forEach(result => isExpToken = { ...result.data() })
                   }
                   if (isExpToken.token !== token) {
                         console.log("Not authorization")
-                        res.status(401).send({ code: 401, status: "logout", message: "ไม่อนุญาติให้ใช้งาน" })
+                        res.status(401).send({ code: 401, logout: true, message: "ไม่อนุญาติให้ใช้งาน" })
                   }
                   if (+decode.exp < Date.now()) {
                         console.log("Token expired")
-                        res.status(401).send({ code: 401, status: "logout", message: "Token expired" })
+                        res.status(401).send({ code: 401, logout: true, message: "Token expired" })
                   }
                   else next()
 
             } else {
                   console.log("Please Login")
-                  res.status(401).send({ code: 401, status: "logout", message: "เกิดข้อผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
+                  res.status(401).send({ code: 401, logout: true, message: "เกิดข้อผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
             }
-      } catch (e) {
-            console.log(e)
-            res.sendStatus(400);
+      } catch (error) {
+            console.log(error)
+            res.sendStatus(400).send({ code: 401, logout: true, message: error });
       }
 }
 

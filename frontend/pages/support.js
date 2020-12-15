@@ -1,5 +1,5 @@
 import React from 'react'
-
+import Router from 'next/router'
 const support = () => {
     return (
         <div className="h-screen">

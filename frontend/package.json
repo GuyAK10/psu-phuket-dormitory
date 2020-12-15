@@ -6,14 +6,15 @@
   "dependencies": {
     "antd": "^4.7.3",
     "axios": "^0.20.0",
-    "dotenv": "^8.2.0",
     "firebase": "^7.20.0",
+    "global": "^4.4.0",
     "gsap": "^3.5.1",
     "next": "^10.0.0",
     "qs": "^6.9.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "recoil": "^0.0.13",
+    "react-hook-form": "^6.13.1",
+    "react-to-print": "^2.11.0",
     "tailwindcss": "^1.9.5",
     "use-http": "^1.0.15"
   },
@@ -27,6 +28,6 @@
     "deploy": "yarn out && firebase deploy"
   },
   "devDependencies": {
-    "firebase-tools": "^8.10.0"
+    "firebase-tools": "^8.16.2"
   }
 }

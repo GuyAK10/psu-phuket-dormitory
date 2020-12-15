@@ -1,32 +1,27 @@
 const express = require('express');
-const firestore = require('../configs/firebase')
+const { db } = require('../configs/firebase')
+const { repairNotify } = require('../configs/line')
 
 const router = express.Router()
 
 router.post('/student/repair', (req, res) => {
-    try {
-        
-        const folder = 'repair'
-        const fileName = `${id}`
-        const fileUpload = bucket.file(`${folder}/` + fileName);
-        const blobStream = fileUpload.createWriteStream({
-          metadata: {
-            contentType: req.file.mimetype
-          }
-        });
-    
-        blobStream.on('error', (err) => {
-          res.status(405).json(err);
-        });
-    
-        blobStream.on('finish', () => {
-          res.status(200).send('Upload complete!');
-        });
-    
-        blobStream.end(req.file.buffer);
-      } catch (error) {
-        res.sendStatus(400);
-      }
+  try {
+    const { body: { topic, detail, roomId, day, month, semester, year } } = req
+    const repairRef = db.collection('repair').doc(`${semester}-${year}-${month}-${roomId}`)
+    repairRef.set({
+      semester: semester,
+      year: year,
+      month: month,
+      day: day,
+      roomId: roomId,
+      detail: detail,
+      topic: topic
+    })
+    repairNotify()
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(400);
+  }
 });
 
 module.exports = router;

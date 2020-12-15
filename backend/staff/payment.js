@@ -1,101 +1,25 @@
 const express = require('express');
-const generatePayload = require('promptpay-qr')
-const qrcode = require('qrcode')
-const firestore = require('../configs/firebase')
+const { db, storage } = require('../configs/firebase')
 
 const router = express.Router();
-const bucket = firestore.storage().bucket()
-const db = firestore.firestore()
-
-const uploadBill = async (roomId, month, semester, year, water, electric, total) => {
-    try {
-
-        const paymentRef = db.collection(`payment/`).doc(`${semester}-${year}-${month}-${roomId}`)
-        await paymentRef.set({
-            semester: semester,
-            year: year,
-            month: month,
-            roomId: roomId,
-            water: water,
-            electric: electric,
-            total: total
-        })
-
-        console.log("บันทึกข้อมูลค่าน้ำค่าไฟแล้ว")
-
-    } catch (error) {
-
-        throw error
-    }
-}
-
-const uploadQr = async (payload, options, month, semester, year, roomId) => {
-    try {
-        await new Promise((resolve, reject) => {
-            qrcode.toDataURL(payload, options, (err, png) => {
-                try {
-
-                    const folder = 'payment'
-                    const fileUpload = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
-                    const blobStream = fileUpload.createWriteStream({
-                        metadata: {
-                            contentType: png
-                        }
-                    });
-
-                    blobStream.on('error', (err) => {
-                        reject(err)
-                    });
-
-                    blobStream.on('finish', () => {
-                        console.log("Upload complete!")
-                        resolve()
-                    });
-
-                    blobStream.end(png.buffer);
-
-                } catch (error) {
-                    error.custom = "Qr Error"
-                    reject(error)
-                }
-
-            })
-        })
-
-    } catch (error) {
-        throw error;
-    }
-}
-
+const bucket = storage.bucket()
 
 router.post('/staff/payment', async (req, res) => {
     try {
-        const { body: { roomId, month, semester, year, water, electric, total } } = req
-        const mobileNumber = '082-432-7072'
-        const amount = total
-        const payload = generatePayload(mobileNumber, { amount }) //First parameter : mobileNumber || IDCardNumber
-
-        // Convert to SVG QR Code
-        const options = { type: 'png', color: { dark: '#000', light: '#fff' } }
-        const status = {
-            qr:false,
-            bill:false
-        }
-
-        try {
-            await uploadQr(payload, options, month, semester, year, roomId)
-            status.qr = true
-        } catch (error) {
-            console.log("QR Error")
-        }
-        try {
-            await uploadBill(roomId, month, semester, year, water, electric, total) 
-            status.bill = true
-        } catch (error) {
-            console.log("Bill Error")
-        }
-        res.send(status);
-
+        const paymentList = req.body
+        paymentList.forEach(async value => {
+            const paymentRef = db.collection(`payment`).doc(`${value.roomId}-${value.month}-${value.semester}-${value.year}`)
+            await paymentRef.set({
+                semester: +value.semester,
+                year: +value.year,
+                month: value.month,
+                roomId: value.roomId,
+                water: +value.water,
+                electric: value.electric ? +value.electric : null,
+                status: value.status
+            })
+        });
+        res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลค่าน้ำค่าไฟเรียบร้อย" });
 
     } catch (error) {
         console.log(error)
@@ -103,18 +27,69 @@ router.post('/staff/payment', async (req, res) => {
     }
 });
 
-router.get('/staff/payment', async (req, res) => {
+router.get('/staff/payment/:semester/:month/:year', async (req, res) => {
     try {
 
-        const { body: { semester, year } } = req
-        const billRef = await db.collection('payment').where("semester", "==", semester).where("year", "==", year).get()
+        const { params: { semester, year, month } } = req
+        const billRef = await db.collection('payment').where("semester", "==", +semester).where("year", "==", +year).where("month", "==", month).get()
+        if (billRef.empty)
+            res.status(200).send({ code: 200, success: false, message: "ไม่พบค่าน้ำค่าไฟในระบบ" });
+        else {
+            let billList = []
+            billRef.docs.map((bill) => {
+                billList.push(bill.data())
+            })
+            res.status(200).send({ code: 200, success: true, message: "พบค่าน้ำค่าไฟในระบบ", data: billList });
+        }
 
-        let billList = []
-        billRef.docs.map((bill) => {
-            billList.push(bill.data())
-        })
-        console.log(billList)
-        res.status(200).send(billList);
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(400);
+    }
+});
+
+router.get('/staff/payment/history/:semester/:month/:year', async (req, res) => {
+    try {
+        const { params: { semester, year, month } } = req
+        const billRef = await db.collection('payment').where("semester", "==", +semester).where("year", "==", +year).where("month", "==", month).get()
+        if (billRef.empty)
+            res.status(200).send({ code: 200, success: false, message: "ไม่พบค่าน้ำค่าไฟในระบบ" });
+        else {
+            let billList = []
+            billRef.docs.map((bill) => {
+                billList.push(bill.data())
+            })
+            res.status(200).send({ code: 200, success: true, message: "พบค่าน้ำค่าไฟในระบบ", data: billList });
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(400);
+    }
+});
+
+router.get('/staff/payment/reciept', async (req, res) => {
+    try {
+        const { body: { month, semester, year, roomId } } = req
+        const folder = 'receipt'
+        const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
+        file.download().then(downloadResponse => {
+            res.status(200).send(downloadResponse[0]);
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(400);
+    }
+});
+
+router.post('/staff/payment/reciept', async (req, res) => {
+    try {
+        const { body: { month, semester, year, roomId } } = req
+        const receiptRef = db.collection(`payment/`).doc(`${roomId}-${month}-${semester}-${year}`)
+        await receiptRef.set({
+            status: "ชำระเสร็จสิ้น"
+        }, { merge: true })
     } catch (error) {
         console.log(error)
         res.sendStatus(400);
