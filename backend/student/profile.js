@@ -39,7 +39,7 @@ const uploader = multer({
 
 // });
 
-router.get('/student/files', (req, res) => {
+router.post('/student/files', (req, res) => {
   console.log(req)
   res.send('finished')
 })
