@@ -5,8 +5,8 @@ const { abort } = require('process');
 require('dotenv').config()
 
 const tokenRef = db.collection('token')
-const privateKey = process.env.PRIVATE_KEY
-// const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
+// const privateKey = process.env.PRIVATE_KEY
+const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 
 let student = {
       profile: {
@@ -144,6 +144,8 @@ const createToken = async (user, responseData, _req, res) => {
 
                         res.status(200).send({
                               id: responseData.userId,
+                              name: responseData.name,
+                              surname: responseData.surname,
                               type: responseData.role,
                               token: encoded
                         })

@@ -1,8 +1,10 @@
 const express = require('express');
 
-const { db } = require('../configs/firebase')
+const { db, admin } = require('../configs/firebase')
 const { createRoomDb, deleteOldroom, changeStatusAllRoom, changeStatusFloor } = require('../configs/initialDormitoryStatus')
 const router = express.Router()
+const { firestore } = admin
+const FieldValue = firestore.FieldValue
 
 router.get('/staff/room/system', async (req, res) => {
       try {
@@ -25,11 +27,11 @@ router.post('/staff/room/system', async (req, res) => {
             const docRef = db.collection(`dormitory`).doc(`status`)
             await docRef.set({
                   system: system,
-                  year: year,
-                  semester: semester
+                  year: +year,
+                  semester: +semester
             })
             await createRoomDb(year, semester)
-            if (semester==1) {
+            if (semester == 1) {
                   await deleteOldroom(year)
             }
             if ((await docRef.get()).data().system)
@@ -61,6 +63,7 @@ router.get('/staff/room/:floorId', async (req, res) => {
       }
 })
 
+//remove Student from room by staff
 router.post('/staff/room/remove', async (req, res) => {
       try {
             const { body: { roomId, studentId, orderId } } = req
@@ -72,8 +75,8 @@ router.post('/staff/room/remove', async (req, res) => {
             const profileRef = await reserveRef.get()
             if (profileRef.data()[orderId].id === studentId) {
                   await reserveRef.update({ [orderId]: FieldValue.delete() })
-                  console.log("deleted")
-                  res.status(200).send({ code: 200, success: true, message: "deleted" })
+                  console.log("ยกเลิกการจองห้องแล้ว")
+                  res.status(200).send({ code: 200, success: true, message: "ยกเลิกการจองห้องแล้ว" })
             }
             else {
                   console.log("ไม่สามารถยกเลิกการจองของผู้อื่นได้")
@@ -82,7 +85,6 @@ router.post('/staff/room/remove', async (req, res) => {
       } catch (error) {
             console.log(error)
             res.status(200).send({ code: 200, success: false, message: "ผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
-
       }
 })
 

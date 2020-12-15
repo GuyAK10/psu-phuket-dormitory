@@ -4,13 +4,16 @@ import { Divider } from 'antd';
 import Link from 'next/link'
 
 const NavigationBar = () => {
-    const { Staff, MenuName, SubMenuName } = useContext(GlobalState)
+    const { Staff, MenuName, SubMenuName, setPreviousRoute } = useContext(GlobalState)
     const [menuName, setMenuName] = MenuName
     const [subMenuName, setSubMenuName] = SubMenuName
     const [staff, setStaff] = Staff
     const [adminPath, setAdminPath] = useState(false)
 
     const SubMenu = ({ menu, route }) => {
+
+        setPreviousRoute(route)
+
         return <Link href={route}>
             <a style={{ background: subMenuName === menu ? "#2f80af" : "none" }} onClick={() => setSubMenuName(menu)} className="text-lg cursor-pointer p-3 rounded">
                 {menu}
@@ -26,7 +29,7 @@ const NavigationBar = () => {
             const checkAdminPath = (JSON.parse(sessionStorage.getItem('token'))).type == "Staffs" || pathname.includes('/admin/')
             setAdminPath(checkAdminPath)
             setStaff(checkAdminPath)
-        }    
+        }
     }
 
     useEffect(() => {
@@ -86,7 +89,7 @@ const NavigationBar = () => {
                         {menuName === "ข้อมูลส่วนตัว" ?
                             <div className="flex flex-col">
                                 <SubMenu menu="ข้อมูลส่วนตัว" route={`/profile-result?profileId=${sessionStorage.getItem('token') ? JSON.parse(sessionStorage.getItem('token')).id : undefined}`} />
-                                <SubMenu menu="แก้ไขข้อมูล" route="/profile" />
+                                <SubMenu menu="เพิ่มเติม/แก้ไขข้อมูล" route="/profile" />
                             </div> : null
                         }
                     </div>

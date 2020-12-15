@@ -10,8 +10,7 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Login = () => {
-    const { MenuBar, Token, Modal, AxiosConfig, PreviousRoute, Staff } = React.useContext(GlobalState)
-    const [previousRoute] = PreviousRoute
+    const { MenuBar, Token, Modal, AxiosConfig, previousRoute, Staff } = React.useContext(GlobalState)
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar

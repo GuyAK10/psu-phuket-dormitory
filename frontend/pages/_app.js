@@ -25,11 +25,12 @@ const MyApp = ({ Component, pageProps }) => {
                 Modal: [showModal, setShowModal],
                 AxiosConfig: [axiosConfig, setAxiosConfig],
                 MenuBar: [menuBar, setMenubar],
-                PreviousRoute: [previousRoute, setPreviousRoute],
                 Students: [students, setStudents],
                 Staff: [staff, setStaff],
                 MenuName: [menuName, setMenuName],
-                SubMenuName: [subMenuName, setSubMenuName]
+                SubMenuName: [subMenuName, setSubMenuName],
+                previousRoute,
+                setPreviousRoute,
             }}>
             <div className="root-container relative grid grid-cols-6">
                 <div className="nav-bar-container col-span-1 col-start-1">

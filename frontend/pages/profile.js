@@ -20,6 +20,7 @@ const profile = ({ profileId }) => {
     const [isLoading, setIsLoading] = useState(true)
     const [headers, setHeaders] = useState({})
     const [myId, setMyId] = useState('')
+    const [blur, setBlur] = useState([])
 
     const [form, setForm] = React.useState({
         profile: {
@@ -108,7 +109,8 @@ const profile = ({ profileId }) => {
             talent: "",
             character: "",
             position: ""
-        }
+        },
+        agreement: false
     })
 
     const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
@@ -285,11 +287,30 @@ const profile = ({ profileId }) => {
         }
     }
 
+    const checkEmpty = (e) => {
+        let tempBlur = blur
+        if (e.target.value.length <= 0) {
+            tempBlur = blur.filter(item => item.name != e.target.name)
+            tempBlur.push({ name: e.target.name, current: e.currentTarget })
+        }
+        else tempBlur = blur.filter(item => item.name != e.target.name)
+        setBlur(tempBlur)
+    }
+
+    const focusEmpty = () => {
+        if (blur.length) {
+            blur[0].current.focus()
+            blur[0]
+        }
+    }
+
     const steps = [
         {
             title: 'ข้อมูลเบื้องต้น',
             content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเบื้องต้น</h2>
+
+                <button onClick={focusEmpty}>Focus</button>
 
                 <label>รูปภาพ</label>
 
@@ -307,12 +328,31 @@ const profile = ({ profileId }) => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.surname} name="surname" onChange={handleFormprofile} />
                 <label>ชื่อเล่น</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.nickname} name="nickname" onChange={handleFormprofile} />
+
                 <label>ศาสนา</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.religion} name="religion" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value={form.profile.religion}
+                    name="religion"
+                    onChange={handleFormprofile}
+                    onBlur={e => checkEmpty(e)}
+                />
+
                 <label>สัญชาติ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.race} name="race" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value={form.profile.race}
+                    name="race"
+                    onChange={handleFormprofile}
+                    onBlur={e => {
+                        e.currentTarget.style = "red"
+                        e.currentTarget.placeholder = "กรุณากรอกข้อมูล"
+                    }}
+                />
                 <label>เชื่อชาติ</label>
-                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.nationality} name="nationality" onChange={handleFormprofile} />
+                <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value={form.profile.nationality}
+                    name="nationality"
+                    onChange={handleFormprofile}
+                />
                 <label>วัน/เดือน/ปีเกิด</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.profile.birthday} name="birthday" onChange={handleFormprofile} />
                 <label>คณะ</label>
@@ -465,6 +505,27 @@ const profile = ({ profileId }) => {
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={form.other.position} name="position" onChange={handleFormOther} />
             </div> : null
         },
+        {
+            title: "",
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <div className="md:flex md:items-center mb-6">
+                    <div className="md:w-1/3"></div>
+                    <label className="md:w-2/3 block text-gray-500 font-bold">
+                        <input
+                            className="mr-2 leading-tight"
+                            type="checkbox"
+                            value={form.agreement} onChange={e => {
+                                setForm({ ...form, agreement: e.target.checked })
+                                console.log(form)
+                            }}
+                        />
+                        <span className="text-sm">
+                            ยอมรับข้อตกลงหอพัก
+                        </span>
+                    </label>
+                </div>
+            </div> : null
+        }
     ]
 
     const getHeader = () => {
@@ -475,7 +536,7 @@ const profile = ({ profileId }) => {
                     type: JSON.parse(sessionStorage.getItem("token")).type
                 },
                 cachePolicy: "no-cache",
-        })
+            })
     }
 
     useEffect(() => {
@@ -491,7 +552,7 @@ const profile = ({ profileId }) => {
     if (isLoading) return <Loading />
 
     return (
-        <div className="profile-container h-auto flex flex-col items-center p-10">
+        <div className="profile-container h-auto flex flex-col items-center px-4 py-4">
             <Steps current={current}>
                 {steps.map(item => (
                     <Step key={item.title} title={item.title} />

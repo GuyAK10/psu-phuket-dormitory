@@ -3,11 +3,19 @@ import axios from 'axios'
 import { GlobalState } from '../../../utils/context'
 import Router from 'next/router'
 import Loading from '../../../component/Loading'
-import { message, Tooltip } from 'antd';
+import { message, Tooltip, Switch, Modal as studentModal } from 'antd';
 import useFetch from 'use-http'
-import { TweenMax } from 'gsap'
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
+
+const years = () => {
+    const fullYear = new Date().getFullYear()
+    const years = []
+    for (let i = fullYear + 3; i >= fullYear - 130; i--) {
+        years.push(i)
+    }
+    return years.map(item => item + 543)
+}
 
 const reserve = () => {
     const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
@@ -23,6 +31,13 @@ const reserve = () => {
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const [update, setUpdate] = useState(0)
     const [system, setSystem] = useState(false)
+    const [isInfoClose, setIsInfoClose] = useState(false)
+    // const [studentModal, setStudentModal] = useState(false)
+    const [select, setSelect] = useState({
+        semester: 2,
+        month: "january",
+        year: years()[0]
+    })
     const floorList = [
         { 1: ["E", "A"] },
         { 2: ["F", "B"] },
@@ -148,13 +163,100 @@ const reserve = () => {
             )
         else return (
             <div className="building-container">
-                <div className="left text-2xl cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("l-1-16")}>{left}01 - {left}16</div>
-                <div className="sleft text-2xl text-white cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("l-17-24")}>{left}17 - {left}24</div>
+                <div className="left text-2xl text-white cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("l-1-16")}>{left}01 - {left}16</div>
+                <div className="sleft text-2xl cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("l-17-24")}>{left}17 - {left}24</div>
                 <div className="center text-2xl text-white">ส่วนกลาง</div>
                 <div className="right text-2xl text-white cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("r-1-16")}>{right}01 - {right}16</div>
                 <div className="sright text-2xl cursor-pointer hover:bg-blue-700" onClick={() => handleModalFloor("r-17-24")}>{right}17 - {right}24</div>
             </div>
         )
+    }
+
+    const routeToStudent = (id) => {
+        Router.push({ pathname: "profiles/student", query: { profileId: id } })
+    }
+
+    const studentInfo = (item, student) => {
+        setIsInfoClose(true)
+        const removeRoom = async () => {
+            const body = {
+                floorId: `floor${item.room[0]}`,
+                roomId: item.room,
+                studentId: item[student].id,
+                orderId: student
+            }
+            const remove = await post("remove", body)
+            if (remove.success) {
+                if (modalFloor) {
+                    let changeStatusReserve = modalFloor.map(room => {
+                        let temp = room
+                        if (temp.room == item.room) {
+                            temp[`${student}`] = undefined
+                            return temp
+                        } else return temp
+                    })
+                    setModalFloor(changeStatusReserve)
+                }
+                else handleSelectFloor(showbuilding)
+                message.success(remove.message)
+            }
+            else message.error(remove.message)
+        }
+        if (student == "student1") {
+
+            studentModal.info({
+                title: 'การจัดการนักศึกษา',
+                content: (
+                    <div className="flex flex-row">
+                        <button className="m-2 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-1 px-1 border border-red-500 hover:border-transparent rounded"
+                            onClick={() => {
+                                studentModal.destroyAll()
+                                removeRoom()
+                            }}
+                        >
+                            ยกเลิกการจองห้องของนักศึกษา
+                        </button>
+                        <button className="m-2 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-1 border border-blue-500 hover:border-transparent rounded"
+                            onClick={() => {
+                                studentModal.destroyAll()
+                                routeToStudent(item.student1.id)
+                            }}
+                        >
+                            ดูข้อมูลนักศึกษาเพิ่มเติม
+                        </button>
+                    </div>
+                ),
+                onOk() { },
+                okText: `ปิด`,
+            });
+        }
+        else if (student == "student2") {
+            studentModal.info({
+                title: 'การจัดการนักศึกษา',
+                content: (
+                    <div className="flex flex-row">
+                        <button className="m-2 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-1 px-1 border border-red-500 hover:border-transparent rounded"
+                            onClick={() => {
+                                studentModal.destroyAll()
+                                removeRoom()
+                            }}
+                        >
+                            ยกเลิกการจองห้องของนักศึกษา
+                            </button>
+                        <button className="m-2 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-1 border border-blue-500 hover:border-transparent rounded"
+                            onClick={() => {
+                                studentModal.destroyAll()
+                                routeToStudent(item.student2.id)
+                            }}
+                        >
+                            ดูข้อมูลนักศึกษาเพิ่มเติม
+                        </button>
+                    </div>
+                ),
+                onOk() { },
+                okText: `ปิด`,
+            });
+        }
     }
 
     const FocusFloor = () => {
@@ -178,10 +280,6 @@ const reserve = () => {
         const oddRoom = modalFloor.filter((_item, key) => key % 2 !== 0)
         const evenRoom = modalFloor.filter((_item, key) => key % 2 === 0)
 
-        const routeToStudent = (id) => {
-            Router.push({ pathname: "profiles/student", query: { profileId: id } })
-        }
-
         const styleStd1 = (room) => {
             if (!room.available) {
                 return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
@@ -203,18 +301,17 @@ const reserve = () => {
         }
 
         const setStatusRoom = async (room, status) => {
-            console.log(room)
-            const sendStatus = { floorId: `floor${room.roomId.slice(0, 1)}`, roomId: room.roomId, available: status }
+            const sendStatus = { floorId: `floor${room.room.slice(0, 1)}`, room: room.room, available: status }
             const setStatus = await post("statusRoom", sendStatus)
             if (setStatus.success) {
                 let tempModelFloor = modalFloor
                 const keepTempModal = tempModelFloor.map(item => {
-                    if (item.roomId === room.roomId)
+                    if (item.room === room.room)
                         return { ...item, available: status }
                     else return item
                 })
                 setModalFloor(keepTempModal)
-                message.success(`ปิดการจองห้อง ${room.roomId} แล้ว`)
+                message.success(`ปิดการจองห้อง ${room.room} แล้ว`)
             }
             setUpdate(Math.random())
         }
@@ -235,8 +332,9 @@ const reserve = () => {
                                             :
                                             <button onClick={() => setStatusRoom(room, true)} className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">เปิดการจองห้องนี้</button>
                                     }
-                                    {room.roomId}
+                                    {room.room}
                                     <span className="student1">
+
                                         <Tooltip title={room.student1 ?
                                             `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/
                                                 ${room.student1.name ? room.student1.name : "ไม่ได้กรอกข้อมูล"}\n/
@@ -249,7 +347,10 @@ const reserve = () => {
                                                 className="person cursor-pointer"
                                                 style={styleStd1(room)}
                                                 src="/icon/male.svg" alt="person"
-                                                onClick={() => routeToStudent(room.student1.id)}
+                                                onClick={() => {
+                                                    if (room.student1)
+                                                        studentInfo(room, "student1")
+                                                }}
                                             />
                                         </Tooltip>
                                     </span>
@@ -267,7 +368,10 @@ const reserve = () => {
                                                 className="person cursor-pointer"
                                                 style={styleStd2(room)}
                                                 src="/icon/male.svg" alt="person"
-                                                onClick={() => routeToStudent(room.student2.id)}
+                                                onClick={() => {
+                                                    if (room.student2)
+                                                        studentInfo(room, "student2")
+                                                }}
                                             />
                                         </Tooltip>
                                     </span>
@@ -312,7 +416,7 @@ const reserve = () => {
                                             :
                                             <button onClick={() => setStatusRoom(room, true)} className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">เปิดการจองห้องนี้</button>
                                     }
-                                    {room.roomId}
+                                    {room.room}
                                     <span className="student1">
                                         <Tooltip title={room.student1 ?
                                             `${room.student1.id ? room.student1.id : "ไม่ได้กรอกข้อมูล"}\n/
@@ -327,7 +431,10 @@ const reserve = () => {
                                                 src="/icon/male.svg"
                                                 alt="person"
                                                 className="person cursor-pointer"
-                                                onClick={() => routeToStudent(room.student1.id)}
+                                                onClick={() => {
+                                                    if (room.student1)
+                                                        studentInfo(room, "student1")
+                                                }}
                                             />
                                         </Tooltip>
                                     </span>
@@ -345,7 +452,10 @@ const reserve = () => {
                                                 src="/icon/male.svg"
                                                 alt="person"
                                                 className="person cursor-pointer"
-                                                onClick={() => routeToStudent(room.student2.id)}
+                                                onClick={() => {
+                                                    if (room.student2)
+                                                        studentInfo(room, "student2")
+                                                }}
                                             />
                                         </Tooltip>
                                     </span>
@@ -368,11 +478,23 @@ const reserve = () => {
         }
     }
 
+    const handleChange = (e) => {
+        setSelect(prev => {
+            return {
+                ...prev,
+                [e.target.name]: e.target.value
+            }
+        })
+    }
+
     const changeStatusSystem = async (status) => {
-        const changeStatus = await post("system", { system: status })
+        const changeStatus = await post("system", { system: status, semester: select.semester, year: select.year })
         if (changeStatus.success) {
             message.success(changeStatus.message)
             setSystem(changeStatus.data.system)
+        }
+        else if (!changeStatus.success) {
+            message.error(changeStatus.message)
         }
     }
 
@@ -388,28 +510,33 @@ const reserve = () => {
         <div className="reserve-container">
             <div className="floor-select-container col-start-2 col-span-10">
                 <div className="flex flex-col floor-select-container col-start-2 col-span-10 justify-center justify-items-center pl-8 pr-8">
-                    {
-                        system
-                            ?
-                            <div className="flex flex-row justify-center text-center text-2xl p-5"><p>สถานะ : </p> <p className="bg-green-200">เปิดจองห้อง</p></div>
-                            :
-                            <div className="flex flex-row justify-center text-center text-2xl p-5"><p>สถานะ : </p> <p className="bg-red-200">ปิดจองห้อง</p></div>
-                    }
-                    {
-                        system
-                            ?
-                            <button
-                                onClick={() => changeStatusSystem(false)}
-                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                ปิดการจองห้อง
-                            </button>
-                            :
-                            <button
-                                onClick={() => changeStatusSystem(true)}
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                เปิดการจองห้อง
-                            </button>
-                    }
+
+                    <div className="flex flex-col relative">
+                        <label htmlFor="semester">เทอม</label>
+                        <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state" name="semester" id="semester" onChange={handleChange} value={select.semester}>
+                            <option value="1" name="semester">1</option>
+                            <option value="2" name="semester">2</option>
+                            <option value="3" name="semester">3</option>
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col relative">
+                        <label htmlFor="years">ปี</label>
+                        <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state" name="year" id="year" onChange={handleChange} value={select.year}>
+                            {
+                                years().map((item, key) => <option key={key} value={item} name={item}>{item}</option>)
+                            }
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                        </div>
+                    </div>
+
+                    <Switch className="m-4" loading={loading} checkedChildren="เปิดการจองห้อง" unCheckedChildren="ปิดการจองห้อง" checked={system} onChange={e => changeStatusSystem(e)} />
+
                 </div>
                 <h1 className="p-3 text-center text-xl">เลือกชั้น</h1>
                 <div className="flex flex-row justify-center">
