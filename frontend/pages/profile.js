@@ -18,12 +18,9 @@ const profile = () => {
     const [showModal, setShowModal] = Modal
     const [menuBar, setMenuBar] = MenuBar
     const [current, setCurrent] = useState(0)
-    const [isLoading, setIsLoading] = useState(true)
     const [headers, setHeaders] = useState({})
     const [myId, setMyId] = useState('')
-    const [blur, setBlur] = useState([])
-    const { register, handleSubmit, errors, getValues } = useForm();
-
+    const { register, handleSubmit, errors } = useForm();
     const [form, setForm] = React.useState({
         profile: {
             profileImg: "",
@@ -114,8 +111,6 @@ const profile = () => {
         agreement: false
     })
 
-    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
-
     const handleFormProfile = (val) => {
         setCurrent(prev => prev + 1)
         setForm({
@@ -199,7 +194,7 @@ const profile = () => {
         })
     }
 
-    const postData = (e) => {
+    const postData = () => {
         const { id } = JSON.parse(sessionStorage.getItem('token'))
 
         const success = () => {
@@ -226,54 +221,11 @@ const profile = () => {
         }
     }
 
-    const Logout = () => {
-        setToken(null)
-        sessionStorage.removeItem('token')
-        setShowModal(false)
-        setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('login')
-    }
-
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
-
-    const getInitialProfile = async () => {
-        try {
-            if (sessionStorage.getItem('token')) {
-                const token = await JSON.parse(sessionStorage.getItem('token'))
-                const studentProfile = await get(`/student/profile/${token.id}`)
-                if (response.ok) {
-                    setForm(studentProfile)
-                }
-            }
-        }
-        catch (error) {
-            console.error(error)
-        }
-    }
-
-    const handleFile = async (file) => {
-        const token = JSON.parse(sessionStorage.getItem('token'))
-        let data = new FormData()
-        data.append('img', file)
-        const resImg = await post(`/student/profile/upload/${token.id}`, data)
-        if (resImg.success) {
-            setForm({ ...form, profile: { ...form.profile, profileImg: resImg.message } })
-        }
-    }
-
     const steps = [
         {
+            key: 0,
             title: 'ข้อมูลเบื้องต้น',
-            content: form ? <form onSubmit={handleSubmit(handleFormProfile)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: <form onSubmit={handleSubmit(handleFormProfile)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเบื้องต้น</h2>
 
                 <label>รูปภาพ</label>
@@ -361,13 +313,20 @@ const profile = () => {
                     ref={register({ required: true })}
                 />
                 {errors.line && <p className="text-red-500">โปรดกรอกข้อมูล line</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
-                : null
         },
         {
+            key: 1,
             title: 'ข้อมูลติดต่อ',
-            content: form ? <form onSubmit={handleSubmit(handleFormContact)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: <form onSubmit={handleSubmit(handleFormContact)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลติดต่อ</h2>
                 <label>เบอร์โทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -390,13 +349,13 @@ const profile = () => {
                     ref={register({ required: true })}
                 />
                 {errors.facebook && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อ Facebook</p>}
-                <label>ชื่อระบบเครือข่ายโทรศัพท์</label>
+                <label>ที่อยู่</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     defaultValue={form.contact.network}
                     name="network"
                     ref={register({ required: true })}
                 />
-                {errors.network && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อระบบเครือข่ายโทรศัพท์</p>}
+                {errors.network && <p className="text-red-500">โปรดกรอกข้อมูล ที่อยู่</p>}
                 <label>บ้านเลขที่</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     defaultValue={form.contact.village}
@@ -453,12 +412,26 @@ const profile = () => {
                     ref={register({ required: true })}
                 />
                 {errors.postalcode && <p className="text-red-500">โปรดกรอกข้อมูล รหัสไปรษณีย์</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
-            </form> : null
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
+            </form>
         },
         {
+            key: 2,
             title: 'ข้อมูลการศึกษา',
-            content: form ? <form onSubmit={handleSubmit(handleFormInformation)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: <form onSubmit={handleSubmit(handleFormInformation)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลการศึกษา</h2>
                 <label>จบจากโรงเรียน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -523,281 +496,365 @@ const profile = () => {
                     ref={register({ required: true })}
                 />
                 {errors.drugallergy && <p className="text-red-500">โปรดกรอกข้อมูล แพ้ยา</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
-            </form> : null
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
+            </form>
         },
         {
+            key: 3,
             title: 'เพื่อนสนิท',
             content: <form onSubmit={handleSubmit(handleFormFriend)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>เพื่อนสนิท</h2>
                 <label>ชื่อจริง</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.friend.name}
+                    defaultValue={form.friend.friendName}
                     name="friendName"
                     ref={register({ required: true })}
                 />{errors.friendName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริง</p>}
                 <label>นามสกุล</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.friend.surname}
+                    defaultValue={form.friend.friendSurname}
                     name="friendSurname"
                     ref={register({ required: true })}
                 />
                 {errors.friendSurname && <p className="text-red-500">โปรดกรอกข้อมูล นามสกุล</p>}
                 <label>ชื่อเล่น</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.friend.nickname}
+                    defaultValue={form.friend.friendNickname}
                     name="friendNickname"
                     ref={register({ required: true })}
                 />
                 {errors.friendNickname && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อเล่น</p>}
                 <label>เบอร์โทร</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.friend.tel}
+                    defaultValue={form.friend.friendTel}
                     name="friendTel"
                     ref={register({ required: true })}
                 />
                 {errors.friendTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>คณะ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.friend.faculty}
+                    defaultValue={form.friend.friendFaculty}
                     name="friendFaculty"
                     ref={register({ required: true })}
                 />
                 {errors.friendFaculty && <p className="text-red-500">โปรดกรอกข้อมูล คณะ</p>}
                 <label>สาขา/ภาควิชา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.friend.department}
+                    defaultValue={form.friend.friendDepartment}
                     name="friendDepartment"
                     ref={register({ required: true })}
                 />
                 {errors.friendDepartment && <p className="text-red-500">โปรดกรอกข้อมูล สาขา/ภาควิชา</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
         {
+            key: 4,
             title: 'ข้อมูลเกี่ยวกับครอบครัว (บิดา)',
             content: <form onSubmit={handleSubmit(handleFormFamily.dad)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเกี่ยวกับครอบครัว (บิดา)</h2>
                 <label>ชื่อจริงบิดา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.name}
+                    defaultValue={form.family.dad.dadName}
                     name="dadName"
                     ref={register({ required: true })}
                 />
                 {errors.dadName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริงบิดา</p>}
                 <label>นามสกุล</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.surname}
+                    defaultValue={form.family.dad.dadSurname}
                     name="dadSurname"
                     ref={register({ required: true })}
                 />
                 {errors.dadSurname && <p className="text-red-500">โปรดกรอกข้อมูล นามสกุล</p>}
                 <label>อายุ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.age}
+                    defaultValue={form.family.dad.dadAge}
                     name="dadAge"
                     ref={register({ required: true })}
                 />
                 {errors.dadAge && <p className="text-red-500">โปรดกรอกข้อมูล อายุ</p>}
                 <label>อาชีพ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.career}
+                    defaultValue={form.family.dad.dadCareer}
                     name="dadCareer"
                     ref={register({ required: true })}
                 />
                 {errors.dadCareer && <p className="text-red-500">โปรดกรอกข้อมูล อาชีพ</p>}
                 <label>สถานที่ทำงาน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.workplace}
+                    defaultValue={form.family.dad.dadWorkplace}
                     name="dadWorkplace"
                     ref={register({ required: true })}
                 />
                 {errors.dadWorkplace && <p className="text-red-500">โปรดกรอกข้อมูล สถานที่ทำงาน</p>}
                 <label>ตำแหน่ง</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.position}
+                    defaultValue={form.family.dad.dadPosition}
                     name="dadPosition"
                     ref={register({ required: true })}
                 />
                 {errors.dadPosition && <p className="text-red-500">โปรดกรอกข้อมูล ตำแหน่ง</p>}
                 <label>รายได้/เดือน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.income}
+                    defaultValue={form.family.dad.dadIncome}
                     name="dadIncome"
                     ref={register({ required: true })}
                 />
                 {errors.dadIncome && <p className="text-red-500">โปรดกรอกข้อมูล รายได้/เดือน</p>}
                 <label>เบอร์โทร</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.tel}
+                    defaultValue={form.family.dad.dadTel}
                     name="dadTel"
                     ref={register({ required: true })}
                 />
                 {errors.dadTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>ชื่อระบบเครือข่ายโทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.dad.network}
+                    defaultValue={form.family.dad.dadNetwork}
                     name="dadNetwork"
                     ref={register({ required: true })}
                 />
                 {errors.dadNetwork && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อระบบเครือข่ายโทรศัพท์</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
         {
+            key: 5,
             title: "ข้อมูลเกี่ยวกับครอบครัว (มารดา)",
             content: <form onSubmit={handleSubmit(handleFormFamily.mom)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <label>ชื่อจริงมารดา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.name}
+                    defaultValue={form.family.mom.momName}
                     name="momName"
                     ref={register({ required: true })}
                 />
                 {errors.momName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริงมารดา</p>}
                 <label>นามสกุล</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.surname}
+                    defaultValue={form.family.mom.momSurname}
                     name="momSurname"
                     ref={register({ required: true })}
                 />
                 {errors.momSurname && <p className="text-red-500">โปรดกรอกข้อมูล นามสกุล</p>}
                 <label>อายุ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.age}
+                    defaultValue={form.family.mom.momAge}
                     name="momAge"
                     ref={register({ required: true })}
                 />
                 {errors.momAge && <p className="text-red-500">โปรดกรอกข้อมูล อายุ</p>}
                 <label>อาชีพ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.career}
+                    defaultValue={form.family.mom.momCareer}
                     name="momCareer"
                     ref={register({ required: true })}
                 />
                 {errors.momCareer && <p className="text-red-500">โปรดกรอกข้อมูล อาชีพ</p>}
                 <label>สถานที่ทำงาน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.workplace}
+                    defaultValue={form.family.mom.momWorkplace}
                     name="momWorkplace"
                     ref={register({ required: true })}
                 />
                 {errors.momWorkplace && <p className="text-red-500">โปรดกรอกข้อมูล สถานที่ทำงาน</p>}
                 <label>ตำแหน่ง</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.position}
+                    defaultValue={form.family.mom.momPosition}
                     name="momPosition"
                     ref={register({ required: true })}
                 />
                 {errors.momPosition && <p className="text-red-500">โปรดกรอกข้อมูล ตำแหน่ง</p>}
                 <label>รายได้/เดือน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.income}
+                    defaultValue={form.family.mom.momIncome}
                     name="momIncome"
                     ref={register({ required: true })}
                 />
                 {errors.momIncome && <p className="text-red-500">โปรดกรอกข้อมูล รายได้/เดือน</p>}
                 <label>เบอร์โทร</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.tel}
+                    defaultValue={form.family.mom.momTel}
                     name="momTel"
                     ref={register({ required: true })}
                 />
                 {errors.momTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>ชื่อระบบเครือข่ายโทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.mom.network}
+                    defaultValue={form.family.mom.momNetwork}
                     name="momNetwork"
                     ref={register({ required: true })}
                 />
                 {errors.momNetwork && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อระบบเครือข่ายโทรศัพท์</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
         {
+            key: 6,
             title: "ข้อมูลเกี่ยวกับครอบครัว (ติดต่อฉุกเฉิน)",
             content: <form onSubmit={handleSubmit(handleFormFamily.emergency)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <label>ติดต่อฉุกเฉิน</label>
                 <label>ชื่อจริง</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.emergency.name}
+                    defaultValue={form.family.emergency.emergencyName}
                     name="emergencyName"
                     ref={register({ required: true })}
                 />
                 {errors.emergencyName && <p className="text-red-500">โปรดกรอกข้อมูล ชื่อจริง</p>}
                 <label>สกุล</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.emergency.surname}
+                    defaultValue={form.family.emergency.emergencySurname}
                     name="emergencySurname"
                     ref={register({ required: true })}
                 />
                 {errors.emergencySurname && <p className="text-red-500">โปรดกรอกข้อมูล สกุล</p>}
                 <label>อายุ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.emergency.age}
+                    defaultValue={form.family.emergency.emergencyAge}
                     name="emergencyAge"
                     ref={register({ required: true })}
                 />
                 {errors.emergencyAge && <p className="text-red-500">โปรดกรอกข้อมูล อายุ</p>}
                 <label>มีความเกี่ยวข้องเป็น</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.emergency.concerned}
+                    defaultValue={form.family.emergency.emergencyConcerned}
                     name="emergencyConcerned"
                     ref={register({ required: true })}
                 />
                 {errors.emergencyConcerned && <p className="text-red-500">โปรดกรอกข้อมูล มีความเกี่ยวข้องเป็น</p>}
                 <label>อาชีพ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.emergency.career}
+                    defaultValue={form.family.emergency.emergencyCareer}
                     name="emergencyCareer"
                     ref={register({ required: true })}
                 />
                 {errors.emergencyCareer && <p className="text-red-500">โปรดกรอกข้อมูล อาชีพ</p>}
                 <label>เบอร์โทร</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.emergency.tel}
+                    defaultValue={form.family.emergency.emergencyTel}
                     name="emergencyTel"
                     ref={register({ required: true })}
                 />
                 {errors.emergencyTel && <p className="text-red-500">โปรดกรอกข้อมูล เบอร์โทร</p>}
                 <label>ระบบเครือข่ายโทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.family.emergency.network}
+                    defaultValue={form.family.emergency.emergencyNetwork}
                     name="emergencyNetwork"
                     ref={register({ required: true })}
                 />
                 {errors.emergencyNetwork && <p className="text-red-500">โปรดกรอกข้อมูล ระบบเครือข่ายโทรศัพท์</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
         {
+            key: 7,
             title: 'ข้อมูลอื่น ๆ',
             content: <form onSubmit={handleSubmit(handleFormOther)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลอื่น ๆ</h2>
                 <label>ความสามารถพิเศษ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.other.talent}
+                    defaultValue={form.other.otherTalent}
                     name="otherTalent"
                     ref={register({ required: true })}
                 />
                 {errors.otherTalent && <p className="text-red-500">โปรดกรอกข้อมูล ความสามารถพิเศษ</p>}
                 <label>อุปนิสัยส่วนตัว</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.other.character}
+                    defaultValue={form.other.otherCharacter}
                     name="otherCharacter"
                     ref={register({ required: true })}
                 />
                 {errors.otherCharacter && <p className="text-red-500">โปรดกรอกข้อมูล อุปนิสัยส่วนตัว</p>}
                 <label>เคยได้รับตำแหน่งใดในมหาวิทยาลัย/โรงเรียน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    defaultValue={form.other.position}
+                    defaultValue={form.other.otherPosition}
                     name="otherPosition"
                     ref={register({ required: true })}
                 />
                 {errors.otherPosition && <p className="text-red-500">โปรดกรอกข้อมูล เคยได้รับตำแหน่งใดในมหาวิทยาลัย/โรงเรียน</p>}
-                <input type="submit" className="bg-gray-500" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={postData}
+                >
+                    บันทึกข้อมูลชั่วคราว
+                </button>
+                <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
         {
+            key: 8,
             title: "กฎระเบียบการใช้งานหอพัก",
             content: <form className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <div className="md:flex md:items-center mb-6">
@@ -806,18 +863,80 @@ const profile = () => {
                         <input
                             className="mr-2 leading-tight"
                             type="checkbox"
-                            value={form.agreement} onChange={e => {
-                                setForm({ ...form, agreement: e.target.checked })
-                            }}
+                            value={form.agreement}
+                            onChange={e => setForm({ ...form, agreement: e.target.checked })}
                         />
                         <span className="text-sm">
                             ยอมรับข้อตกลงหอพัก
                         </span>
                     </label>
                 </div>
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => setCurrent(prev => prev - 1)}
+                >
+                    ก่อนหน้า
+                </button>
+                <button
+                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => {
+                        if (form.agreement) postData()
+                        else message.warning("โปรดอ่านและยอมรับกฎระเบียบของหอพัก")
+                    }}
+                >
+                    บันทึกข้อมูลทั้งหมด (สามารถจองห้องได้)
+                </button>
             </form>
         }
     ]
+
+    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
+
+    const Logout = () => {
+        setToken(null)
+        sessionStorage.removeItem('token')
+        setShowModal(false)
+        setMenuBar('ลงชื่อเข้าใช้')
+        Router.push('login')
+    }
+
+    const verifyLogin = () => {
+        const session = sessionStorage.getItem("token")
+        if (!session) {
+            sessionStorage.removeItem('token')
+            setToken(null)
+            setShowModal(false)
+            setMenuBar('ลงชื่อเข้าใช้')
+            Router.push('login')
+        }
+    }
+
+    const getInitialProfile = async () => {
+        try {
+            if (sessionStorage.getItem('token')) {
+                const token = await JSON.parse(sessionStorage.getItem('token'))
+                const studentProfile = await get(`/student/profile/${token.id}`)
+                if (response.ok) {
+                    setForm(studentProfile)
+                }
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleFile = async (file) => {
+        const token = JSON.parse(sessionStorage.getItem('token'))
+        let data = new FormData()
+        data.append('img', file)
+        const resImg = await post(`/student/profile/upload/${token.id}`, data)
+        if (resImg.success) {
+            setForm({ ...form, profile: { ...form.profile, profileImg: resImg.message } })
+        }
+    }
+
+
 
     const getHeader = () => {
         if (sessionStorage.getItem('token'))
@@ -845,22 +964,7 @@ const profile = () => {
                     <Step key={item.title} title={item.title} />
                 ))}
             </Steps>
-            <div className="steps-content">{steps[current].content}</div>
-            <div className="steps-action">
-                {current > 0 && (
-                    <Button style={{ margin: '0 8px' }} onClick={() => setCurrent(prev => prev - 1)}>
-                        ก่อนหน้า
-                    </Button>
-                )}
-                {current === steps.length - 1 && (
-                    <Button type="primary" onClick={() => {
-                        if (form.agreement) postData()
-                        else message.warning("โปรดอ่านและยอมรับกฎระเบียบของหอพัก")
-                    }}>
-                        บันทึกข้อมูล
-                    </Button>
-                )}
-            </div>
+            <div className="steps-content" key={steps[current].key}>{steps[current].content}</div>
         </div>
     )
 }

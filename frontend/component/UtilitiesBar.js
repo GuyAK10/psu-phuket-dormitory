@@ -9,7 +9,7 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const UtilitiesBar = () => {
-    const { SubMenuName, Token, Modal, MenuBar,Staff } = useContext(GlobalState)
+    const { SubMenuName, Token, Modal, MenuBar, Staff } = useContext(GlobalState)
     const [subMenuName] = SubMenuName
     const [token, setToken] = Token
     const [menuBar, setMenuBar] = MenuBar
@@ -17,6 +17,7 @@ const UtilitiesBar = () => {
     const [staff, setStaff] = Staff
     const [headers, setHeaders] = useState({})
     const [adminPath, setAdminPath] = useState(false)
+    const [headerDetail, setHeaderDetail] = useState(null)
 
     const { del } = useFetch(`${ENDPOINT}:${PORT}`, headers)
 
@@ -38,6 +39,7 @@ const UtilitiesBar = () => {
             setToken({ id: null, token: null, type: "Students" })
             sessionStorage.removeItem('token')
             setMenuBar('ลงชื่อเข้าใช้')
+            setHeaderDetail(null)
             setStaff(false)
             try {
                 del(`/logout/${token}`)
@@ -67,15 +69,21 @@ const UtilitiesBar = () => {
         setAdminPath(checkAdminPath)
     }
 
+    const getUtilsBar = () => {
+        const detail = JSON.parse(sessionStorage.getItem('token'))
+        setHeaderDetail(detail)
+    }
+
     useEffect(() => {
         getHeaders()
+        getUtilsBar()
         LoginOrLogout()
         checkPathName()
     }, [])
 
     return (
         <div className="utillities flex flex-row justify-between shadow w-full flex flex-row bg-gray-200 text-xl p-3">
-            {/* <div>{subMenuName}</div> */}
+            { headerDetail ? <div className="text-center text-base">{`${headerDetail.name} ${headerDetail.surname} ${headerDetail.id} `}</div> : ""}
             <div className="self-end">{token ? token.id : null}</div>
             <div className="cursor-pointer">
                 <span className="flex">

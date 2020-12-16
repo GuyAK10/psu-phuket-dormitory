@@ -62,8 +62,6 @@ const PaymentHistory = () => {
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
 
-            <div className="text-center"><label htmlFor="id">รหัสนักศึกษา :  </label>{JSON.parse(sessionStorage.getItem('token')).id}</div>
-
             { isLoading
                 ?
                 <Skeleton />

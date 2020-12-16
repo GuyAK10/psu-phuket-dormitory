@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react'
-import Head from "next/head"
+import React, { useState, useEffect } from 'react'
 import Card from '../component/Card'
-import Router from 'next/router'
 import useFetch from 'use-http'
 
 const ENDPOINT = process.env.ENDPOINT
@@ -9,7 +7,6 @@ const PORT = process.env.PORT
 
 const Index = () => {
     const [news, setNews] = useState(null)
-    const [newnew, setNew] = useState(null)
     const { get } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", })
 
     const newsList = async () => {
@@ -53,11 +50,22 @@ const Index = () => {
                     <div className="flex flex-row"><img className="w-5 h-5" src="icon/check.svg" alt="check" /><p>แจ้งผลผ่าน Line</p></div>
                 </Card>
             </div>
-            {news !== null ? news.data.map((item, key) => (
-                <div>
-                    <a href={`http://localhost/news/${item.newsName}`} target="_blank">{item.newsId}</a>
-                </div>
-            )) :""}
+
+            <h1 className="text-3xl text-center">ข่าวสาร</h1>
+            <div className="flex flex-row flex-wrap px-8 justify-center">
+                {news !== null ? news.data.map((item, key) => (
+                    // const name = `http://localhost/news/${item.newsName}`
+                    // const getUrl = async () => await get(`/news/${item.newsName}`)
+                    <div className="p-4" key={key}>
+                        <h1 className="text-center">{`${item.newsName}`}</h1>
+                        <embed src={`http://localhost/news/${item.newsName}`} type="application/pdf" />
+                        <div className="flex flex-row justify-center">
+                            <a className="m-1 text-blue-400" target="_blank" href={`http://localhost/news/${item.newsName}`}>อ่านเพิ่มเติม</a>
+                            <a className="m-1 text-blue-400" href={`http://localhost/news/${item.newsName}?download=true`}>ดาวน์โหลดไฟล์</a>
+                        </div>
+                    </div>
+                )) : ""}
+            </div>
         </div>
 
     )

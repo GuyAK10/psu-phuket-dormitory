@@ -154,11 +154,11 @@ const ProfileResult = ({ profileId }) => {
             >
                 Print
             </button>
-            <div ref={printRef} className="print-student text-black flex flex-col pt-10 pb-10 pr-16 pl-16">
+            <div ref={printRef} className="print-student text-black flex flex-col pt-8 pb-8 pr-16 pl-16">
 
                 <img className="psuLogo self-center" src="../../icon/psuLogo.png" alt="psu logo" />
 
-                <p className="text-center m-4">สำนักงานหอพักนักศึกษาชาย มหาวิทยาลัยสงขลานครินทร์ วิทยาเขตภูเก็ต</p>
+                <p className="text-center m-2">สำนักงานหอพักนักศึกษาชาย มหาวิทยาลัยสงขลานครินทร์ วิทยาเขตภูเก็ต</p>
 
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
                 <ul className="list-disc flex flex-col">
@@ -167,62 +167,63 @@ const ProfileResult = ({ profileId }) => {
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }
-                    <div className="m-4">
-                        <li>
+                    <div className="m-2">
+                        <li className="font-bold">
                             ข้อมูลเบื้องต้นของนักศึกษา
-                    </li>
+                        </li>
                         <p>
-                            {`ชื่อ-สกุล ${student.profile.name} ${student.profile.surname} ชื่อเล่น ${student.profile.nickname} ศาสนา ${student.profile.religion} เชื้อชาติ ${student.profile.race} สัญชาติ ${student.profile.nationality} วัน/เดือน/ปีเกิด ${student.profile.birthday} คณะ ${student.profile.faculty} สาขา/ภาควิชา ${student.profile.department} Line ID ${student.profile.line} เบอร์โทรศัพท์ ${student.profile.tel} อีเมล์ ${student.profile.email}`}
+                            ชื่อ-สกุล <p className="border-dotted border-b-2 border-black inline">{student.profile.name} {student.profile.surname}</p> ชื่อเล่น <p className="border-dotted border-b-2 border-black inline">{student.profile.nickname}</p> ศาสนา <p className="border-dotted border-b-2 border-black inline">{student.profile.religion}</p> เชื้อชาติ <p className="border-dotted border-b-2 border-black inline">{student.profile.race}</p> สัญชาติ <p className="border-dotted border-b-2 border-black inline">{student.profile.nationality}</p> วัน/เดือน/ปีเกิด <p className="border-dotted border-b-2 border-black inline">{student.profile.birthday}</p> คณะ <p className="border-dotted border-b-2 border-black inline">{student.profile.faculty}</p> สาขา/ภาควิชา <p className="border-dotted border-b-2 border-black inline">{student.profile.department}</p> Line ID <p className="border-dotted border-b-2 border-black inline">{student.profile.line}</p>
                         </p>
                     </div>
-                    <div className="m-4">
-                        <li>
+                    <div className="m-2">
+                        <li className="font-bold">
                             ข้อมูลติดต่อ
-                    </li>
+                        </li>
                         <p>
-                            {`เบอร์โทร ${student.contact.tel} อีเมล์ ${student.contact.email} ชื่อ facebook ${student.contact.facebook} ที่อยู่ ${student.contact.network} บ้านเลขที่ ${student.contact.houseno} หมู่บ้าน ${student.contact.village} หมู่ที่ ${student.contact.villageno} ถนน ${student.contact.road} ตำบล ${student.contact.district} อำเภอ ${student.contact.subdistrict} จังหวัด ${student.contact.province} รหัสไปรษณีย์ ${student.contact.postalcode}`}
+                            เบอร์โทร <p className="border-dotted border-b-2 border-black inline">{student.contact.tel}</p> อีเมล์ <p className="border-dotted border-b-2 border-black inline">{student.contact.email}</p> ชื่อ facebook <p className="border-dotted border-b-2 border-black inline">{student.contact.facebook}</p> ที่อยู่ <p className="border-dotted border-b-2 border-black inline">{student.contact.network}</p> บ้านเลขที่ <p className="border-dotted border-b-2 border-black inline">{student.contact.houseno}</p> หมู่บ้าน <p className="border-dotted border-b-2 border-black inline">{student.contact.village}</p> หมู่ที่ <p className="border-dotted border-b-2 border-black inline">{student.contact.villageno}</p> ถนน <p className="border-dotted border-b-2 border-black inline">{student.contact.road}</p> ตำบล <p className="border-dotted border-b-2 border-black inline">{student.contact.district}</p> อำเภอ <p className="border-dotted border-b-2 border-black inline">{student.contact.subdistrict}</p> จังหวัด <p className="border-dotted border-b-2 border-black inline">{student.contact.province}</p> รหัสไปรษณีย์ <p className="border-dotted border-b-2 border-black inline">{student.contact.postalcode}</p>
                         </p>
                     </div>
-                    <div className="m-4">
-                        <li>
+                    <div className="m-2">
+                        <li className="font-bold">
                             ข้อมูลการศึกษา
-                    </li>
-                        <p>{`จบจากโรงเรียน ${student.information.school} จังหวัด ${student.information.county} เกรดเฉลี่ย ${student.information.gpa} แผนการศึกษา ${student.information.plan} ส่วนสูง(ซ.ม.) ${student.information.height}  น้ำหนัก(ก.ก.) ${student.information.weight} กรุ๊บเลือด ${student.information.blood} โรคประจำตัว ${student.information.disease} แพ้ยา ${student.information.drugallergy}          
-                    `}
-                        </p>
+                        </li>
+                        <p>จบจากโรงเรียน <p className="border-dotted border-b-2 border-black inline">{student.information.school}</p> จังหวัด <p className="border-dotted border-b-2 border-black inline">{student.information.county}</p> เกรดเฉลี่ย <p className="border-dotted border-b-2 border-black inline">{student.information.gpa}</p> แผนการศึกษา <p className="border-dotted border-b-2 border-black inline">{student.information.plan}</p> ส่วนสูง (ซ.ม.) <p className="border-dotted border-b-2 border-black inline">{student.information.height}</p>  น้ำหนัก (ก.ก.) <p className="border-dotted border-b-2 border-black inline">{student.information.weight}</p> กรุ๊บเลือด <p className="border-dotted border-b-2 border-black inline">{student.information.blood}</p> โรคประจำตัว <p className="border-dotted border-b-2 border-black inline">{student.information.disease}</p> แพ้ยา <p className="border-dotted border-b-2 border-black inline">{student.information.drugallergy}</p></p>
                     </div>
-                    <div className="m-4">
-                        <li>
+                    <div className="m-2">
+                        <li className="font-bold">
                             เพื่อนสนิท
-                    </li>
+                        </li>
                         <p>
-                            {` ชื่อจริง ${student.friend.friendName} นามสกุล ${student.friend.friendSurname} ชื่อเล่น ${student.friend.friendNickname} เบอร์โทร ${student.friend.friendTel} คณะ ${student.friend.friendFaculty} สาขา/ภาควิชา ${student.friend.friendDepartment}
-                        `}
+                            ชื่อจริง <p className="border-dotted border-b-2 border-black inline">{student.friend.friendName}</p> นามสกุล <p className="border-dotted border-b-2 border-black inline">{student.friend.friendSurname}</p> ชื่อเล่น <p className="border-dotted border-b-2 border-black inline">{student.friend.friendNickname}</p> เบอร์โทร <p className="border-dotted border-b-2 border-black inline">{student.friend.friendTel}</p> คณะ <p className="border-dotted border-b-2 border-black inline">{student.friend.friendFaculty}</p> สาขา/ภาควิชา <p className="border-dotted border-b-2 border-black inline">{student.friend.friendDepartment}</p>
                         </p>
                     </div>
-                    <div className="m-4">
-                        <li>
+                    <div className="m-2">
+                        <li className="font-bold">
                             เกี่ยวกับครอบครัว
-                    </li>
-                        <p>
-                            {`ชื่อจริงบิดา ${student.family.dad.dadName} นามสกุล ${student.family.dad.dadSurname} อายุ ${student.family.dad.dadAge} สถานที่ทำงาน ${student.family.dad.dadWorkplace} ตำแหน่ง ${student.family.dad.dadPosition} สถานที่ ${student.family.dad.dadNetwork} รายได้/เดือน ${student.family.dad.dadIncome} เบอร์โทร ${student.family.dad.dadTel} ชื่อระบบเครือข่ายโทรศัพท์ ${student.family.dad.dadTel}`}
+                        </li>
+                        <p className="font-semibold my-1">
+                            เกี่ยวกับบิดา
                         </p>
-                        <p>
-                            {`ชื่อจริงมารดา ${student.family.mom.momName} นามสกุล ${student.family.mom.momSurname} อายุ ${student.family.mom.momAge} สถานที่ทำงาน ${student.family.mom.momWorkplace} ตำแหน่ง ${student.family.mom.momPosition} สถานที่ ${student.family.mom.momNetwork} รายได้/เดือน ${student.family.mom.momIncome} เบอร์โทร ${student.family.mom.momTel} ชื่อระบบเครือข่ายโทรศัพท์ ${student.family.mom.momTel}`}
+                        ชื่อจริงบิดา<p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadName}</p> นามสกุล <p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadSurname}</p> อายุ <p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadAge}</p> สถานที่ทำงาน <p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadWorkplace}</p> ตำแหน่ง <p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadPosition}</p> รายได้/เดือน <p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadIncome}</p> เบอร์โทร <p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadTel}</p> ชื่อระบบเครือข่ายโทรศัพท์ <p className="border-dotted border-b-2 border-black inline">{student.family.dad.dadNetwork}</p>
+                        <p className="font-semibold my-1">
+                            เกี่ยวกับมารดา
                         </p>
-                        <p>
-                            {`มีความเกี่ยวข้องเป็น  ${student.family.status}`}
+                        ชื่อจริงมารดา<p className="border-dotted border-b-2 border-black inline">{student.family.mom.momName}</p> นามสกุล <p className="border-dotted border-b-2 border-black inline">{student.family.mom.momSurname}</p> อายุ <p className="border-dotted border-b-2 border-black inline">{student.family.mom.momAge}</p> สถานที่ทำงาน <p className="border-dotted border-b-2 border-black inline">{student.family.mom.momWorkplace}</p> ตำแหน่ง <p className="border-dotted border-b-2 border-black inline">{student.family.mom.momPosition}</p>รายได้/เดือน <p className="border-dotted border-b-2 border-black inline">{student.family.mom.momIncome}</p> เบอร์โทร <p className="border-dotted border-b-2 border-black inline">{student.family.mom.momTel}</p> ชื่อระบบเครือข่ายโทรศัพท์ <p className="border-dotted border-b-2 border-black inline">{student.family.mom.momNetwork}</p>
+                        <p className="font-semibold my-1">
+                            ติดต่อฉุกเฉิน
                         </p>
-                        <p>
-                            {`ติดต่อฉุกเฉินชื่อจริง ${student.family.emergency.emergencyName} สกุล ${student.family.emergency.emergencySurname} อายุ ${student.family.emergency.emergencyAge} มีความเกี่ยวข้องเป็น ${student.family.emergency.emergencyConcerned} อาชีพ ${student.family.emergency.emergencyCareer} เบอร์โทร ${student.family.emergency.emergencyTel} ระบบเครือข่ายโทรศัพท์ ${student.family.emergency.emergencyNetwork}`}
+                            ชื่อจริง <p className="border-dotted border-b-2 border-black inline">{student.family.emergency.emergencyName}</p> สกุล <p className="border-dotted border-b-2 border-black inline">{student.family.emergency.emergencySurname}</p> อายุ <p className="border-dotted border-b-2 border-black inline">{student.family.emergency.emergencyAge}</p> มีความเกี่ยวข้องเป็น <p className="border-dotted border-b-2 border-black inline">{student.family.emergency.emergencyConcerned}</p> อาชีพ <p className="border-dotted border-b-2 border-black inline">{student.family.emergency.emergencyCareer}</p> เบอร์โทร <p className="border-dotted border-b-2 border-black inline">{student.family.emergency.emergencyTel}</p> ระบบเครือข่ายโทรศัพท์ <p className="border-dotted border-b-2 border-black inline">{student.family.emergency.emergencyNetwork}</p>
+                        <p className="font-semibold">
+                            มีความเกี่ยวข้องเป็น
                         </p>
+                        <p className="border-dotted border-b-2 border-black inline">{student.family.status}</p>
                     </div>
-                    <div className="m-4">
-                        <li>
+                    <div className="m-2">
+                        <li className="font-bold">
                             อื่น ๆ
-                    </li>
+                        </li>
                         <p>
-                            {`ความสามารถพิเศษ ${student.other.otherTalent} อุปนิสัยส่วนตัว ${student.other.otherCharacter} เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน ${student.other.otherPosition}`}
+                            ความสามารถพิเศษ <p className="border-dotted border-b-2 border-black inline">{student.other.otherTalent}</p> อุปนิสัยส่วนตัว <p className="border-dotted border-b-2 border-black inline">{student.other.otherCharacter}</p> เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน <p className="border-dotted border-b-2 border-black inline">{student.other.otherPosition}</p>
                         </p>
                     </div>
                 </ul>
