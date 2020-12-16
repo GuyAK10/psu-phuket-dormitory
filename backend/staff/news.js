@@ -1,5 +1,4 @@
 const express = require('express');
-const firestore = require('../configs/firebase')
 const multer = require('multer');
 const { db, storage } = require('../configs/firebase');
 const { newsNotify } = require('../configs/line')
@@ -8,10 +7,9 @@ const router = express.Router()
 const bucket = storage.bucket()
 const uploader = multer();
 
-router.post('/staff/news/upload/:newName', uploader.single('pdf'), async (req, res) => {
-    console.log(req.body)
+router.post('/staff/news/upload/:newName/:detail', uploader.single('pdf'), async (req, res) => {
     try {
-        const { params: { newName } } = req
+        const { params: { newName, detail } } = req
         const folder = 'news'
         const fileName = req.file.originalname
         const fileUpload = bucket.file(`${folder}/` + fileName);
@@ -28,9 +26,11 @@ router.post('/staff/news/upload/:newName', uploader.single('pdf'), async (req, r
 
         blobStream.on('finish', async () => {
             await newsNotify(newName)
-            const newsRef =  db.collection("news").doc(`${newName}`)
+            const newsRef = db.collection("news").doc(`${decodeURI(newName)}`)
             await newsRef.set({
-                newsName:fileName
+                newsName: fileName,
+                detail,
+                title: newName
             })
             res.status(200).send({ code: 200, success: true, message: `อัพเดทข่าวแล้ว` });
         });
@@ -40,7 +40,6 @@ router.post('/staff/news/upload/:newName', uploader.single('pdf'), async (req, r
         console.log(error)
         res.sendStatus(400);
     }
-
 });
 
 router.get('/staff/news/', (req, res) => {
@@ -61,7 +60,7 @@ router.get('/staff/news/', (req, res) => {
 router.get('/staff/news/listname', async (req, res) => {
     try {
         const newsRef = db.collection("news");
-        const listName =  await newsRef.get()
+        const listName = await newsRef.get()
         let newNameset = []
         listName.forEach(newsName => {
             let dataList = {
@@ -70,10 +69,10 @@ router.get('/staff/news/listname', async (req, res) => {
 
             dataList.newsId = newsName.id
             Object.assign(dataList, newsName.data())
-            newNameset.push(dataList)
+            newNameset.push(decodeURI(dataList))
 
         })
-        res.status(200).send({ code: 200, success: true, data:newNameset });
+        res.status(200).send({ code: 200, success: true, data: newNameset });
     } catch (error) {
         console.log(error)
     }

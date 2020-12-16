@@ -936,8 +936,6 @@ const profile = () => {
         }
     }
 
-
-
     const getHeader = () => {
         if (sessionStorage.getItem('token'))
             setHeaders({

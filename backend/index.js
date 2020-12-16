@@ -27,7 +27,7 @@ const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: "100mb" }))
 
 //useStaff
 app.use(accessControl)
