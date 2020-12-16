@@ -7,7 +7,7 @@ const bucket = storage.bucket()
 router.get('/news/listname', async (req, res) => {
     try {
         const newsRef = db.collection("news");
-        const listName =  await newsRef.get()
+        const listName = await newsRef.get()
         let newNameset = []
         listName.forEach(newsName => {
             let dataList = {
@@ -19,20 +19,27 @@ router.get('/news/listname', async (req, res) => {
             newNameset.push(dataList)
 
         })
-        res.status(200).send({ code: 200, success: true, data:newNameset });
+        res.status(200).send({ code: 200, success: true, data: newNameset });
     } catch (error) {
         console.log(error)
     }
 })
 
-router.get('/news/:newsName', (req, res) => {
+router.get('/news/:newsName', async (req, res) => {
     try {
+        const { download } = req.query
         const fileName = req.params.newsName
         const file = bucket.file(`news/${fileName}`);
-        file.download().then(downloadResponse => {
-            console.log(downloadResponse[0])
-            res.status(200).send(downloadResponse[0]);
-        });
+
+        const [getUrl] = await file.getSignedUrl({ action: "read", expires: Date.now() + 1000 * 60 * 60 })
+        // if (download != 'true') res.status(200).send({ code: 200, success: true, message: "พบไฟล์", data: getUrl })
+        if (download != 'true') res.redirect(getUrl)
+
+        else if (download == "true")
+            file.download().then(downloadResponse => {
+                res.status(200).send(downloadResponse[0]);
+            });
+
     } catch (error) {
         console.log(error)
         res.sendStatus(400);

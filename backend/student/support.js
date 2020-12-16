@@ -5,9 +5,9 @@ const router = express.Router()
 
 router.post('/student/support', (req, res) => {
     try {
-        const { body: {  detail } } = req
+        const { body: { detail } } = req
         const type = "student"
-        supportNotify(detail,type)
+        supportNotify(detail, type)
     } catch (error) {
         console.log(error)
         res.status(400);

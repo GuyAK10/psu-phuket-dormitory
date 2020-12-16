@@ -109,20 +109,11 @@ router.get('/student/profile/:studentId', async (req, res) => {
 router.post('/student/profile/:studentId', async (req, res) => {
   try {
     const { params: { studentId } } = req
-    const { body: { profile, contact, information, friend, family, other, agreement } } = req
-    const user = {
-      profile,
-      contact,
-      information,
-      friend,
-      family,
-      other,
-      agreement
-    }
+    // const { body: { profile, contact, information, friend, family, other, agreement } } = req
+    const user = req.body
     const docRef = db.collection('students').doc(`${studentId}`)
     await docRef.update(user)
-    res.status(200).send("add profile success");
-
+    res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลสำเร็วแล้ว" });
   } catch (error) {
     console.log(error)
     res.sendStatus(400);
