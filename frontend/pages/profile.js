@@ -112,6 +112,7 @@ const profile = () => {
     })
 
     const handleFormProfile = (val) => {
+        postData()
         setCurrent(prev => prev + 1)
         setForm({
             ...form,
@@ -120,6 +121,7 @@ const profile = () => {
     }
 
     const handleFormContact = (val) => {
+        postData()
         setCurrent(prev => prev + 1)
         setForm({
             ...form,
@@ -128,6 +130,7 @@ const profile = () => {
     }
 
     const handleFormInformation = (val) => {
+        postData()
         setCurrent(prev => prev + 1)
         setForm({
             ...form,
@@ -136,6 +139,7 @@ const profile = () => {
     }
 
     const handleFormFriend = (val) => {
+        postData()
         setCurrent(prev => prev + 1)
         setForm({
             ...form,
@@ -145,6 +149,7 @@ const profile = () => {
 
     const handleFormFamily = {
         dad: (val) => {
+            postData()
             setCurrent(prev => prev + 1)
             setForm({
                 ...form,
@@ -155,6 +160,7 @@ const profile = () => {
             })
         },
         mom: (val) => {
+            postData()
             setCurrent(prev => prev + 1)
             setForm({
                 ...form,
@@ -165,6 +171,7 @@ const profile = () => {
             })
         },
         emergency: (val) => {
+            postData()
             setCurrent(prev => prev + 1)
             setForm({
                 ...form,
@@ -175,6 +182,7 @@ const profile = () => {
             })
         },
         status: (val) => {
+            postData()
             setCurrent(prev => prev + 1)
             setForm({
                 ...form,
@@ -187,6 +195,7 @@ const profile = () => {
     }
 
     const handleFormOther = (val) => {
+        postData()
         setCurrent(prev => prev + 1)
         setForm({
             ...form,
@@ -194,7 +203,7 @@ const profile = () => {
         })
     }
 
-    const postData = () => {
+    const postData = (saveAll) => {
         const { id } = JSON.parse(sessionStorage.getItem('token'))
 
         const success = () => {
@@ -208,8 +217,11 @@ const profile = () => {
         try {
             axios.post(`${ENDPOINT}/student/profile/${id}`, form, headers).then(res => {
                 if (res.status === 200) {
-                    success()
-                    Router.push('/')
+                    if (saveAll == "saveAll") {
+                        success()
+                        Router.push(`/profile-result?profileId=${id}`)
+                    }
+                    if (saveAll != "saveAll") message.success('บันทึกข้อมูลชั่วคราว (เฉพาะหน้าถัดมา)')
                 }
                 else {
                     error()
@@ -314,12 +326,6 @@ const profile = () => {
                 />
                 {errors.line && <p className="text-red-500">โปรดกรอกข้อมูล line</p>}
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
@@ -419,12 +425,6 @@ const profile = () => {
                     ก่อนหน้า
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
@@ -503,12 +503,6 @@ const profile = () => {
                     ก่อนหน้า
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
@@ -565,12 +559,6 @@ const profile = () => {
                     ก่อนหน้า
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
@@ -649,12 +637,6 @@ const profile = () => {
                     ก่อนหน้า
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
@@ -732,12 +714,6 @@ const profile = () => {
                     ก่อนหน้า
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
@@ -802,12 +778,6 @@ const profile = () => {
                     ก่อนหน้า
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
@@ -844,26 +814,20 @@ const profile = () => {
                     ก่อนหน้า
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
-                <button
-                    className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={postData}
-                >
-                    บันทึกข้อมูลชั่วคราว
-                </button>
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
             </form>
         },
         {
             key: 8,
             title: "กฎระเบียบการใช้งานหอพัก",
-            content: <form className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <div className="md:flex md:items-center mb-6">
                     <div className="md:w-1/3"></div>
                     <label className="md:w-2/3 block text-gray-500 font-bold">
                         <input
                             className="mr-2 leading-tight"
                             type="checkbox"
-                            value={form.agreement}
+                            checked={form.agreement}
                             onChange={e => setForm({ ...form, agreement: e.target.checked })}
                         />
                         <span className="text-sm">
@@ -880,17 +844,19 @@ const profile = () => {
                 <button
                     className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     onClick={() => {
-                        if (form.agreement) postData()
+                        if (form.agreement) {
+                            postData('saveAll')
+                        }
                         else message.warning("โปรดอ่านและยอมรับกฎระเบียบของหอพัก")
                     }}
                 >
                     บันทึกข้อมูลทั้งหมด (สามารถจองห้องได้)
                 </button>
-            </form>
+            </div>
         }
     ]
 
-    const { get, post, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
+    const { get, post, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
 
     const Logout = () => {
         setToken(null)

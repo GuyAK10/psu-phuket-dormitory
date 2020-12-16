@@ -88,7 +88,7 @@ const NavigationBar = () => {
                         </span>
                         {menuName === "ข้อมูลส่วนตัว" ?
                             <div className="flex flex-col">
-                                <SubMenu menu="ข้อมูลส่วนตัว" route={`/profile-result?profileId=${sessionStorage.getItem('token') ? JSON.parse(sessionStorage.getItem('token')).id : undefined}`} />
+                                <SubMenu menu="แสดงข้อมูลส่วนตัว" route={`/profile-result?profileId=${sessionStorage.getItem('token') ? JSON.parse(sessionStorage.getItem('token')).id : undefined}`} />
                                 <SubMenu menu="เพิ่มเติม/แก้ไขข้อมูล" route="/profile" />
                             </div> : null
                         }
