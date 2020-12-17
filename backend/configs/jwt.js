@@ -101,6 +101,7 @@ const createToken = async (user, responseData, _req, res) => {
             if (responseData.userId === null && responseData.role === null) {
                   res.status(401).send("ID หรือ Password ผิด");
             } else {
+                  //save test user for profile
                   if (user.username === 'student') {
                         const payload = {
                               id: responseData.userId,

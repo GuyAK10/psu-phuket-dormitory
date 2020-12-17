@@ -7,6 +7,7 @@ const router = express.Router()
 const { db, admin } = require('./configs/firebase')
 const { createToken } = require('./configs/jwt')
 const xlsxFile = require('read-excel-file/node');
+const { error } = require('console');
 //remove token
 router.delete('/logout/:token', async (req, res) => {
     const token = req.params.token
@@ -37,15 +38,18 @@ router.post('/', (req, res) => {
             const mockRequestStaff = { headers: { type: "Staffs" } }
             const mockRequestStudent = { headers: { type: "Students" } }
             if (username == "staff") {
-                createToken({ username, password: "any", type: "Staffs" }, { userId: "Test User", role: "Staffs" }, mockRequestStaff, res)
+                createToken({ username, password: "any", type: "Staffs" }, { userId: "staff test User", role: "Staffs" }, mockRequestStaff, res)
             }
             //test user student
             else if (username == "student") {
                 createToken({ username, password: "any", type: "Students" }, { userId: "student test user", role: "Students" }, mockRequestStudent, res)
             }
-
             else {
-                client.GetUserDetails({ username, password, type }, async function (err, response) {
+                // fast check login
+                let loginFail = setTimeout(() => {
+                    res.status(401).send("ID หรือ Password ผิด");
+                }, 1000)
+                client.GetUserDetails({ username, password, type }, (err, response) => {
                     try {
                         const responseData = {
                             userId: userUsecase.getStudentId(response),
@@ -57,10 +61,13 @@ router.post('/', (req, res) => {
                             email: userUsecase.getEmail(response)
                         }
 
-                        createToken({ username, password, type }, responseData, req, res)
+                        if (!err) {
+                            clearTimeout(loginFail)
+                            createToken({ username, password, type }, responseData, req, res)
+                        }
+
                     } catch (error) {
                         console.log(error)
-                        throw error
                     }
                 })
             }

@@ -19,7 +19,9 @@ const profile = () => {
     const [current, setCurrent] = useState(0)
     const [headers, setHeaders] = useState({})
     const [myId, setMyId] = useState('')
+    const [imgUrl, setImgUrl] = useState('')
     const { register, handleSubmit, errors } = useForm();
+    const [isProfileFail, setProfileFail] = useState(true)
     const [form, setForm] = React.useState({
         profile: {
             profileImg: "",
@@ -241,11 +243,13 @@ const profile = () => {
 
                 <label>รูปภาพ</label>
 
-                {form.profile ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}${form.profile.profileImg}`} alt="profileImg" />
+                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}/student/profile/picture/${myId}?key=${imgUrl}`} onError={() => {
+                    setProfileFail(false)
+                }} alt="profileImg" />
                     :
                     <img className="w-20 h-20" src="icon/mockProfile.png" alt="mock profile" />}
 
-                <input type="file" name="file" onChange={(e) => handleFile(e.target.files[0])} />
+                <input type="file" accept="image/*" name="file" onChange={(e) => handleFile(e.target.files[0])} />
 
                 <label>รหัสนักศึกษา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -897,7 +901,7 @@ const profile = () => {
         data.append('img', file)
         const resImg = await post(`/student/profile/upload/${token.id}`, data)
         if (resImg.success) {
-            setForm({ ...form, profile: { ...form.profile, profileImg: resImg.message } })
+            setImgUrl(resImg.message)
         }
     }
 
@@ -915,9 +919,7 @@ const profile = () => {
         getHeader()
         verifyLogin()
         getInitialProfile()
-        if (sessionStorage.getItem('token')) {
-            setMyId(JSON.parse(sessionStorage.getItem("token")).id)
-        }
+        setMyId(JSON.parse(sessionStorage.getItem("token")).id)
     }, [])
 
     return (

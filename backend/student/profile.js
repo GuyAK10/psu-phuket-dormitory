@@ -57,13 +57,11 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
     });
 
     blobStream.on('finish', () => {
-
       res.status(200).send({
         code: 200,
         success: true,
-        message: `/student/profile/picture/${id}?${Math.random()}`
+        message: `${Math.random()}`
       });
-
     });
     blobStream.end(req.file.buffer);
 
@@ -78,7 +76,6 @@ router.get('/student/profile/picture/:studentId', async (req, res) => {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
     const [profilePictureUrl] = await file.getSignedUrl({ action: "read", expires: Date.now() + 60 * 60 * 10 })
-    console.log(profilePictureUrl)
     res.redirect(profilePictureUrl)
   } catch (error) {
     console.log(error)

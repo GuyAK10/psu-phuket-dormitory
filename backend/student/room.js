@@ -149,6 +149,18 @@ router.post('/student/room', async (req, res) => {
     }
 })
 
+//check is fill prefile
+router.get('/student/room/isFill/:studentId', async (req, res) => {
+    const { params: { studentId } } = req
+    const profileRef = await db.collection('students').doc(`${studentId}`).get()
+    if (!profileRef.data().agreement) {
+        res.send({ code: 200, success: false, message: "กรุณากรอกข้อมูลส่วนตัวให้ครบก่อนจองห้อง ระบบจะนำคุณไปยังหน้ากรอกข้อมูล" })
+    }
+    else res.send({ code: 200, success: true, message: "สามารถจองห้องได้" })
+})
+
+
+
 router.get('/student/room/system', async (req, res) => {
     try {
         const docRef = await db.doc(`dormitory/status`).get()

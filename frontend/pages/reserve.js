@@ -454,6 +454,14 @@ const reserve = () => {
             console.log(system.message)
         }
     }
+    
+    const checkIsFillProfile = async () => {
+        const isFill = await get(`isFill/${JSON.parse(sessionStorage.getItem('token')).id}`)
+        if (!isFill.success) {
+            message.warning(isFill.message)
+            Router.push(`/profile`)
+        }
+    }
 
     useEffect(() => {
         getHeader()
@@ -463,6 +471,7 @@ const reserve = () => {
         handleSelectFloor(["E", "A"])
         getMyId()
         getMyRoom()
+        checkIsFillProfile()
     }, [])
 
     if (loading) message.loading('Loading')
