@@ -101,7 +101,57 @@ const createToken = async (user, responseData, _req, res) => {
             if (responseData.userId === null && responseData.role === null) {
                   res.status(401).send("ID หรือ Password ผิด");
             } else {
-                  if (user.type == responseData.role) {
+                  //save test user for profile
+                  if (user.username === 'student') {
+                        const payload = {
+                              id: responseData.userId,
+                              type: responseData.role,
+                              exp: Date.now() + (1000 * 60 * 60)
+                        }
+
+                        let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
+                        const register = tokenRef.doc(`${responseData.userId}`)
+                        const setProfile = db.collection('students').doc(`${responseData.userId}`);
+
+                        await register.set({
+                              id: responseData.userId,
+                              type: responseData.role,
+                              token: encoded
+                        });
+
+                        student.profile.id = 'student test user'
+                        student.profile.name = "userStudentForTest"
+                        student.profile.surname = "userStudentForTest"
+                        student.profile.faculty = "testFaculty"
+                        student.profile.department = "testDepartment"
+                        student.contact.email = "test@test.com"
+
+                        if (user.username === "student") {
+                              const doc = await setProfile.get()
+                              if (!doc.exists) {
+                                    await setProfile.set(student)
+                              } else {
+                                    await setProfile.update({
+                                          'profile.id ': "student test user",
+                                          'profile.name': "userStudentForTest",
+                                          'profile.surname': "userStudentForTest",
+                                          'profile.faculty': "testFaculty",
+                                          'profile.department': "testDepartment",
+                                          'contact.email': "test@test.com"
+                                    })
+                              }
+                        }
+
+                        res.status(200).send({
+                              id: "student test user",
+                              name: "userStudentForTest",
+                              surname: "userStudentForTest",
+                              type: "Students",
+                              token: encoded
+                        })
+                  }
+
+                  else if (user.type == responseData.role) {
 
                         const payload = {
                               id: responseData.userId,

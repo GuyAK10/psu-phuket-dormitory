@@ -20,7 +20,7 @@ const years = () => {
 const reserve = () => {
     const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
     const [menuBar, setMenuBar] = MenuBar
-    const [axiosConfig, setAxiosConfig] = AxiosConfig
+    const [axiosConfig] = AxiosConfig
     const [token, setToken] = Token
     const [showModal, setShowModal] = Modal
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
@@ -31,11 +31,9 @@ const reserve = () => {
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const [update, setUpdate] = useState(0)
     const [system, setSystem] = useState(false)
-    const [isInfoClose, setIsInfoClose] = useState(false)
-    // const [studentModal, setStudentModal] = useState(false)
     const [select, setSelect] = useState({
+        system: false,
         semester: 2,
-        month: "january",
         year: years()[0]
     })
     const floorList = [
@@ -44,7 +42,7 @@ const reserve = () => {
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/staff/room`, { ...header, cachePolicy: "no-cache" })
+    const { get, post, loading } = useFetch(`${ENDPOINT}:${PORT}/staff/room`, { ...header, cachePolicy: "no-cache" })
 
     const Logout = () => {
         setToken(null)
@@ -177,7 +175,6 @@ const reserve = () => {
     }
 
     const studentInfo = (item, student) => {
-        setIsInfoClose(true)
         const removeRoom = async () => {
             const body = {
                 floorId: `floor${item.room[0]}`,
@@ -301,7 +298,7 @@ const reserve = () => {
         }
 
         const setStatusRoom = async (room, status) => {
-            const sendStatus = { floorId: `floor${room.room.slice(0, 1)}`, room: room.room, available: status }
+            const sendStatus = { floorId: `floor${room.room.slice(0, 1)}`, roomId: room.room, available: status }
             const setStatus = await post("statusRoom", sendStatus)
             if (setStatus.success) {
                 let tempModelFloor = modalFloor
@@ -382,6 +379,7 @@ const reserve = () => {
                     </div>
 
                     <span className="">
+                        
                         <span className="flex">
                             <img
                                 src="/icon/male.svg" alt="person" className="person cursor-pointer"
@@ -472,7 +470,9 @@ const reserve = () => {
     const checkSystem = async () => {
         const system = await get('system')
         if (system.success) {
+            console.log(system)
             setSystem(system.data.system)
+            setSelect(system.data)
         } else {
             message.error(system.message)
         }

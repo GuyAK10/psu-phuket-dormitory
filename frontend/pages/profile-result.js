@@ -13,6 +13,8 @@ const ProfileResult = ({ profileId }) => {
     const [showModal, setShowModal] = Modal
     const [axiosConfig] = AxiosConfig
     const [headers, setHeaders] = useState({})
+    const [myId, setMyId] = useState('')
+    const [isProfileFail, setProfileFail] = useState(true)
     const { get, loading } = useFetch(`${ENDPOINT}:${PORT}/student`, { ...headers, cachePolicy: "no-cache" })
     const printRef = useRef();
     const handlePrint = useReactToPrint({
@@ -130,6 +132,7 @@ const ProfileResult = ({ profileId }) => {
                 cachePolicy: "no-cache",
             })
     }
+
     const verifyLogin = () => {
         const session = sessionStorage.getItem("token")
         if (!session) {
@@ -140,10 +143,15 @@ const ProfileResult = ({ profileId }) => {
             Router.push('login')
         }
     }
+
     useEffect(() => {
+        let protectMemoryLeak = false
         getHeader()
         verifyLogin()
         getStudents()
+        if (!protectMemoryLeak) setMyId(JSON.parse(sessionStorage.getItem("token")).id)
+        console.log(student)
+        return () => protectMemoryLeak = true
     }, [])
 
     if (student) return (
@@ -163,7 +171,7 @@ const ProfileResult = ({ profileId }) => {
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
                 <ul className="list-disc flex flex-col">
                     {
-                        student.profile.profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}${student.profile.profileImg}`} alt="profileImg" />
+                        isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}/student/profile/picture/${myId}`} onError={() => setProfileFail(false)} alt="profileImg" />
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }
@@ -226,11 +234,39 @@ const ProfileResult = ({ profileId }) => {
                             ความสามารถพิเศษ <p className="border-dotted border-b-2 border-black inline">{student.other.otherTalent}</p> อุปนิสัยส่วนตัว <p className="border-dotted border-b-2 border-black inline">{student.other.otherCharacter}</p> เคยได้รับตำแหน่งในมหาวิทยาลัย/โรงเรียน <p className="border-dotted border-b-2 border-black inline">{student.other.otherPosition}</p>
                         </p>
                     </div>
+
+                    <div className="m-2">
+                        <li className="font-bold">
+                            ประวัติการอยู่หอพัก
+                        </li>
+                        {
+                            student.historyRoom ?
+                                <table className="table-auto">
+                                    <thead>
+                                        {
+                                            student.historyRoom
+                                                .sort()
+                                                .map((item, key) =>
+                                                    <tr key={key}><th>{key + 1}</th></tr>
+                                                )
+                                        }
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            student.historyRoom
+                                                .sort()
+                                                .map((item, key) =>
+                                                    <tr key={key}><td>{item}</td></tr>
+                                                )
+                                        }
+                                    </tbody>
+                                </table> : ""
+                        }
+                    </div>
                 </ul>
             </div>
         </div>
     )
-    else return <div>Loading</div>
 }
 
 ProfileResult.getInitialProps = async ({ query }) => {

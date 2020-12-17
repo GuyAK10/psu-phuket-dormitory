@@ -338,7 +338,8 @@ const reserve = () => {
                     </div>
 
                     <span className="">
-
+                        เลือกห้องว่างโดยคลิกเลือกจากห้องว่าง (สีขาว)
+                        ยกเลิกโดยคลิกที่ห้องตนเอง (สีเขียว)
                         <span className="flex">
                             <img
                                 src="/icon/male.svg" alt="person" className="person cursor-pointer"
@@ -453,6 +454,14 @@ const reserve = () => {
             console.log(system.message)
         }
     }
+    
+    const checkIsFillProfile = async () => {
+        const isFill = await get(`isFill/${JSON.parse(sessionStorage.getItem('token')).id}`)
+        if (!isFill.success) {
+            message.warning(isFill.message)
+            Router.push(`/profile`)
+        }
+    }
 
     useEffect(() => {
         getHeader()
@@ -462,6 +471,7 @@ const reserve = () => {
         handleSelectFloor(["E", "A"])
         getMyId()
         getMyRoom()
+        checkIsFillProfile()
     }, [])
 
     if (loading) message.loading('Loading')

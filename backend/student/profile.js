@@ -27,7 +27,12 @@ const historyReserve = async (studentId) => {
       const reserveRef = await dormitory.where("year", "==", year).where(`${student}.id`, "==", studentId).get()
       if (!reserveRef.empty) {
         reserveRef.forEach(async (room) => {
-          historyList.push(room.id)
+         const roomDetail = {
+             room:room.data().room,
+             year:room.data().year,
+             semester:room.data().semester
+          }
+          historyList.push(roomDetail)
           booked = historyList
           return booked
         })
@@ -57,13 +62,11 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
     });
 
     blobStream.on('finish', () => {
-
       res.status(200).send({
         code: 200,
         success: true,
-        message: `/student/profile/picture/${id}?${Math.random()}`
+        message: `${Math.random()}`
       });
-
     });
     blobStream.end(req.file.buffer);
 
@@ -73,13 +76,12 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
   }
 });
 
-router.get('/student/profile/picture/:studentId', (req, res) => {
+router.get('/student/profile/picture/:studentId', async (req, res) => {
   try {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
-    file.download().then(downloadResponse => {
-      res.status(200).send(downloadResponse[0]);
-    });
+    const [profilePictureUrl] = await file.getSignedUrl({ action: "read", expires: Date.now() + 60 * 60 * 10 })
+    res.redirect(profilePictureUrl)
   } catch (error) {
     console.log(error)
     res.sendStatus(400);

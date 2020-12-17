@@ -45,7 +45,7 @@ const Login = ({ children }) => {
         }
         try {
             const success = () => {
-                message.success('เข้าสู้ระบบแล้ว')
+                message.success('เข้าสู่ระบบแล้ว')
             }
             const result = await axios.post(`${ENDPOINT}:${PORT}`, qs.stringify(form), {
                 headers: {

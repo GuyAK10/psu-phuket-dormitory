@@ -13,7 +13,6 @@ const Index = () => {
         try {
             const resNews = await get('/news/listname')
             setNews(resNews)
-            console.log(resNews)
         } catch (error) {
             console.error(error)
         }
