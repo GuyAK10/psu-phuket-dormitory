@@ -338,7 +338,8 @@ const reserve = () => {
                     </div>
 
                     <span className="">
-
+                        เลือกห้องว่างโดยคลิกเลือกจากห้องว่าง (สีขาว)
+                        ยกเลิกโดยคลิกที่ห้องตนเอง (สีเขียว)
                         <span className="flex">
                             <img
                                 src="/icon/male.svg" alt="person" className="person cursor-pointer"

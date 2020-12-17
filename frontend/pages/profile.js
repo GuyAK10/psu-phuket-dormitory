@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import axios from 'axios'
-import Loading from '../component/Loading'
-import { message, Steps, Button, } from 'antd';
+import { message, Steps, } from 'antd';
 import Router from 'next/router';
 import useFetch from 'use-http'
 import { useForm } from "react-hook-form";
@@ -237,12 +236,12 @@ const profile = () => {
         {
             key: 0,
             title: 'ข้อมูลเบื้องต้น',
-            content: <form onSubmit={handleSubmit(handleFormProfile)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormProfile)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเบื้องต้น</h2>
 
                 <label>รูปภาพ</label>
 
-                {form.profile.profileImg ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}${form.profile.profileImg}`} alt="profileImg" />
+                {form.profile ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}${form.profile.profileImg}`} alt="profileImg" />
                     :
                     <img className="w-20 h-20" src="icon/mockProfile.png" alt="mock profile" />}
 
@@ -327,12 +326,12 @@ const profile = () => {
                 {errors.line && <p className="text-red-500">โปรดกรอกข้อมูล line</p>}
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 1,
             title: 'ข้อมูลติดต่อ',
-            content: <form onSubmit={handleSubmit(handleFormContact)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormContact)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลติดต่อ</h2>
                 <label>เบอร์โทรศัพท์</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -426,12 +425,12 @@ const profile = () => {
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 2,
             title: 'ข้อมูลการศึกษา',
-            content: <form onSubmit={handleSubmit(handleFormInformation)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormInformation)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลการศึกษา</h2>
                 <label>จบจากโรงเรียน</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -504,12 +503,12 @@ const profile = () => {
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 3,
             title: 'เพื่อนสนิท',
-            content: <form onSubmit={handleSubmit(handleFormFriend)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormFriend)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>เพื่อนสนิท</h2>
                 <label>ชื่อจริง</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -560,12 +559,12 @@ const profile = () => {
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 4,
             title: 'ข้อมูลเกี่ยวกับครอบครัว (บิดา)',
-            content: <form onSubmit={handleSubmit(handleFormFamily.dad)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormFamily.dad)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเกี่ยวกับครอบครัว (บิดา)</h2>
                 <label>ชื่อจริงบิดา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -638,12 +637,12 @@ const profile = () => {
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 5,
             title: "ข้อมูลเกี่ยวกับครอบครัว (มารดา)",
-            content: <form onSubmit={handleSubmit(handleFormFamily.mom)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormFamily.mom)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <label>ชื่อจริงมารดา</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     defaultValue={form.family.mom.momName}
@@ -715,12 +714,12 @@ const profile = () => {
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 6,
             title: "ข้อมูลเกี่ยวกับครอบครัว (ติดต่อฉุกเฉิน)",
-            content: <form onSubmit={handleSubmit(handleFormFamily.emergency)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormFamily.emergency)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <label>ติดต่อฉุกเฉิน</label>
                 <label>ชื่อจริง</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -779,12 +778,12 @@ const profile = () => {
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 7,
             title: 'ข้อมูลอื่น ๆ',
-            content: <form onSubmit={handleSubmit(handleFormOther)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <form onSubmit={handleSubmit(handleFormOther)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลอื่น ๆ</h2>
                 <label>ความสามารถพิเศษ</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -815,12 +814,12 @@ const profile = () => {
                 </button>
                 <input type="submit" className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" value="ถัดไป" />
                 <p className="text-red-500">*** คำเตือน การบันทึกข้อมูลชั่วคราวใช้สำหรับการบันทึกชั่วคราวเท่านั้น ต้องกรอกข้อมูลให้ครบทุกช่องเท่านั้นจึงสามารถจองห้องพักได้</p>
-            </form>
+            </form> : ""
         },
         {
             key: 8,
             title: "กฎระเบียบการใช้งานหอพัก",
-            content: <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <div className="md:flex md:items-center mb-6">
                     <div className="md:w-1/3"></div>
                     <label className="md:w-2/3 block text-gray-500 font-bold">
@@ -852,7 +851,7 @@ const profile = () => {
                 >
                     บันทึกข้อมูลทั้งหมด (สามารถจองห้องได้)
                 </button>
-            </div>
+            </div> : ""
         }
     ]
 

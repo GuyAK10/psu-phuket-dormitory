@@ -73,13 +73,13 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
   }
 });
 
-router.get('/student/profile/picture/:studentId', (req, res) => {
+router.get('/student/profile/picture/:studentId', async (req, res) => {
   try {
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
-    file.download().then(downloadResponse => {
-      res.status(200).send(downloadResponse[0]);
-    });
+    const [profilePictureUrl] = await file.getSignedUrl({ action: "read", expires: Date.now() + 60 * 60 * 10 })
+    console.log(profilePictureUrl)
+    res.redirect(profilePictureUrl)
   } catch (error) {
     console.log(error)
     res.sendStatus(400);

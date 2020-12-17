@@ -6,6 +6,7 @@ const router = express.Router()
 const { firestore } = admin
 const FieldValue = firestore.FieldValue
 
+//get status room
 router.get('/staff/room/system', async (req, res) => {
       try {
             const docRef = await db.collection(`dormitory`).doc(`status`).get()
@@ -88,6 +89,7 @@ router.post('/staff/room/remove', async (req, res) => {
       }
 })
 
+//Close/Open available room
 router.post('/staff/room/statusRoom', async (req, res) => {
       try {
             const { body: { roomId, available } } = req

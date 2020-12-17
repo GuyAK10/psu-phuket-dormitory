@@ -4,7 +4,7 @@ const soap = require('soap');
 const { userUsecase } = require('./usecase/userUsecase')
 const url = 'https://passport.psu.ac.th/authentication/authentication.asmx?wsdl';
 const router = express.Router()
-const { db,admin } = require('./configs/firebase')
+const { db, admin } = require('./configs/firebase')
 const { createToken } = require('./configs/jwt')
 const xlsxFile = require('read-excel-file/node');
 //remove token
@@ -35,13 +35,13 @@ router.post('/', (req, res) => {
 
             //test user staff
             const mockRequestStaff = { headers: { type: "Staffs" } }
-            const mockRequestStudent = { headers: { type: "Staffs" } }
+            const mockRequestStudent = { headers: { type: "Students" } }
             if (username == "staff") {
                 createToken({ username, password: "any", type: "Staffs" }, { userId: "Test User", role: "Staffs" }, mockRequestStaff, res)
             }
             //test user student
             else if (username == "student") {
-                createToken({ username, password: "any", type: "Students" }, { userId: "Test User", role: "Students" }, mockRequestStudent, res)
+                createToken({ username, password: "any", type: "Students" }, { userId: "student test user", role: "Students" }, mockRequestStudent, res)
             }
 
             else {
@@ -80,7 +80,7 @@ router.post('/test', (req, res) => {
             month = excelData[1]
             let year = excelData[2]
             console.log("ค่าน้ำค่าไฟประจำเดือน", month, year)
-            for (i = 5; i <52;) {
+            for (i = 5; i < 52;) {
                 console.log("ห้อง", rows[i][0], "ยูนิตเดือนก่อน", rows[i][2], "ยูนิตเดือนนี้", rows[i][3], "ราคาต่อหน่วย", rows[i][5], "ค่าน้ำ", rows[i][8])
                 i += 2
             }
