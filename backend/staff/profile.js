@@ -20,7 +20,12 @@ const historyReserve = async (studentId) => {
       const reserveRef = await dormitory.where("year", "==", year).where(`${student}.id`, "==", studentId).get()
       if (!reserveRef.empty) {
         reserveRef.forEach(async (room) => {
-          historyList.push(room.id)
+          const roomDetail = {
+             room:room.data().room,
+             year:room.data().year,
+             semester:room.data().semester
+          }
+          historyList.push(roomDetail)
           booked = historyList
           return booked
         })
