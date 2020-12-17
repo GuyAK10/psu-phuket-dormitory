@@ -31,7 +31,7 @@ router.post('/staff/room/system', async (req, res) => {
                   semester: +semester
             })
             await createRoomDb(year, semester)
-            if (semester == 1) {
+            if (semester == 1 && system == true) {
                   await deleteOldroom(year)
             }
             if ((await docRef.get()).data().system)
