@@ -4,50 +4,11 @@ const { db, storage } = require('../configs/firebase')
 const router = express.Router()
 const bucket = storage.bucket()
 
-const historyReserve = async (studentId) => {
-  try {
-    const orderId = [
-      "student1",
-      "student2"
-    ]
-    let historyList = []
-    let booked = false;
-    const dormitory = db.collection("dormitory")
-    const status = await dormitory.doc("status").get()
-    const year = status.data().year
-    for (i in orderId) {
-      var student = orderId[i]
-      const reserveRef = await dormitory.where("year", "==", year).where(`${student}.id`, "==", studentId).get()
-      if (!reserveRef.empty) {
-        reserveRef.forEach(async (room) => {
-          const roomDetail = {
-             room:room.data().room,
-             year:room.data().year,
-             semester:room.data().semester
-          }
-          historyList.push(roomDetail)
-          booked = historyList
-          return booked
-        })
-      }
-    }
-    return booked
-  } catch (error) {
-    throw error
-  }
-}
-
 router.get('/staff/profile/', async (req, res) => {
   try {
     let studentList = []
     const studentRef = db.collection('students')
     const profile = await studentRef.get();
-    profile.forEach(async (student) => {
-      const historyRoom = await historyReserve(student.id)
-      await studentRef.doc(student.id).set({
-        historyRoom:historyRoom
-      },{merge:true})
-    })
     profile.forEach(async (list) => {
       let studentData = {
         studentId: '',
