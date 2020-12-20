@@ -1,18 +1,12 @@
 import React, { useEffect, useContext, useState, useRef } from 'react'
 import { GlobalState } from '../../../utils/context'
 import Router from 'next/router'
-import useFetch from 'use-http'
 import { useReactToPrint } from 'react-to-print';
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Profile = ({ profileId }) => {
-    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
-    const [_token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [menuBar, setMenuBar] = MenuBar
-    const [headers, setHeaders] = useState({})
-    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}/staff`, headers)
+    const { get } = useContext(GlobalState)
     const printRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => printRef.current,
@@ -106,23 +100,9 @@ const Profile = ({ profileId }) => {
         }
     })
 
-    const {
-        profile:
-        { id, name, surname, nickname, religion, race, nationality, birthday, faculty, department, line, profileImg },
-        contact:
-        { tel, email, facebook, network, houseno, village, villageno, road, district, subdistrict, province, postalcode },
-        information:
-        { school, county, gpa, plan, height, weight, blood, disease, drugallergy },
-        friend,
-        family:
-        { dad, mom, status, emergency },
-        other:
-        { talent, character, position },
-    } = student
-
     const getStudents = async () => {
         try {
-            const data = await get(`profile`)
+            const data = await get(`staff/profile`)
             filterStudent(data)
         } catch (e) {
             console.error(e)

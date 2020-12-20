@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Card from '../component/Card'
-import useFetch from 'use-http'
+import { GlobalState } from '../utils/context'
 
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
-const Index = () => {
+const Index = (props) => {
+    const { get } = useContext(GlobalState)
     const [news, setNews] = useState(null)
-    const { get } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", })
 
     const newsList = async () => {
         try {
@@ -66,7 +66,6 @@ const Index = () => {
                 )) : ""}
             </div>
         </div>
-
     )
 }
 

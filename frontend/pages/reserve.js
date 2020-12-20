@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { GlobalState } from '../utils/context'
 import Router from 'next/router'
-import { message, Skeleton, Tooltip } from 'antd';
-import useFetch from 'use-http'
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
+import { message, Tooltip } from 'antd';
 
 message.config({ maxCount: 1 })
 
 const reserve = () => {
-    const { Modal, Token, MenuBar } = useContext(GlobalState)
-    const [menuBar, setMenuBar] = MenuBar
-    const [token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [header, setHeader] = useState({})
+    const { get, post, loading, error } = useContext(GlobalState)
     const [system, setSystem] = useState(false)
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(true)
@@ -28,52 +21,21 @@ const reserve = () => {
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/room`, { ...header, cachePolicy: "no-cache" })
+
     const [myId, setMyId] = useState(null)
     const [myRoom, setMyRoom] = useState(null)
-
-    const Logout = () => {
-        setToken(null)
-        sessionStorage.removeItem('token')
-        setShowModal(false)
-        setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('login')
-    }
-
-    const getHeader = () => {
-        if (sessionStorage.getItem('token')) {
-            setToken(JSON.parse(sessionStorage.getItem('token')))
-            setHeader({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem('token')).type
-                }
-            })
-        }
-    }
-
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
 
     const handleSelectFloor = async floor => {
         setShowBuilding(floor)
         let floorDetails = []
         setIsLoading(true)
         try {
-            const floor0 = await get(`/floor${floor[0]}`)
+            const floor0 = await get(`student/room/floor${floor[0]}`)
             if (!error)
                 floorDetails[0] = { ...floor0 }
             else Logout()
 
-            const floor1 = await get(`/floor${floor[1]}`)
+            const floor1 = await get(`student/room/floor${floor[1]}`)
             if (!error)
                 floorDetails[1] = { ...floor1 }
             else Logout()
@@ -427,18 +389,10 @@ const reserve = () => {
         )
     }
 
-    const getMyId = () => {
-        if (sessionStorage.getItem('token')) {
-            const { id } = JSON.parse(sessionStorage.getItem('token'))
-            setMyId(id)
-        }
-        else Logout()
-    }
-
     const getMyRoom = async () => {
         if (sessionStorage.getItem('token')) {
             const myId = JSON.parse(sessionStorage.getItem('token')).id
-            const myRoomGet = await get(`myRoom/${myId}`)
+            const myRoomGet = await get(`student/room/myRoom/${myId}`)
             if (myRoomGet.success) {
                 setMyRoom(myRoomGet.data)
                 setUpdate(Math.random())
@@ -447,7 +401,7 @@ const reserve = () => {
     }
 
     const checkSystem = async () => {
-        const system = await get('system')
+        const system = await get('student/room/system')
         if (system.success) {
             setSystem(system.data.system)
         } else {
@@ -456,7 +410,7 @@ const reserve = () => {
     }
     
     const checkIsFillProfile = async () => {
-        const isFill = await get(`isFill/${JSON.parse(sessionStorage.getItem('token')).id}`)
+        const isFill = await get(`student/room/isFill/${cookies.user.id}`)
         if (!isFill.success) {
             message.warning(isFill.message)
             Router.push(`/profile`)
@@ -464,12 +418,9 @@ const reserve = () => {
     }
 
     useEffect(() => {
-        getHeader()
-        verifyLogin()
         checkSystem()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
-        getMyId()
         getMyRoom()
         checkIsFillProfile()
     }, [])

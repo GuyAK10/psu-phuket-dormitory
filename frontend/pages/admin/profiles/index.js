@@ -6,54 +6,16 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const profile = () => {
-    const { AxiosConfig, Token, Students,Modal,MenuBar} = useContext(GlobalState)
-    const [showModal, setShowModal] = Modal
-    const [menuBar, setMenuBar] = MenuBar
-    const [students, setStudents] = Students
-    const [axiosConfig, setAxiosConfig] = AxiosConfig
-    const [_token, setToken] = Token
-
-    const Logout = () => {
-        setToken(null)
-        sessionStorage.removeItem('token')
-        setShowModal(false)
-        setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('../../login')
-    }
-
-    const getHeader = () => {
-        if (sessionStorage.getItem('token')) {
-            setToken(JSON.parse(sessionStorage.getItem('token')))
-            setAxiosConfig({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem('token')).type
-                }
-            })
-        }
-    }
-
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
+    const { students, setStudents } = useContext(GlobalState)
 
     React.useEffect(() => {
-        verifyLogin()
-        getHeader()
         getStudent()
     }, [])
 
     const getStudent = async () => {
         try {
-            const result = await axios.get(`${ENDPOINT}:${PORT}/staff/profile/`, axiosConfig)
-            setStudents(result.data)
+            const result = await get(`staff/profile`)
+            setStudents(result)
         } catch (e) {
             console.error(e)
         }

@@ -1,11 +1,10 @@
+require('dotenv').config()
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 const PORT = process.env.PORT || 80
-
-require('dotenv').config()
-
 const { verifyHeader } = require("./configs/jwt");
 const { staffType, studentType } = require("./configs/type")
 const accessControl = require('./access')
@@ -26,6 +25,7 @@ const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 app.use(cors())
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
@@ -40,7 +40,7 @@ app.use(staffRepair);
 app.use(staffSupport);
 
 //useStudent
-// app.use('/student', verifyHeader, studentType)
+app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);

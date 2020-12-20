@@ -1,18 +1,18 @@
 import React from 'react'
-import axios from 'axios'
-import qs from 'qs'
 import { message } from 'antd';
 import { GlobalState } from '../utils/context'
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
+import Router from 'next/router'
 
 const Login = ({ children }) => {
-    const { MenuBar, Token, Modal, AxiosConfig, Staff } = React.useContext(GlobalState)
-    const [token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [menuBar, setMenuBar] = MenuBar
-    const [axiosConfig, setAxiosConfig] = AxiosConfig
-    const [staff, setStaff] = Staff
+    const {
+        setCookie,
+        showModal,
+        setShowModal,
+        setMenuBar,
+        setStaff,
+        post,
+        previousRoute
+    } = React.useContext(GlobalState)
 
     const [form, setForm] = React.useState({
         username: "",
@@ -27,53 +27,37 @@ const Login = ({ children }) => {
         })
     }
 
-    const isStaff = () => {
-        const session = JSON.parse(sessionStorage.getItem('token'))
-        if (session) {
-            if (session.type == "Staffs") {
-                setStaff(true)
-            }
-            else if (session.type == "Students") {
-                setStaff(false)
-            }
-        }
-    }
-
     const getAuthen = async () => {
-        const fail = () => {
-            message.warn('ID หรือรหัสผ่านผิดพลาด')
-        }
+
         try {
-            const success = () => {
+            const result = await post(`/login`, form)
+            if (result.token) {
+                setShowModal(false)
+                setCookie("token", result.token)
+                setCookie("user", result.user)
+                setMenuBar('ออกจากระบบ')
+                if (result.user.type == "Staffs") {
+                    setStaff(true)
+                }
+                else if (result.user.type == "Students") {
+                    setStaff(false)
+                }
+                if (previousRoute) {
+                    Router.push(previousRoute)
+                }
                 message.success('เข้าสู่ระบบแล้ว')
             }
-            const result = await axios.post(`${ENDPOINT}:${PORT}`, qs.stringify(form), {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-            if (result.status === 200 && result.data.token) {
-                sessionStorage.setItem('token', JSON.stringify(result.data))
-                setShowModal(false)
-                setToken(result.data)
-                setAxiosConfig({
-                    headers: {
-                        authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                        type: result.data.type
-                    }
-                })
-                isStaff()
-                setMenuBar('ออกจากระบบ')
-                success()
-            }
+
             else if (result.status === 401) {
-                setToken({ id: null, token: null, type: "Students" })
+                message.warn('ID หรือ รหัสผ่านผิดพลาด')
             }
+
         } catch (e) {
-            fail()
+            message.warn('ผิดพลาดไม่ทราบสาเหตุ')
             console.log(e)
         }
     }
+
     const handleEnter = e => {
         if (e.key === "Enter")
             getAuthen()

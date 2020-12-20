@@ -1,51 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react'
-import Router from 'next/router'
-import useFetch from 'use-http'
+import React, { useState, useContext } from 'react'
 import { GlobalState } from '../../../utils/context'
 import { message, Button } from 'antd';
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
 
 const UpdateNews = () => {
-    const { Modal, Token, MenuBar } = useContext(GlobalState)
-    const [menuBar, setMenuBar] = MenuBar
-    const [token, setToken] = Token
-    const [showModal, setShowModal] = Modal
+    const { post } = useContext(GlobalState)
     const [fileName, setFileName] = useState({})
     const [file, setFile] = useState({})
-    const [header, setHeader] = useState({})
-    const { get, post } = useFetch(`${ENDPOINT}:${PORT}/staff/news`, { ...header, cachePolicy: "no-cache" })
-
-    const Logout = () => {
-        setToken(null)
-        sessionStorage.removeItem('token')
-        setShowModal(false)
-        setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('login')
-    }
-
-    const getHeader = () => {
-        if (sessionStorage.getItem('token')) {
-            setToken(JSON.parse(sessionStorage.getItem('token')))
-            setHeader({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem('token')).type
-                }
-            })
-        }
-    }
-
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
 
     const handleName = (name) => {
         setFileName({
@@ -71,11 +31,6 @@ const UpdateNews = () => {
         const resPdf = await post(`upload/${fileName.name}/${fileName.detail}`, data)
         if (resPdf.success) message.success(resPdf.message)
     }
-
-    useEffect(() => {
-        getHeader()
-        verifyLogin()
-    }, [])
 
     return (
         <div className="flex flex-col justify-center px-32 py-4">

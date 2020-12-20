@@ -1,22 +1,10 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import qs from 'qs'
+import React from 'react'
 import { GlobalState } from '../utils/context'
 import { message } from 'antd';
 import Router from 'next/router'
-import Loading from '../component/Loading'
-
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
 
 const Login = () => {
-    const { MenuBar, Token, Modal, AxiosConfig, previousRoute, Staff } = React.useContext(GlobalState)
-    const [token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [menuBar, setMenuBar] = MenuBar
-    const [axiosConfig, setAxiosConfig] = AxiosConfig
-    const [staff, setStaff] = Staff
-    const [isLoading, setIsLoading] = useState(false)
+    const { cookies, setCookie, setShowModal, setMenuBar, setStaff, post, previousRoute } = React.useContext(GlobalState)
 
     const [form, setForm] = React.useState({
         username: "",
@@ -31,62 +19,33 @@ const Login = () => {
         })
     }
 
-    const isStaff = () => {
-        const session = JSON.parse(sessionStorage.getItem('token'))
-        if (session) {
-            if (session.type == "Staffs") {
-                setStaff(true)
-            }
-            else if (session.type == "Students") {
-                setStaff(false)
-            }
-        }
-    }
-
     const getAuthen = async () => {
-
-        setIsLoading(true)
-
-        const fail = () => {
-            message.warn('ID หรือ รหัสผ่านผิดพลาด')
-        }
-        const success = () => {
-            message.success('เข้าสู้ระบบแล้ว')
-        }
         try {
-            const result = await axios.post(`${ENDPOINT}:${PORT}`, qs.stringify(form), {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
+            const result = await post(`/login`, form)
 
-            if (result.status === 200 && result.data.token) {
-                sessionStorage.setItem('token', JSON.stringify(result.data))
+            if (result.token) {
                 setShowModal(false)
-                setToken(result.data)
-                setAxiosConfig({
-                    headers: {
-                        authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                        type: result.data.type
-                    }
-                })
-                isStaff()
+                setCookie("token", result.token)
+                setCookie("user", result.user)
+                if (result.user.type == "Staffs") {
+                    setStaff(true)
+                }
+                else if (result.user.type == "Students") {
+                    setStaff(false)
+                }
                 setMenuBar('ออกจากระบบ')
                 if (previousRoute) {
                     Router.push(previousRoute)
                 }
-                success()
-                setIsLoading(false)
+                message.success('เข้าสู่ระบบแล้ว')
             }
+
             else if (result.status === 401) {
-                fail()
-                setToken(null)
-                setIsLoading(false)
+                message.warn('ID หรือ รหัสผ่านผิดพลาด')
             }
         } catch (e) {
-            fail()
+            message.warn('ผิดพลาดไม่ทราบสาเหตุ')
             console.log(e)
-            setIsLoading(false)
         }
     }
 
@@ -101,13 +60,13 @@ const Login = () => {
         setShowModal(false)
     }, [])
 
-    if (isLoading) return <Loading />
     return (
         <div className="min-h-screen">
             <h2 className="text-3xl m-3">กรุณาเข้าสู่ระบบ</h2>
             <div className={`Card bg-gray-100 shadow-md rounded px-8 pt-6 pb-8 m-4 flex flex-col justify-center items-center`}>
                 <label htmlFor="username">PSU Passport</label>
                 <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="username" placeholder="username"
+                    name="username"
                     value={form.username}
                     onChange={handleForm}
                     onKeyDown={handleEnter}
@@ -115,6 +74,7 @@ const Login = () => {
 
                 <label htmlFor="username">Password</label>
                 <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" name="password" placeholder="password"
+                    name="password"
                     value={form.password}
                     onChange={handleForm}
                     onKeyPress={handleEnter}

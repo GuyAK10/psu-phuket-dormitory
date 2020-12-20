@@ -3,7 +3,6 @@ import { GlobalState } from '../utils/context'
 import axios from 'axios'
 import { message, Steps, } from 'antd';
 import Router from 'next/router';
-import useFetch from 'use-http'
 import { useForm } from "react-hook-form";
 
 const ENDPOINT = process.env.ENDPOINT
@@ -12,13 +11,9 @@ const PORT = process.env.PORT
 const { Step } = Steps;
 
 const profile = () => {
-    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
-    const [_token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [menuBar, setMenuBar] = MenuBar
+    const { response, cookies, get } = React.useContext(GlobalState)
     const [current, setCurrent] = useState(0)
     const [headers, setHeaders] = useState({})
-    const [myId, setMyId] = useState('')
     const [imgUrl, setImgUrl] = useState('')
     const { register, handleSubmit, errors } = useForm();
     const [isProfileFail, setProfileFail] = useState(true)
@@ -204,33 +199,21 @@ const profile = () => {
         })
     }
 
-    const postData = (saveAll) => {
-        const { id } = JSON.parse(sessionStorage.getItem('token'))
-
-        const success = () => {
-            message.success('บันทึกข้อมูลเรียบร้อยแล้ว');
-        };
-
-        const error = () => {
-            message.error('เกิดข้อผิดพลาด');
-        };
+    const postData = async (saveAll) => {
+        const { id } = cookies.user
 
         try {
-            axios.post(`${ENDPOINT}/student/profile/${id}`, form, headers).then(res => {
-                if (res.status === 200) {
-                    if (saveAll == "saveAll") {
-                        success()
-                        Router.push(`/profile-result?profileId=${id}`)
-                    }
-                    if (saveAll != "saveAll") message.success('บันทึกข้อมูลชั่วคราว (เฉพาะหน้าถัดมา)')
+            const res = await post(`${ENDPOINT}/student/profile/${cookies.user.id}`, form)
+            if (res.status === 200) {
+                if (saveAll == "saveAll") {
+                    message.success('บันทึกข้อมูลเรียบร้อยแล้ว');
+                    Router.push(`/profile-result?profileId=${cookies.user.id}`)
                 }
-                else {
-                    error()
-                }
-            })
+                if (saveAll != "saveAll") message.success('บันทึกข้อมูลชั่วคราว (เฉพาะหน้าถัดมา)')
+            }
+            else message.error('เกิดข้อผิดพลาด');
         } catch (e) {
             console.error(e)
-            Logout()
         }
     }
 
@@ -243,7 +226,7 @@ const profile = () => {
 
                 <label>รูปภาพ</label>
 
-                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}/student/profile/picture/${myId}?key=${imgUrl}`} onError={() => {
+                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}/student/profile/picture/${cookies.user ? cookies.user.id : ""}?key=${imgUrl}`} onError={() => {
                     setProfileFail(false)
                 }} alt="profileImg" />
                     :
@@ -859,35 +842,11 @@ const profile = () => {
         }
     ]
 
-    const { get, post, response } = useFetch(`${ENDPOINT}:${PORT}`, { ...headers, cachePolicy: "no-cache", })
-
-    const Logout = () => {
-        setToken(null)
-        sessionStorage.removeItem('token')
-        setShowModal(false)
-        setMenuBar('ลงชื่อเข้าใช้')
-        Router.push('login')
-    }
-
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
-
     const getInitialProfile = async () => {
         try {
-            if (sessionStorage.getItem('token')) {
-                const token = await JSON.parse(sessionStorage.getItem('token'))
-                const studentProfile = await get(`/student/profile/${token.id}`)
-                if (response.ok) {
-                    setForm(studentProfile)
-                }
+            const studentProfile = await get(`/student/profile/${cookies.user.id}`)
+            if (response.ok) {
+                setForm(studentProfile)
             }
         }
         catch (error) {
@@ -896,30 +855,16 @@ const profile = () => {
     }
 
     const handleFile = async (file) => {
-        const token = JSON.parse(sessionStorage.getItem('token'))
         let data = new FormData()
         data.append('img', file)
-        const resImg = await post(`/student/profile/upload/${token.id}`, data)
+        const resImg = await post(`/student/profile/upload/${cookies.user.id}`, data)
         if (resImg.success) {
             setImgUrl(resImg.message)
         }
     }
 
-    const getHeader = () => {
-        if (sessionStorage.getItem('token'))
-            setHeaders({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem("token")).type
-                },
-            })
-    }
-
     useEffect(() => {
-        getHeader()
-        verifyLogin()
         getInitialProfile()
-        setMyId(JSON.parse(sessionStorage.getItem("token")).id)
     }, [])
 
     return (

@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs')
 const { db } = require('./firebase');
 const { abort } = require('process');
+const { error } = require('console');
 require('dotenv').config()
 
 const tokenRef = db.collection('token')
@@ -35,7 +36,6 @@ let student = {
             district: "",
             province: "",
             postalcode: ""
-
       },
       information: {
             school: "",
@@ -96,6 +96,7 @@ let student = {
             position: ""
       }
 }
+
 const createToken = async (user, responseData, _req, res) => {
       try {
             if (responseData.userId === null && responseData.role === null) {
@@ -142,13 +143,27 @@ const createToken = async (user, responseData, _req, res) => {
                               }
                         }
 
-                        res.status(200).send({
-                              id: "student test user",
-                              name: "userStudentForTest",
-                              surname: "userStudentForTest",
-                              type: "Students",
-                              token: encoded
-                        })
+                        res.status(200).
+                              cookie("token", encoded, {
+                                    expire: Date.now() + 1000 * 60 * 10,
+                                    httpOnly: true,
+                              })
+                              .cookie("user", {
+                                    id: responseData.userId,
+                                    name: responseData.name,
+                                    surname: responseData.surname,
+                                    type: responseData.role,
+                              }, {
+                                    expire: Date.now() + 1000 * 60 * 10,
+                              }).send({
+                                    token: encoded,
+                                    user: {
+                                          id: "student test user",
+                                          name: "userStudentForTest",
+                                          surname: "userStudentForTest",
+                                          type: "Students",
+                                    }
+                              })
                   }
 
                   else if (user.type == responseData.role) {
@@ -192,15 +207,31 @@ const createToken = async (user, responseData, _req, res) => {
                               }
                         }
 
-                        res.status(200).send({
-                              id: responseData.userId,
-                              name: responseData.name,
-                              surname: responseData.surname,
-                              type: responseData.role,
-                              token: encoded
-                        })
+                        res.status(200)
+                              .cookie("token", encoded, {
+                                    expire: Date.now() + 1000 * 60 * 10,
+                                    httpOnly: true,
+                              })
+                              .cookie("user", {
+                                    id: responseData.userId,
+                                    name: responseData.name,
+                                    surname: responseData.surname,
+                                    type: responseData.role,
+                              }, {
+                                    expire: Date.now() + 1000 * 60 * 10,
+                              })
+                              .send({
+                                    token: encoded,
+                                    user: {
+                                          id: responseData.userId,
+                                          name: responseData.name,
+                                          surname: responseData.surname,
+                                          type: responseData.role,
+                                    }
+                              })
                   }
                   else {
+                        console.log('สถานะไม่ถูกต้อง')
                         res.status(400).send("สถานะไม่ถูกต้อง")
                   }
             }
@@ -212,28 +243,13 @@ const createToken = async (user, responseData, _req, res) => {
 
 const verifyHeader = async (req, res, next) => {
       try {
-            if (req.headers.authorization) {
-                  const tokenReceive = req.headers.authorization
-                  const token = tokenReceive.slice(7)
-                  const verifyHeaderToken = await tokenRef.where('token', '==', token).get()
-                  let isExpToken = {}
-                  const decode = jwt.decode(token, privateKey)
-                  if (!verifyHeaderToken.empty) {
-                        verifyHeaderToken.forEach(result => isExpToken = { ...result.data() })
-                  }
-                  if (isExpToken.token !== token) {
-                        console.log("Not authorization")
-                        res.status(401).send({ code: 401, logout: true, message: "ไม่อนุญาติให้ใช้งาน" })
-                  }
-                  if (+decode.exp < Date.now()) {
-                        console.log("Token expired")
-                        res.status(401).send({ code: 401, logout: true, message: "Token expired" })
+            if (req.cookies) {
+                  const { token } = req.cookies || req.headers
+                  const verifyToken = await tokenRef.doc('token', '==', token).get()
+                  if (verifyToken.empty) {
+                        res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
                   }
                   else next()
-
-            } else {
-                  console.log("Please Login")
-                  res.status(401).send({ code: 401, logout: true, message: "เกิดข้อผิดพลาดกรุณาเข้าสู่ระบบอีกครั้ง" })
             }
       } catch (error) {
             console.log(error)

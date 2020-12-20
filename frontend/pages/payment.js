@@ -1,21 +1,13 @@
-import React, { useState, useEffect ,useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import { GlobalState } from '../utils/context'
-import Router from 'next/router'
-import useFetch from 'use-http'
 import { message, Skeleton } from 'antd'
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
 
 const Payment = () => {
-    const [headers, setHeaders] = useState({})
     const [bill, setBill] = useState({
         message: "ค้นหาเพื่อแสดงผลข้อมูล"
     })
-    const { Modal, Token, MenuBar } = useContext(GlobalState)
-    const [menuBar, setMenuBar] = MenuBar
+    const { get } = useContext(GlobalState)
     const [isLoading, setIsLoading] = useState(false)
-    const [token, setToken] = Token
-    const [showModal, setShowModal] = Modal
     const years = () => {
         const fullYear = new Date().getFullYear()
         const years = []
@@ -30,8 +22,6 @@ const Payment = () => {
         month: "january",
         year: years()[0]
     })
-
-    const { get, post, loading, error } = useFetch(`${ENDPOINT}:${PORT}/student/payment`, { ...headers, cachePolicy: "no-cache" })
 
     const handleChange = (e) => {
         setSelect(prev => {
@@ -55,32 +45,6 @@ const Payment = () => {
         }
         setIsLoading(false)
     }
-
-    const getHeaders = () => {
-        if (sessionStorage.getItem('token'))
-            setHeaders({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem("token")).type
-                },
-            })
-    }
-
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
-
-    useEffect(() => {
-        getHeaders()
-        verifyLogin()
-    }, [])
 
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
@@ -163,7 +127,7 @@ const Payment = () => {
                                 <td className="border px-4 py-2">{bill.data.year}</td>
                                 <td className="border px-4 py-2">{bill.data.electric}</td>
                                 <td className="border px-4 py-2">{bill.data.water}</td>
-                                <td className="border px-4 py-2">{+bill.data.water+ +bill.data.electric}</td>
+                                <td className="border px-4 py-2">{+bill.data.water + +bill.data.electric}</td>
                                 <td className="border px-4 py-2">{bill.data.status}</td>
                             </tr>
                         </tbody>

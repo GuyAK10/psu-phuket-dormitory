@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { GlobalState } from '../../../utils/context'
 import useFetch from 'use-http'
 import Router from 'next/router'
-import { message, Skeleton } from 'antd'
+import { message } from 'antd'
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Payment = () => {
-    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
-    const [_token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [menuBar, setMenuBar] = MenuBar
+    const { get, post, setShowModal, setMenuBar } = React.useContext(GlobalState)
     const [headers, setHeaders] = useState({})
     const [form, setForm] = useState([])
     const [autoSave, setAutoSave] = useState(true)
@@ -33,8 +30,6 @@ const Payment = () => {
         year: years()[0]
     })
 
-    const { get, post } = useFetch(`${ENDPOINT}:${PORT}/staff/payment`, { ...headers, cachePolicy: "no-cache" })
-
     const handleChange = (e) => {
         localStorage.removeItem('adminPayment')
         setCreateBill(false)
@@ -49,7 +44,7 @@ const Payment = () => {
 
     const getBill = async () => {
         setIsLoading(true)
-        const data = await get(`${select.semester}/${select.month}/${select.year}`)
+        const data = await get(`staff/payment/${select.semester}/${select.month}/${select.year}`)
         if (data.success) {
             message.success(data.message)
             let tempChange = []
@@ -106,7 +101,7 @@ const Payment = () => {
     }
 
     const saveForm = () => {
-        const save = post(form)
+        const save = post("staff/payment", form)
         if (save.success) {
             message.success(save.message)
         }
@@ -201,7 +196,7 @@ const Payment = () => {
                                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             type="text"
                                             name="total"
-                                            value={+item.electric+ +item.water}
+                                            value={+item.electric + +item.water}
                                             required
                                         />
                                     </td>

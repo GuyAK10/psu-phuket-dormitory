@@ -1,7 +1,9 @@
+let i = 0
 const checkType = {
     studentType: (req, res, next) => {
+        const type = req.headers ? req.headers.type : JSON.parse(req.cookies).type
         try {
-            if (req.headers.type === "Students") {
+            if (type === "Students") {
                 next();
             }
         } catch (error) {
@@ -10,8 +12,9 @@ const checkType = {
         }
     },
     staffType: (req, res, next) => {
+        const { type } = JSON.parse(req.cookies.user) || ""
         try {
-            if (req.headers.type === "Staffs") {
+            if (type === "Staffs") {
                 next();
             }
         } catch (error) {

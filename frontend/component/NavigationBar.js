@@ -1,14 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import { Divider } from 'antd';
 import Link from 'next/link'
 
 const NavigationBar = () => {
-    const { Staff, MenuName, SubMenuName, setPreviousRoute } = useContext(GlobalState)
-    const [menuName, setMenuName] = MenuName
-    const [subMenuName, setSubMenuName] = SubMenuName
-    const [staff, setStaff] = Staff
-    const [adminPath, setAdminPath] = useState(false)
+    const {
+        adminPath,
+        setAdminPath,
+        staff,
+        setStaff,
+        cookies,
+        menuName,
+        setMenuName,
+        subMenuName,
+        setSubMenuName,
+        setPreviousRoute,
+    } = useContext(GlobalState)
 
     const SubMenu = ({ menu, route }) => {
 
@@ -26,7 +33,7 @@ const NavigationBar = () => {
     const checkIsStaff = () => {
         const { location: { pathname } } = window
         if (sessionStorage.getItem('token')) {
-            const checkAdminPath = (JSON.parse(sessionStorage.getItem('token'))).type == "Staffs" || pathname.includes('/admin/')
+            const checkAdminPath = cookies.user.type == "Staffs" || pathname.includes('/admin/')
             setAdminPath(checkAdminPath)
             setStaff(checkAdminPath)
         }
@@ -88,7 +95,7 @@ const NavigationBar = () => {
                         </span>
                         {menuName === "ข้อมูลส่วนตัว" ?
                             <div className="flex flex-col">
-                                <SubMenu menu="แสดงข้อมูลส่วนตัว" route={`/profile-result?profileId=${sessionStorage.getItem('token') ? JSON.parse(sessionStorage.getItem('token')).id : undefined}`} />
+                                <SubMenu menu="แสดงข้อมูลส่วนตัว" route={`/profile-result?profileId=${cookies.user ? cookies.user.id : ""}`} />
                                 <SubMenu menu="เพิ่มเติม/แก้ไขข้อมูล" route="/profile" />
                             </div> : null
                         }

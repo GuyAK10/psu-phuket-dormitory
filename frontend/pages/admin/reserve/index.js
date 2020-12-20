@@ -18,11 +18,7 @@ const years = () => {
 }
 
 const reserve = () => {
-    const { Modal, Token, AxiosConfig, MenuBar } = useContext(GlobalState)
-    const [menuBar, setMenuBar] = MenuBar
-    const [axiosConfig] = AxiosConfig
-    const [token, setToken] = Token
-    const [showModal, setShowModal] = Modal
+    const { setMenuBar, setShowModal, get, post, loading } = useContext(GlobalState)
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
     const [showbuilding, setShowBuilding] = useState([])
@@ -42,7 +38,6 @@ const reserve = () => {
         { 3: ["G", "C"] },
         { 4: ["H", "D"] }
     ]
-    const { get, post, loading } = useFetch(`${ENDPOINT}:${PORT}/staff/room`, { ...header, cachePolicy: "no-cache" })
 
     const Logout = () => {
         setToken(null)
@@ -80,23 +75,11 @@ const reserve = () => {
         let floorDetails = []
         setIsLoading(false)
         try {
-            await axios.get(`${ENDPOINT}:${PORT}/staff/room/floor${floor[0]}`, axiosConfig)
-                .then(res => {
-                    floorDetails[0] = { ...res.data }
-                })
-                .catch(e => {
-                    console.log(e)
-                    Logout()
-                })
+            const floor0 = await get(`staff/room/floor${floor[0]}`, axiosConfig)
+            if (floor0) floorDetails[0] = { ...res.data }
 
-            await axios.get(`${ENDPOINT}:${PORT}/staff/room/floor${floor[1]}`, axiosConfig)
-                .then(res => {
-                    floorDetails[1] = { ...res.data }
-                })
-                .catch(e => {
-                    console.log(e)
-                    Logout()
-                })
+            const floor1 = await axios.get(`staff/room/floor${floor[1]}`, axiosConfig)
+            if (floor1) floorDetails[1] = { ...res.data }
 
             setFocusListRoom(floorDetails)
             setIsLoading(true)
@@ -182,7 +165,7 @@ const reserve = () => {
                 studentId: item[student].id,
                 orderId: student
             }
-            const remove = await post("remove", body)
+            const remove = await post("staff/room/remove", body)
             if (remove.success) {
                 if (modalFloor) {
                     let changeStatusReserve = modalFloor.map(room => {
@@ -299,7 +282,7 @@ const reserve = () => {
 
         const setStatusRoom = async (room, status) => {
             const sendStatus = { floorId: `floor${room.room.slice(0, 1)}`, roomId: room.room, available: status }
-            const setStatus = await post("statusRoom", sendStatus)
+            const setStatus = await post("staff/room/statusRoom", sendStatus)
             if (setStatus.success) {
                 let tempModelFloor = modalFloor
                 const keepTempModal = tempModelFloor.map(item => {
@@ -379,7 +362,7 @@ const reserve = () => {
                     </div>
 
                     <span className="">
-                        
+
                         <span className="flex">
                             <img
                                 src="/icon/male.svg" alt="person" className="person cursor-pointer"
@@ -468,7 +451,7 @@ const reserve = () => {
     }
 
     const checkSystem = async () => {
-        const system = await get('system')
+        const system = await get('staff/room/system')
         if (system.success) {
             console.log(system)
             setSystem(system.data.system)
@@ -488,7 +471,7 @@ const reserve = () => {
     }
 
     const changeStatusSystem = async (status) => {
-        const changeStatus = await post("system", { system: status, semester: select.semester, year: select.year })
+        const changeStatus = await post("staff/room/system", { system: status, semester: select.semester, year: select.year })
         if (changeStatus.success) {
             message.success(changeStatus.message)
             setSystem(changeStatus.data.system)

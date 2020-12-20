@@ -7,7 +7,7 @@ const router = express.Router()
 const { db, admin } = require('./configs/firebase')
 const { createToken } = require('./configs/jwt')
 const xlsxFile = require('read-excel-file/node');
-const { error } = require('console');
+
 //remove token
 router.delete('/logout/:token', async (req, res) => {
     const token = req.params.token
@@ -20,7 +20,6 @@ router.delete('/logout/:token', async (req, res) => {
             find.forEach(res => deleteId = { ...res.data() })
         }
         docRef.doc(deleteId.id).delete()
-        console.log("Logout")
         res.status(200).send({ code: 401, status: "Logout", message: "Logout" });
     } catch (e) {
         console.log(e)
@@ -29,7 +28,7 @@ router.delete('/logout/:token', async (req, res) => {
 })
 
 //create token
-router.post('/', (req, res) => {
+router.post('/login', (req, res) => {
     try {
         soap.createClient(url, (err, client) => {
             const { username, password, type } = req.body
@@ -44,11 +43,12 @@ router.post('/', (req, res) => {
             else if (username == "student") {
                 createToken({ username, password: "any", type: "Students" }, { userId: "student test user", role: "Students" }, mockRequestStudent, res)
             }
+
             else {
-                // fast check login
+                // fail login when too late
                 let loginFail = setTimeout(() => {
                     res.status(401).send("ID หรือ Password ผิด");
-                }, 1000)
+                }, 5000)
                 client.GetUserDetails({ username, password, type }, (err, response) => {
                     try {
                         const responseData = {

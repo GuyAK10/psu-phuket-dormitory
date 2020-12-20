@@ -1,21 +1,14 @@
 import React, { useEffect, useContext, useState, useRef } from 'react'
 import { GlobalState } from '../utils/context'
 import Router from 'next/router'
-import useFetch from 'use-http'
 import { useReactToPrint } from 'react-to-print';
+
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const ProfileResult = ({ profileId }) => {
-    const { AxiosConfig, Modal, Token, MenuBar } = useContext(GlobalState)
-    const [menuBar, setMenuBar] = MenuBar
-    const [token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [axiosConfig] = AxiosConfig
-    const [headers, setHeaders] = useState({})
-    const [myId, setMyId] = useState('')
+    const { get, cookies } = useContext(GlobalState)
     const [isProfileFail, setProfileFail] = useState(true)
-    const { get, loading } = useFetch(`${ENDPOINT}:${PORT}/student`, { ...headers, cachePolicy: "no-cache" })
     const printRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => printRef.current,
@@ -112,50 +105,22 @@ const ProfileResult = ({ profileId }) => {
 
     const getStudents = async () => {
         try {
-            if (!profileId) Router.push("login")
-            else {
-                const data = await get(`profile/${profileId}`)
-                setStudent(data)
-            }
+            const data = await get(`student/profile/${profileId || cookies.user.id}`)
+            setStudent(data)
         } catch (e) {
             console.error(e)
         }
     }
 
-    const getHeader = () => {
-        if (sessionStorage.getItem('token'))
-            setHeaders({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem("token")).type
-                },
-                cachePolicy: "no-cache",
-            })
-    }
-
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
-
     useEffect(() => {
         let protectMemoryLeak = false
-        getHeader()
-        verifyLogin()
         getStudents()
-        if (!protectMemoryLeak) setMyId(JSON.parse(sessionStorage.getItem("token")).id)
-        console.log(student)
         return () => protectMemoryLeak = true
     }, [])
 
     if (student) return (
         <div className="container flex flex-col">
+            <button onClick={cookies}>cookie</button>
             <button
                 className="w-32 m-5 self-center bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded self-start"
                 onClick={handlePrint}
@@ -171,7 +136,7 @@ const ProfileResult = ({ profileId }) => {
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
                 <ul className="list-disc flex flex-col">
                     {
-                        isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}/student/profile/picture/${myId}`} onError={() => setProfileFail(false)} alt="profileImg" />
+                        isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}/student/profile/picture/${profileId}`} onError={() => setProfileFail(false)} alt="profileImg" />
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }
@@ -247,7 +212,7 @@ const ProfileResult = ({ profileId }) => {
                                             student.historyRoom
                                                 .sort()
                                                 .map((item, key) =>
-                                                    <tr key={key}><th>{key + 1}</th></tr>
+                                                    <tr key={key}><th >{key + 1}</th></tr>
                                                 )
                                         }
                                     </thead>
