@@ -1,18 +1,29 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { message } from 'antd';
 import { GlobalState } from '../utils/context'
 import Router from 'next/router'
+import useFetch from 'use-http'
+
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const Login = ({ children }) => {
+
+    const { post, response, loading } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+        options.cachePolicy = "no-cache"
+        return options
+    })
+
     const {
         setCookie,
         showModal,
         setShowModal,
         setMenuBar,
         setStaff,
-        post,
-        previousRoute
-    } = React.useContext(GlobalState)
+        previousRoute,
+        setHeaderDetail,
+        cookies
+    } = useContext(GlobalState)
 
     const [form, setForm] = React.useState({
         username: "",
@@ -28,14 +39,15 @@ const Login = ({ children }) => {
     }
 
     const getAuthen = async () => {
-
         try {
             const result = await post(`/login`, form)
-            if (result.token) {
+            if (response.ok) {
                 setShowModal(false)
-                setCookie("token", result.token)
-                setCookie("user", result.user)
+                setCookie("token", result.token, { maxAge: Date.now() + 1000 * 60 * 10 })
+                setCookie("user", result.user, { maxAge: Date.now() + 1000 * 60 * 10 })
                 setMenuBar('ออกจากระบบ')
+                const detail = cookies.user || ""
+                setHeaderDetail(detail)
                 if (result.user.type == "Staffs") {
                     setStaff(true)
                 }
@@ -47,11 +59,7 @@ const Login = ({ children }) => {
                 }
                 message.success('เข้าสู่ระบบแล้ว')
             }
-
-            else if (result.status === 401) {
-                message.warn('ID หรือ รหัสผ่านผิดพลาด')
-            }
-
+            else message.warn('ID หรือ รหัสผ่านผิดพลาด')
         } catch (e) {
             message.warn('ผิดพลาดไม่ทราบสาเหตุ')
             console.log(e)
@@ -62,6 +70,13 @@ const Login = ({ children }) => {
         if (e.key === "Enter")
             getAuthen()
     }
+
+    useEffect(() => {
+        if (loading) message.loading('กำลังเข้าสู่ระบบ')
+        return () => {
+            if (!loading) message.destroy()
+        }
+    }, [loading])
 
     if (showModal) return (
         <>

@@ -2,9 +2,24 @@ import React from 'react'
 import { GlobalState } from '../utils/context'
 import { message } from 'antd';
 import Router from 'next/router'
+import useFetch from 'use-http'
 
 const Login = () => {
-    const { cookies, setCookie, setShowModal, setMenuBar, setStaff, post, previousRoute } = React.useContext(GlobalState)
+    const {
+        setCookie,
+        setShowModal,
+        setMenuBar,
+        setStaff,
+        previousRoute,
+        setHeaderDetail,
+        cookies,
+        response
+    } = React.useContext(GlobalState)
+
+    const { post } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+        options.cachePolicy = "no-cache"
+        return options
+    })
 
     const [form, setForm] = React.useState({
         username: "",
@@ -22,11 +37,12 @@ const Login = () => {
     const getAuthen = async () => {
         try {
             const result = await post(`/login`, form)
-
-            if (result.token) {
+            if (response.ok) {
                 setShowModal(false)
-                setCookie("token", result.token)
-                setCookie("user", result.user)
+                setCookie("token", result.token, { maxAge: Date.now() + 1000 * 60 * 10 })
+                setCookie("user", result.user, { maxAge: Date.now() + 1000 * 60 * 10 })
+                const detail = cookies.user || ""
+                setHeaderDetail(detail)
                 if (result.user.type == "Staffs") {
                     setStaff(true)
                 }

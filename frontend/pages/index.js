@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import Card from '../component/Card'
 import useFetch from 'use-http'
 
@@ -8,7 +8,7 @@ const PORT = process.env.PORT
 const Index = () => {
     const { get } = useFetch(`${ENDPOINT}:${PORT}`, options => {
         options.cachePolicy = "no-cache"
-        return funct
+        return options
     })
     const [news, setNews] = useState(null)
 

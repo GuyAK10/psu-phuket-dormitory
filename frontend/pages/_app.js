@@ -22,7 +22,9 @@ const MyApp = ({ Component, pageProps }) => {
     const [subMenuName, setSubMenuName] = useState('รายการข่าว')
     const [cookies, setCookie, removeCookie] = useCookies(["token", "user"]);
     const [adminPath, setAdminPath] = useState(false)
-    const { get, post, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+    const [headerDetail, setHeaderDetail] = useState(null)
+
+    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, options => {
         options.cachePolicy = "no-cache"
         options.credentials = 'include'
         return options
@@ -46,14 +48,10 @@ const MyApp = ({ Component, pageProps }) => {
                     subMenuName, setSubMenuName,
                     cookies, setCookie, removeCookie,
                     previousRoute, setPreviousRoute,
-                    get, post, error, loading, response
+                    headerDetail, setHeaderDetail,
+                    get, post, del, error, loading, response
                 }}>
                 <div className="root-container relative grid grid-cols-6">
-                    <button onClick={async () => {
-                        const data = await get('student/profile/5835512119')
-                        console.log(cookies)
-                        console.log(data)
-                    }}>Check</button>
                     <div className="nav-bar-container col-span-1 col-start-1">
                         <NavigationBar />
                     </div>

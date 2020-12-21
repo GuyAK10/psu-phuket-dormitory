@@ -5,8 +5,181 @@ import { message, Tooltip } from 'antd';
 
 message.config({ maxCount: 1 })
 
+const FocusFloor = ({ modalFloor, selectRoom, removeRoom }) => {
+
+    const styleStd1 = (room) => {
+        if (!room.available) {
+            return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
+        }
+        else if (room.student1) {
+            if (room.student1.id == myId) {
+                return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
+            }
+            return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
+        }
+        return { filter: null }
+    }
+
+    const styleStd2 = (room) => {
+        if (!room.available) {
+            return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
+        }
+        else if (room.student2) {
+            if (room.student2.id == myId) {
+                return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
+            }
+            return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
+        }
+        return { filter: null }
+    }
+
+    const color = "#108ee9"
+
+    return (
+        <div className="focus-floor">
+            <img src="icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
+            <div className="modal-content">
+                <div className="even-room">
+                    {modalFloor ? modalFloor.filter((_item, key) => key % 2 !== 0).map((room, key) => {
+
+                        return <div className="room-container" key={key}>
+                            <span className="even-room-item" >
+                                <span className="student1">
+                                    <Tooltip
+                                        title={room.student1 ? `${room.student1.id} ${room.student1.name} ${room.student1.surname}` : ""}
+                                        color={color}
+                                    >
+                                        <img
+                                            style={styleStd1(room)}
+                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                                            onClick={(e) => {
+                                                if (!loading)
+                                                    if (room.student1)
+                                                        removeRoom(room, "student1", e.currentTarget)
+                                                    else
+                                                        selectRoom(room, "student1", e.currentTarget)
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </span>
+                                <span className="student2">
+                                    <Tooltip
+                                        title={room.student2 ? `${room.student2.id} ${room.student2.name} ${room.student2.surname}` : ""}
+                                        color={color}
+                                    >
+                                        <img
+                                            style={styleStd2(room)}
+                                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                                            onClick={(e) => {
+                                                if (!loading) {
+                                                    if (room.student2)
+                                                        removeRoom(room, "student2", e.currentTarget)
+                                                    else
+                                                        selectRoom(room, "student2", e.currentTarget)
+                                                }
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </span>
+                            </span>
+                            {room.room}
+                        </div>
+                    }
+                    ) : null}
+                </div>
+
+                <span className="">
+                    เลือกห้องว่างโดยคลิกเลือกจากห้องว่าง (สีขาว)
+                    ยกเลิกโดยคลิกที่ห้องตนเอง (สีเขียว)
+                    <span className="flex">
+                        <img
+                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                        />
+                            ห้องว่างสามารถจองได้
+                            </span>
+
+                    <span className="flex">
+                        <img
+                            style={{ filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }}
+                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                        />
+                            ห้องที่ท่านจอง
+                            </span>
+
+                    <span className="flex">
+                        <img
+                            style={{ filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }}
+                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                        />
+                            ห้องไม่ว่างเนื่องจากจองแล้ว
+                            </span>
+                    <span className="flex">
+                        <img
+                            style={{ filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }}
+                            src="/icon/male.svg" alt="person" className="person cursor-pointer"
+                        />
+                            ห้องถูกปิดการจองโดยเจ้าหน้าที่
+                            </span>
+                </span>
+
+                <div className="odd-room">
+                    {modalFloor ? modalFloor.filter((_item, key) => key % 2 === 0).map((room, key) => {
+
+                        return <div className="room-container" key={key} >
+                            <span className="odd-room-item">
+                                <span className="student1">
+                                    <Tooltip
+                                        title={room.student1 ? `${room.student1.id} ${room.student1.name} ${room.student1.surname}` : ""}
+                                        color={color}
+                                    >
+                                        <img
+                                            style={styleStd1(room)}
+                                            src="/icon/male.svg"
+                                            alt="person"
+                                            className="person cursor-pointer"
+                                            onClick={(e) => {
+                                                if (!loading)
+                                                    if (room.student1)
+                                                        removeRoom(room, "student1", e.currentTarget)
+                                                    else
+                                                        selectRoom(room, "student1", e.currentTarget)
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </span>
+                                <span className="student2">
+                                    <Tooltip
+                                        title={room.student2 ? `${room.student2.id} ${room.student2.name} ${room.student2.surname}` : ""}
+                                        color={color}
+                                    >
+                                        <img
+                                            style={styleStd2(room)}
+                                            src="/icon/male.svg"
+                                            alt="person"
+                                            className="person cursor-pointer"
+                                            onClick={(e) => {
+                                                if (!loading) {
+                                                    if (room.student2)
+                                                        removeRoom(room, "student2", e.currentTarget)
+                                                    else
+                                                        selectRoom(room, "student2", e.currentTarget)
+                                                }
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </span>
+                            </span>
+                            {room.room}
+                        </div>
+                    }) : null}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const reserve = () => {
-    const { get, post, loading, error } = useContext(GlobalState)
+    const { get, post, loading, error, cookies } = useContext(GlobalState)
     const [system, setSystem] = useState(false)
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(true)
@@ -216,179 +389,6 @@ const reserve = () => {
         }
     }
 
-    const FocusFloor = () => {
-
-        const styleStd1 = (room) => {
-            if (!room.available) {
-                return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
-            }
-            else if (room.student1) {
-                if (room.student1.id == myId) {
-                    return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
-                }
-                return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
-            }
-            return { filter: null }
-        }
-
-        const styleStd2 = (room) => {
-            if (!room.available) {
-                return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
-            }
-            else if (room.student2) {
-                if (room.student2.id == myId) {
-                    return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
-                }
-                return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
-            }
-            return { filter: null }
-        }
-
-        const color = "#108ee9"
-
-        return (
-            <div className="focus-floor">
-                <img src="icon/close.svg" alt="x" id="close" onClick={handleFocusModal} />
-                <div className="modal-content">
-                    <div className="even-room">
-                        {modalFloor ? modalFloor.filter((_item, key) => key % 2 !== 0).map((room, key) => {
-
-                            return <div className="room-container" key={key}>
-                                <span className="even-room-item" >
-                                    <span className="student1">
-                                        <Tooltip
-                                            title={room.student1 ? `${room.student1.id} ${room.student1.name} ${room.student1.surname}` : ""}
-                                            color={color}
-                                        >
-                                            <img
-                                                style={styleStd1(room)}
-                                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                                                onClick={(e) => {
-                                                    if (!loading)
-                                                        if (room.student1)
-                                                            removeRoom(room, "student1", e.currentTarget)
-                                                        else
-                                                            selectRoom(room, "student1", e.currentTarget)
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    </span>
-                                    <span className="student2">
-                                        <Tooltip
-                                            title={room.student2 ? `${room.student2.id} ${room.student2.name} ${room.student2.surname}` : ""}
-                                            color={color}
-                                        >
-                                            <img
-                                                style={styleStd2(room)}
-                                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                                                onClick={(e) => {
-                                                    if (!loading) {
-                                                        if (room.student2)
-                                                            removeRoom(room, "student2", e.currentTarget)
-                                                        else
-                                                            selectRoom(room, "student2", e.currentTarget)
-                                                    }
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    </span>
-                                </span>
-                                {room.room}
-                            </div>
-                        }
-                        ) : null}
-                    </div>
-
-                    <span className="">
-                        เลือกห้องว่างโดยคลิกเลือกจากห้องว่าง (สีขาว)
-                        ยกเลิกโดยคลิกที่ห้องตนเอง (สีเขียว)
-                        <span className="flex">
-                            <img
-                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                            />
-                                ห้องว่างสามารถจองได้
-                                </span>
-
-                        <span className="flex">
-                            <img
-                                style={{ filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }}
-                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                            />
-                                ห้องที่ท่านจอง
-                                </span>
-
-                        <span className="flex">
-                            <img
-                                style={{ filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }}
-                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                            />
-                                ห้องไม่ว่างเนื่องจากจองแล้ว
-                                </span>
-                        <span className="flex">
-                            <img
-                                style={{ filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }}
-                                src="/icon/male.svg" alt="person" className="person cursor-pointer"
-                            />
-                                ห้องถูกปิดการจองโดยเจ้าหน้าที่
-                                </span>
-                    </span>
-
-                    <div className="odd-room">
-                        {modalFloor ? modalFloor.filter((_item, key) => key % 2 === 0).map((room, key) => {
-
-                            return <div className="room-container" key={key} >
-                                <span className="odd-room-item">
-                                    <span className="student1">
-                                        <Tooltip
-                                            title={room.student1 ? `${room.student1.id} ${room.student1.name} ${room.student1.surname}` : ""}
-                                            color={color}
-                                        >
-                                            <img
-                                                style={styleStd1(room)}
-                                                src="/icon/male.svg"
-                                                alt="person"
-                                                className="person cursor-pointer"
-                                                onClick={(e) => {
-                                                    if (!loading)
-                                                        if (room.student1)
-                                                            removeRoom(room, "student1", e.currentTarget)
-                                                        else
-                                                            selectRoom(room, "student1", e.currentTarget)
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    </span>
-                                    <span className="student2">
-                                        <Tooltip
-                                            title={room.student2 ? `${room.student2.id} ${room.student2.name} ${room.student2.surname}` : ""}
-                                            color={color}
-                                        >
-                                            <img
-                                                style={styleStd2(room)}
-                                                src="/icon/male.svg"
-                                                alt="person"
-                                                className="person cursor-pointer"
-                                                onClick={(e) => {
-                                                    if (!loading) {
-                                                        if (room.student2)
-                                                            removeRoom(room, "student2", e.currentTarget)
-                                                        else
-                                                            selectRoom(room, "student2", e.currentTarget)
-                                                    }
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    </span>
-                                </span>
-                                {room.room}
-                            </div>
-                        }) : null}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
     const getMyRoom = async () => {
         if (sessionStorage.getItem('token')) {
             const myId = JSON.parse(sessionStorage.getItem('token')).id
@@ -408,7 +408,7 @@ const reserve = () => {
             console.log(system.message)
         }
     }
-    
+
     const checkIsFillProfile = async () => {
         const isFill = await get(`student/room/isFill/${cookies.user.id}`)
         if (!isFill.success) {
@@ -458,7 +458,7 @@ const reserve = () => {
                 </div>
             </div>
             {Building()}
-            {showRoomSelect && <FocusFloor />}
+            {showRoomSelect && <FocusFloor modalFloor={modalFloor} selectRoom={selectRoom} removeRoom={removeRoom} />}
         </div>
     )
 }

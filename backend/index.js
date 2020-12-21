@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 80
 const { verifyHeader } = require("./configs/jwt");
 const { staffType, studentType } = require("./configs/type")
 const accessControl = require('./access')
+const functions = require('firebase-functions')
 
 //studentPath
 const studentProfile = require('./student/profile')
@@ -40,7 +41,7 @@ app.use(staffRepair);
 app.use(staffSupport);
 
 //useStudent
-app.use('/student', verifyHeader, studentType)
+// app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);
@@ -48,4 +49,8 @@ app.use(studentNew);
 app.use(studentRepair);
 app.use(studentSupport);
 
+//firebase functions
+exports.api = functions.https.onRequest(app);
+
+//express
 app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))

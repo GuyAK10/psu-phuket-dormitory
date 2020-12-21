@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs')
 const { db } = require('./firebase');
-const { abort } = require('process');
-const { error } = require('console');
 require('dotenv').config()
 
 const tokenRef = db.collection('token')
@@ -133,7 +131,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     await setProfile.set(student)
                               } else {
                                     await setProfile.update({
-                                          'profile.id ': "student test user",
+                                          'profile.id ': "studentTest",
                                           'profile.name': "userStudentForTest",
                                           'profile.surname': "userStudentForTest",
                                           'profile.faculty': "testFaculty",
@@ -166,6 +164,69 @@ const createToken = async (user, responseData, _req, res) => {
                               })
                   }
 
+                  else if (user.username === 'staff') {
+                        const payload = {
+                              id: responseData.userId,
+                              type: responseData.role,
+                              exp: Date.now() + (1000 * 60 * 60)
+                        }
+
+                        let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
+                        const register = tokenRef.doc(`${responseData.userId}`)
+                        const setProfile = db.collection('students').doc(`${responseData.userId}`);
+
+                        await register.set({
+                              id: responseData.userId,
+                              type: responseData.role,
+                              token: encoded
+                        });
+
+                        student.profile.id = 'staffTest'
+                        student.profile.name = "userStaffForTest"
+                        student.profile.surname = "userStaffForTest"
+                        student.profile.faculty = "testFaculty"
+                        student.profile.department = "testDepartment"
+                        student.contact.email = "test@test.com"
+
+                        if (user.username === "staff") {
+                              const doc = await setProfile.get()
+                              if (!doc.exists) {
+                                    await setProfile.set(student)
+                              } else {
+                                    await setProfile.update({
+                                          'profile.id ': "staffTest",
+                                          'profile.name': "userStaffForTest",
+                                          'profile.surname': "userStaffForTest",
+                                          'profile.faculty': "testFaculty",
+                                          'profile.department': "testDepartment",
+                                          'contact.email': "test@test.com"
+                                    })
+                              }
+                        }
+
+                        res.status(200).
+                              cookie("token", encoded, {
+                                    expire: Date.now() + 1000 * 60 * 10,
+                                    httpOnly: true,
+                              })
+                              .cookie("user", {
+                                    id: responseData.userId,
+                                    name: responseData.name,
+                                    surname: responseData.surname,
+                                    type: responseData.role,
+                              }, {
+                                    expire: Date.now() + 1000 * 60 * 10,
+                              }).send({
+                                    token: encoded,
+                                    user: {
+                                          id: "staffTest",
+                                          name: "userStaffForTest",
+                                          surname: "userStaffForTest",
+                                          type: "Staffs",
+                                    }
+                              })
+                  }
+
                   else if (user.type == responseData.role) {
 
                         const payload = {
@@ -191,7 +252,7 @@ const createToken = async (user, responseData, _req, res) => {
                         student.profile.department = responseData.department
                         student.contact.email = responseData.email
 
-                        if (responseData.role === "Students" && user.username !== "student") {
+                        if (responseData.role === "Students") {
                               const doc = await setProfile.get()
                               if (!doc.exists) {
                                     await setProfile.set(student)
@@ -205,8 +266,32 @@ const createToken = async (user, responseData, _req, res) => {
                                           'contact.email': responseData.email
                                     })
                               }
+                              res.status(200)
+                                    .cookie("token", encoded, {
+                                          expire: Date.now() + 1000 * 60 * 10,
+                                          httpOnly: true,
+                                    })
+                                    .cookie("user", {
+                                          id: responseData.userId,
+                                          name: responseData.name,
+                                          surname: responseData.surname,
+                                          type: responseData.role,
+                                    }, {
+                                          expire: Date.now() + 1000 * 60 * 10,
+                                    })
+                                    .send({
+                                          token: encoded,
+                                          user: {
+                                                id: responseData.userId,
+                                                name: responseData.name,
+                                                surname: responseData.surname,
+                                                type: responseData.role,
+                                          }
+                                    })
                         }
+                  }
 
+                  else if (responseData.role === "Staff") {
                         res.status(200)
                               .cookie("token", encoded, {
                                     expire: Date.now() + 1000 * 60 * 10,

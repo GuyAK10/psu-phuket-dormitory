@@ -5,8 +5,20 @@ import Router from 'next/router'
 import { message } from 'antd';
 
 const UtilitiesBar = () => {
-    const { adminPath, setAdminPath, del, cookies, menuBar, setMenuBar, setStaff, setShowModal, removeCookie } = useContext(GlobalState)
-    const [headerDetail, setHeaderDetail] = useState(null)
+    const {
+        adminPath,
+        setAdminPath,
+        del,
+        cookies,
+        menuBar,
+        setMenuBar,
+        setStaff,
+        setShowModal,
+        removeCookie,
+        response,
+        headerDetail,
+        setHeaderDetail
+    } = useContext(GlobalState)
 
     const LoginOrLogout = () => {
         if (cookies.token) setMenuBar('ออกจากระบบ')
@@ -23,8 +35,8 @@ const UtilitiesBar = () => {
             setHeaderDetail(null)
             setStaff(false)
             try {
-                const deletSession = await del(`/logout/${token}`)
-                if (deletSession) message.success('ออกจากระบบเรียบร้อย')
+                await del(`/logout/${cookies.user.id}`)
+                if (response.ok) message.success('ออกจากระบบเรียบร้อย')
             } catch (e) {
                 console.error(e)
             }
