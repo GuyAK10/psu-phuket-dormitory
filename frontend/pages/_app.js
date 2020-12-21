@@ -22,10 +22,12 @@ const MyApp = ({ Component, pageProps, serverCookie, clientCookie }) => {
     const [subMenuName, setSubMenuName] = useState('รายการข่าว')
     const [cookies, setCookie, removeCookie] = useCookies(["token", "user"]);
     const [adminPath, setAdminPath] = useState(false)
-    const { get, post, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", headers: { type: cookies.user.type, token: cookies.token } })
+    // const { get, post, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", headers: { type: cookies.user.type, token: cookies.token } })
+    const myCookie = serverCookie || clientCookie
+    const { get, post, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", headers: { type: JSON.parse(myCookie.user).type, token: myCookie.token } })
 
+    console.log(myCookie)
     const getCookieToState = () => {
-        const myCookie = serverCookie || clientCookie
         if (myCookie.token) {
             setCookie("token", myCookie.token)
             setCookie("user", myCookie.user)
