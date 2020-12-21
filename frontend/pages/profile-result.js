@@ -105,7 +105,7 @@ const ProfileResult = ({ profileId }) => {
 
     const getStudents = async () => {
         try {
-            const data = await get(`student/profile/${profileId || cookies.user.id}`)
+            const data = await get(`student/profile/${cookies.user.id}`)
             setStudent(data)
         } catch (e) {
             console.error(e)
@@ -114,7 +114,7 @@ const ProfileResult = ({ profileId }) => {
 
     useEffect(() => {
         let protectMemoryLeak = false
-        getStudents()
+        if (!protectMemoryLeak) getStudents()
         return () => protectMemoryLeak = true
     }, [])
 

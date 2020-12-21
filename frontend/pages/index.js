@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Card from '../component/Card'
-import { GlobalState } from '../utils/context'
+import useFetch from 'use-http'
 
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
-const Index = (props) => {
-    const { get } = useContext(GlobalState)
+const Index = () => {
+    const { get } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+        options.cachePolicy = "no-cache"
+        return funct
+    })
     const [news, setNews] = useState(null)
 
     const newsList = async () => {

@@ -3,6 +3,22 @@ import { GlobalState } from '../utils/context'
 import { Divider } from 'antd';
 import Link from 'next/link'
 
+const SubMenu = ({ menu, route }) => {
+    const {
+        setSubMenuName,
+        setPreviousRoute,
+        subMenuName
+    } = useContext(GlobalState)
+
+    setPreviousRoute(route)
+
+    return <Link href={route}>
+        <a style={{ background: subMenuName === menu ? "#2f80af" : "none" }} onClick={() => setSubMenuName(menu)} className="text-lg cursor-pointer p-3 rounded">
+            {menu}
+        </a>
+    </Link>
+}
+
 const NavigationBar = () => {
     const {
         adminPath,
@@ -12,21 +28,8 @@ const NavigationBar = () => {
         cookies,
         menuName,
         setMenuName,
-        subMenuName,
-        setSubMenuName,
-        setPreviousRoute,
+        
     } = useContext(GlobalState)
-
-    const SubMenu = ({ menu, route }) => {
-
-        setPreviousRoute(route)
-
-        return <Link href={route}>
-            <a style={{ background: subMenuName === menu ? "#2f80af" : "none" }} onClick={() => setSubMenuName(menu)} className="text-lg cursor-pointer p-3 rounded">
-                {menu}
-            </a>
-        </Link>
-    }
 
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
 

@@ -12,7 +12,7 @@ import { useCookies } from 'react-cookie';
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
-const MyApp = ({ Component, pageProps, serverCookie, clientCookie }) => {
+const MyApp = ({ Component, pageProps }) => {
     const [showModal, setShowModal] = useState(false)
     const [menuBar, setMenuBar] = useState('ลงชื่อเข้าใช้')
     const [previousRoute, setPreviousRoute] = useState(null)
@@ -22,21 +22,14 @@ const MyApp = ({ Component, pageProps, serverCookie, clientCookie }) => {
     const [subMenuName, setSubMenuName] = useState('รายการข่าว')
     const [cookies, setCookie, removeCookie] = useCookies(["token", "user"]);
     const [adminPath, setAdminPath] = useState(false)
-    // const { get, post, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", headers: { type: cookies.user.type, token: cookies.token } })
-    const myCookie = serverCookie || clientCookie
-    const { get, post, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, { cachePolicy: "no-cache", headers: { type: JSON.parse(myCookie.user).type, token: myCookie.token } })
-
-    console.log(myCookie)
-    const getCookieToState = () => {
-        if (myCookie.token) {
-            setCookie("token", myCookie.token)
-            setCookie("user", myCookie.user)
-        }
-    }
+    const { get, post, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+        options.cachePolicy = "no-cache"
+        options.credentials = 'include'
+        return options
+    })
 
     useEffect(() => {
         let dontLeak = false
-        if (!dontLeak) getCookieToState()
         return () => dontLeak = true
     }, [])
 
@@ -81,11 +74,11 @@ MyApp.getInitialProps = ({ ctx: { req, res } }) => {
 
     //server side
     if (req) {
-        const serverCookie = req.cookies || ""
+        let serverCookie = req.cookies || ""
         if (!serverCookie) {
             if (req.url != '/login' && req.url != '/') {
                 console.log('no cookie Redirect')
-                res.writeHead(301, { Location: `/login` })
+                res.writeHead(302, { Location: `/login` })
                 res.end()
             }
         }
