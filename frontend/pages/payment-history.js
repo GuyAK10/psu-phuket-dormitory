@@ -7,7 +7,7 @@ const PaymentHistory = () => {
         message: "ค้นหาเพื่อแสดงผลข้อมูล",
         data: []
     })
-    const { get, loading, cookies } = useContext(GlobalState)
+    const { get, loading, cookies, verifyLogin } = useContext(GlobalState)
 
     const getBill = async () => {
         if (cookies.token) {
@@ -25,6 +25,7 @@ const PaymentHistory = () => {
 
     useEffect(() => {
         getBill()
+        verifyLogin()
     }, [])
 
     return (

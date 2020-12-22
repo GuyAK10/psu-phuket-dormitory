@@ -40,9 +40,10 @@ const Login = () => {
 
     const getAuthen = async () => {
         try {
-            const result = await post(`login`, form)
+            const result = await post(`/login`, form)
             console.log(result)
-            if (response.ok) {
+            if (result.token) {
+                Router.back()
                 setShowModal(false)
                 setCookie("token", result.token, { maxAge: 10 * 60 })
                 setCookie("user", result.user, { maxAge: 10 * 60 })

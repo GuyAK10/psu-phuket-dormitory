@@ -4,6 +4,7 @@ import axios from 'axios'
 import { message, Steps, } from 'antd';
 import Router from 'next/router';
 import { useForm } from "react-hook-form";
+import useFetch from 'use-http'
 
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
@@ -11,7 +12,7 @@ const PORT = process.env.PORT
 const { Step } = Steps;
 
 const profile = () => {
-    const { response, cookies, get, post } = React.useContext(GlobalState)
+    const { get, response, cookies, verifyLogin } = React.useContext(GlobalState)
     const [current, setCurrent] = useState(0)
     const [headers, setHeaders] = useState({})
     const [imgUrl, setImgUrl] = useState('')
@@ -864,6 +865,7 @@ const profile = () => {
     }
 
     useEffect(() => {
+        verifyLogin()
         getInitialProfile()
     }, [])
 

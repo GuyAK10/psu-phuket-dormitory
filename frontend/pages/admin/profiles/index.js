@@ -1,9 +1,6 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import { GlobalState } from '../../../utils/context'
-import axios from 'axios'
 import Router from 'next/router'
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
 
 const profile = () => {
     const { students, setStudents } = useContext(GlobalState)

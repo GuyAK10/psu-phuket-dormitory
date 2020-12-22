@@ -7,8 +7,7 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Payment = () => {
-    const { get, post, setShowModal, setMenuBar, cookies } = React.useContext(GlobalState)
-    const [headers, setHeaders] = useState({})
+    const { get, post, cookies } = React.useContext(GlobalState)
     const [form, setForm] = useState([])
     const [autoSave, setAutoSave] = useState(true)
     const [createBill, setCreateBill] = useState(false)

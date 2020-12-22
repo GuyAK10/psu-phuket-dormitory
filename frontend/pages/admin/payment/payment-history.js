@@ -7,13 +7,8 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const PaymentHistory = () => {
-    const [headers, setHeaders] = useState({})
-    const { get, post } = useFetch(`${ENDPOINT}:${PORT}/staff/payment/history`, { ...headers, cachePolicy: "no-cache" })
     const [payments, setPayments] = useState([])
-    const { Token, Modal, MenuBar } = React.useContext(GlobalState)
-    const [_token, setToken] = Token
-    const [showModal, setShowModal] = Modal
-    const [menuBar, setMenuBar] = MenuBar
+    const { get } = React.useContext(GlobalState)
 
     const years = () => {
         const fullYear = new Date().getFullYear()
@@ -31,7 +26,7 @@ const PaymentHistory = () => {
     })
 
     const getPayments = async () => {
-        const data = await get(`${select.semester}/${select.month}/${select.year}`)
+        const data = await get(`staff/payment/history/${select.semester}/${select.month}/${select.year}`)
         if (data.success) {
             message.success(data.message)
             setPayments(data.data)

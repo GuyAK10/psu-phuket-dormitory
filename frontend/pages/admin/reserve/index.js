@@ -18,7 +18,7 @@ const years = () => {
 }
 
 const reserve = () => {
-    const { setMenuBar, setShowModal, get, post, loading } = useContext(GlobalState)
+    const { get, post, loading } = useContext(GlobalState)
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
     const [showbuilding, setShowBuilding] = useState([])

@@ -1,13 +1,12 @@
 import React, { useEffect, useContext, useState, useRef } from 'react'
 import { GlobalState } from '../utils/context'
 import { useReactToPrint } from 'react-to-print';
-import axios from 'axios'
 
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const ProfileResult = ({ profileId }) => {
-    const { get, cookies } = useContext(GlobalState)
+    const { get, cookies, verifyLogin } = useContext(GlobalState)
     const [isProfileFail, setProfileFail] = useState(true)
     const printRef = useRef();
     const handlePrint = useReactToPrint({
@@ -115,6 +114,7 @@ const ProfileResult = ({ profileId }) => {
     }
 
     useEffect(() => {
+        verifyLogin()
         getStudents()
     }, [])
 

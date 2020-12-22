@@ -5,8 +5,8 @@ import { message, Tooltip } from 'antd';
 
 message.config({ maxCount: 1 })
 
-const FocusFloor = ({ modalFloor, handleFocusModal, setModalFloor }) => {
-    const { cookies, loading, post } = useContext(GlobalState)
+const FocusFloor = ({ modalFloor, handleFocusModal, setModalFloor, setMyRoom }) => {
+    const { loading, post, cookies } = useContext(GlobalState)
 
     const onSelectedRoom = () => {
         message.success('จองห้องแล้ว')
@@ -49,7 +49,6 @@ const FocusFloor = ({ modalFloor, handleFocusModal, setModalFloor }) => {
                 onSelectedRoom()
                 setModalFloor(changeStatusReserve)
                 setMyRoom(item)
-                setUpdate(Math.random())
             }
         }
         catch (e) {
@@ -110,7 +109,6 @@ const FocusFloor = ({ modalFloor, handleFocusModal, setModalFloor }) => {
                 else handleSelectFloor(showbuilding)
                 setMyRoom(null)
                 onDeletedRoom()
-                setUpdate(Math.random())
             }
         }
         catch (e) {
@@ -297,7 +295,6 @@ const reserve = () => {
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState(null)
     const [focusRoomList, setFocusListRoom] = useState([])
-    const [update, setUpdate] = useState(0)
 
     const floorList = [
         { 1: ["E", "A"] },
@@ -360,7 +357,6 @@ const reserve = () => {
                 else handleSelectFloor(showbuilding)
                 setMyRoom(null)
                 onDeletedRoom()
-                setUpdate(Math.random())
             }
         }
         catch (e) {
@@ -455,7 +451,6 @@ const reserve = () => {
             const myRoomGet = await get(`student/room/myRoom/${id}`)
             if (myRoomGet.success) {
                 setMyRoom(myRoomGet.data)
-                setUpdate(Math.random())
             }
         }
     }

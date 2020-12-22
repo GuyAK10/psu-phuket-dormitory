@@ -4,7 +4,7 @@ import Footer from '../component/Footer'
 import UtilitiesBar from '../component/UtilitiesBar'
 import { GlobalState } from '../utils/context'
 import LoginModal from '../component/Login'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { CookiesProvider } from 'react-cookie';
 import useFetch from 'use-http'
 import { useCookies } from 'react-cookie';
@@ -25,7 +25,7 @@ const MyApp = ({ Component, pageProps }) => {
     const [adminPath, setAdminPath] = useState(false)
     const [headerDetail, setHeaderDetail] = useState(null)
 
-    const { get, post, del, error, loading, response, request } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, options => {
         options.cachePolicy = "no-cache"
         options.credentials = 'include'
         // options.timeout = 3000
@@ -39,25 +39,25 @@ const MyApp = ({ Component, pageProps }) => {
             setMenuBar('ลงชื่อเข้าใช้')
             setHeaderDetail(null)
             setStaff(false)
-            Router.push('/')
+            Router.replace('/')
         }
     }
 
     const verifyLogin = () => {
         if (!cookies.token) {
-            Router.push('/login')
+            Router.replace('/login')
         }
     }
 
-    useEffect(() => {
-        let dontLeak = false
-        if (!cookies.token) {
-            logout()
-        } return () => dontLeak = true
-    }, [])
+    // useEffect(() => {
+    //     let dontLeak = false
+    //     if (!cookies.token) {
+    //         logout()
+    //     } return () => dontLeak = true
+    // }, [])
 
     return (
-        <CookiesProvider>
+        <CookiesProvider allCookies={cookies}>
             <GlobalState.Provider
                 value={{
                     verifyLogin,
@@ -93,18 +93,18 @@ const MyApp = ({ Component, pageProps }) => {
 MyApp.getInitialProps = ({ ctx: { req, res } }) => {
 
     //server side
-    if (req) {
-        let serverCookie = req.cookies || ""
-        if (!serverCookie) {
-            if (req.url != '/login' && req.url != '/') {
-                console.log('no cookie Redirect')
-                res.writeHead(302, { Location: `/login` })
-                res.end()
-            }
-        }
+    // if (req) {
+    //     let serverCookie = req.cookies || ""
+    //     if (!serverCookie) {
+    //         if (req.url != '/login' && req.url != '/') {
+    //             console.log('no cookie Redirect')
+    //             res.writeHead(302, { Location: `/login` })
+    //             res.end()
+    //         }
+    //     }
 
-        return { serverCookie }
-    }
+    //     return { serverCookie }
+    // }
 
     //client side
     if (!req) {

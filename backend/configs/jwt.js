@@ -328,7 +328,7 @@ const createToken = async (user, responseData, _req, res) => {
 const verifyHeader = async (req, res, next) => {
       try {
             if (req.cookies) {
-                  const { token } = req.cookies
+                  const token = req.cookies && req.cookies.token
                   const verifyToken = await tokenRef.doc('token', '==', token).get()
                   if (verifyToken.empty) {
                         res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });

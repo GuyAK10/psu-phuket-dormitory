@@ -27,7 +27,7 @@ const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","http://localhost:5000"],
     credentials: true
 }))
 
@@ -55,7 +55,7 @@ app.use(studentRepair);
 app.use(studentSupport);
 
 //firebase functions
-// exports.api = functions.https.onRequest(app);
+exports.api = functions.https.onRequest(app);
 
 //express
 app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))
