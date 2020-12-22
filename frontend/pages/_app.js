@@ -4,7 +4,7 @@ import Footer from '../component/Footer'
 import UtilitiesBar from '../component/UtilitiesBar'
 import { GlobalState } from '../utils/context'
 import LoginModal from '../component/Login'
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { CookiesProvider } from 'react-cookie';
 import useFetch from 'use-http'
 import { useCookies } from 'react-cookie';
@@ -32,6 +32,9 @@ const MyApp = ({ Component, pageProps }) => {
         return options
     })
 
+    const hambuger = useRef()
+    const navBar = useRef()
+
     const logout = async () => {
         if (menuBar === "ออกจากระบบ") {
             removeCookie("token")
@@ -49,12 +52,27 @@ const MyApp = ({ Component, pageProps }) => {
         }
     }
 
-    // useEffect(() => {
-    //     let dontLeak = false
-    //     if (!cookies.token) {
-    //         logout()
-    //     } return () => dontLeak = true
-    // }, [])
+    useEffect(() => {
+        let dontLeak = false
+        if (!cookies.token) {
+            logout()
+            console.log('app ret')
+        } return () => {
+            dontLeak = true
+        }
+    }, [])
+
+    const hideHambuger = () => {
+        hambuger.current.style.display = "none"
+        navBar.current.style.display = "flex"
+        navBar.current.style.position = "fixed"
+        navBar.current.style.height = "100%"
+    }
+
+    const hideNarBar = () => {
+        navBar.current.style.display = "none"
+        hambuger.current.style.display = "block"
+    }
 
     return (
         <CookiesProvider allCookies={cookies}>
@@ -73,11 +91,15 @@ const MyApp = ({ Component, pageProps }) => {
                     headerDetail, setHeaderDetail,
                     get, post, del, error, loading, response
                 }}>
-                <div className="root-container relative grid grid-cols-6">
-                    <div className="nav-bar-container col-span-1 col-start-1">
+                <div className="root-container relative grid grid-cols-6 min-w-screen">
+                    <img ref={hambuger} onClick={hideHambuger} className="hambuger" src="icon/menu.svg" alt="hambuger" />
+                    <div ref={navBar} className="nav-bar-container flex flex-col justify-center">
+                        <div onClick={hideNarBar} className="arrow-left p-2 bg-blue-500 flex justify-center">
+                            <img className="w-4" src="icon/left-arrow.svg" alt="left-arrow" />
+                        </div>
                         <NavigationBar />
                     </div>
-                    <div className="body-container col-span-5 col-start-2">
+                    <div className="body-container">
                         <UtilitiesBar />
                         <LoginModal>
                             <Component {...pageProps} />
@@ -86,6 +108,12 @@ const MyApp = ({ Component, pageProps }) => {
                     </div>
                 </div>
             </GlobalState.Provider>
+            <style jsx global>{`
+                html, body{
+                    margin: 0;
+                    padding: 0;
+                }
+            `}</style>
         </CookiesProvider>
     )
 }

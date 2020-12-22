@@ -8,7 +8,7 @@ const checkType = {
             }
         } catch (error) {
             console.log("คุณไม่ใช่นักศึกษา")
-            res.status(403).send(error);
+            res.status(403).send({ code: 403, success: false, messagge: "เฉพาะนักศึกษาที่สถานะกำลังศึกษาดท่านั้นที่ใช้งานระบบนี้ได้" });
         }
     },
     staffType: (req, res, next) => {
@@ -19,7 +19,7 @@ const checkType = {
             }
         } catch (error) {
             console.log("คุณไม่ใช่เจ้าหน้าที่/อาจารย์")
-            res.status(403).send(error);
+            res.status(403).send({ code: 403, success: false, messagge: "คุณไม่ใช่เจ้าหน้าที่" });
         }
     }
 }

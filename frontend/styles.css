@@ -2,9 +2,9 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 :root {
-    --heigth-navbar: 5vh;
     font-size: 16px;
     font-family: 'Sarabun', sans-serif;
+    min-width: 100vw;
 }
 
 /* reserve */
@@ -203,6 +203,63 @@
     }
     .body-container {
         grid-column: span 6;
+    }
+}
+
+@media (min-width:280px) {
+    .nav-bar-container {
+        display: none;
+    }
+    .body-container {
+        grid-column-start: 1;
+        grid-column-end: 7;
+    }
+    .news-border {
+        border: 0;
+        padding: 0;
+        margin: 0;
+    }
+    .news-container {
+        width: 100%;
+    }
+    iframe {
+        display: block;
+        border: none;
+        height: fit-content;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        width: calc(100% - 10px);
+    }
+
+    .news-border {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+
+    .hambuger {
+        top:6px;
+        left: 6px;
+        width: calc(100vw - 90vw);
+        position: fixed;
+        z-index: 2;
+    }
+}
+
+@media (min-width:1024px) {
+    .nav-bar-container {
+        display: flex;
+        grid-column-start: 1;
+        grid-column: span 1;
+    }
+    .body-container {
+        grid-column-start: 2;
+        grid-column: span 5;
+    }
+    .hambuger {
+        display: none;
+    }
+    .arrow-left{
+        display: none;
     }
 }
 

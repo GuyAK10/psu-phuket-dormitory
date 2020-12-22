@@ -12,9 +12,8 @@ const PORT = process.env.PORT
 const { Step } = Steps;
 
 const profile = () => {
-    const { get, response, cookies, verifyLogin } = React.useContext(GlobalState)
+    const { get, post, response, cookies, verifyLogin } = React.useContext(GlobalState)
     const [current, setCurrent] = useState(0)
-    const [headers, setHeaders] = useState({})
     const [imgUrl, setImgUrl] = useState('')
     const { register, handleSubmit, errors } = useForm();
     const [isProfileFail, setProfileFail] = useState(true)

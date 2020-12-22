@@ -62,7 +62,7 @@ const UtilitiesBar = () => {
     }, [])
 
     return (
-        <div className="utillities flex flex-row justify-between shadow w-full flex flex-row bg-gray-200 text-xl p-3">
+        <div className="utillities flex flex-row justify-between shadow min-w-screen flex flex-row bg-gray-200 text-xl p-3">
             { headerDetail ? <div className="text-center text-base">{`${headerDetail.name} ${headerDetail.surname} ${headerDetail.id} `}</div> : ""}
             <div className="self-end">{cookies ? cookies.id : null}</div>
             <div className="cursor-pointer">

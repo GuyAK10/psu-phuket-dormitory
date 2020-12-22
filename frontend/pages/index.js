@@ -27,7 +27,7 @@ const Index = () => {
     }, [])
 
     return (
-        <div className="min-h-screen flex flex-col items-center">
+        <div className="flex flex-col items-center">
             {/* <img src="background/index.jpg" alt="index image"/> */}
             <h1 className="text-4xl p-5">จองห้องพัก</h1>
             <p className="text-xl">ระบบนี้สร้างขึ้นมาเพื่อลดปัญหาการจองห้องพักที่ต้องใช้เอกสาร</p>
@@ -55,15 +55,15 @@ const Index = () => {
             </div>
 
             <h1 className="text-3xl text-center">ข่าวสาร</h1>
-            <div className="flex flex-row flex-wrap px-4 justify-center">
+            <div className="news-container flex flex-row flex-wrap px-4 justify-center">
                 {news !== null ? news.data.map((item, key) => (
-                    <div className="p-4 border-4 border-blue-400 rounded m-2" key={key}>
+                    <div className="news-border border-blue-400 rounded" key={key}>
                         <h1 className="text-center">{`${item.title}`}</h1>
-                        <embed className="rounded m-4" src={`${ENDPOINT}:${PORT}/news/${item.newsName}`} type="application/pdf" />
+                        <iframe seamless="seamless" scrolling="no" className="rounded" frameBorder="0" src={`${ENDPOINT}:${PORT}/news/${item.newsName}`} type="application/pdf" />
                         <p className="text-center">{item.detail}</p>
                         <div className="flex flex-row justify-center mt-2">
-                            <a className="m-1 font-medium text-lg text-black bg-blue-200 px-2 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" target="_blank" href={`http://localhost/news/${item.newsName}`}>อ่านเพิ่มเติม</a>
-                            <a className="m-1 font-medium text-lg text-black bg-blue-200 px-2 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" href={`http://localhost/news/${item.newsName}?download=true`}>ดาวน์โหลดไฟล์</a>
+                            <a className="font-medium text-lg text-black bg-blue-200 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" target="_blank" href={`http://localhost/news/${item.newsName}`}>อ่านเพิ่มเติม</a>
+                            <a className="font-medium text-lg text-black bg-blue-200 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" href={`http://localhost/news/${item.newsName}?download=true`}>ดาวน์โหลดไฟล์</a>
                         </div>
                     </div>
                 )) : ""}

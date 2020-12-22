@@ -16,11 +16,9 @@ const Login = () => {
         previousRoute,
         setHeaderDetail,
         cookies,
-        response,
-        loading
     } = React.useContext(GlobalState)
 
-    const { post } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+    const { post, loading } = useFetch(`${ENDPOINT}:${PORT}`, options => {
         options.cachePolicy = "no-cache"
         return options
     })
@@ -41,7 +39,6 @@ const Login = () => {
     const getAuthen = async () => {
         try {
             const result = await post(`/login`, form)
-            console.log(result)
             if (result.token) {
                 Router.back()
                 setShowModal(false)
@@ -61,10 +58,10 @@ const Login = () => {
                 }
                 message.success('เข้าสู่ระบบแล้ว')
             }
-
-            else if (result.status === 401) {
-                message.warn('ID หรือ รหัสผ่านผิดพลาด')
+            else {
+                message.warn(result.message)
             }
+
         } catch (e) {
             message.warn('ผิดพลาดไม่ทราบสาเหตุ')
             console.log(e)
