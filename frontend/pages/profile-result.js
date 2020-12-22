@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState, useRef } from 'react'
 import { GlobalState } from '../utils/context'
-import Router from 'next/router'
 import { useReactToPrint } from 'react-to-print';
+import axios from 'axios'
 
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
@@ -104,23 +104,24 @@ const ProfileResult = ({ profileId }) => {
     })
 
     const getStudents = async () => {
-        try {
-            const data = await get(`student/profile/${cookies.user.id}`)
-            setStudent(data)
-        } catch (e) {
-            console.error(e)
+        if (cookies.token) {
+            try {
+                const data = await get(`student/profile/${cookies.user.id}`)
+                setStudent(data)
+            } catch (e) {
+                console.error(e)
+            }
         }
     }
 
     useEffect(() => {
-        let protectMemoryLeak = false
-        if (!protectMemoryLeak) getStudents()
-        return () => protectMemoryLeak = true
+        getStudents()
     }, [])
 
-    if (student) return (
+    if (!student) return <>loading</>
+
+    return (
         <div className="container flex flex-col">
-            <button onClick={cookies}>cookie</button>
             <button
                 className="w-32 m-5 self-center bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded self-start"
                 onClick={handlePrint}
@@ -136,7 +137,7 @@ const ProfileResult = ({ profileId }) => {
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
                 <ul className="list-disc flex flex-col">
                     {
-                        isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}/student/profile/picture/${profileId}`} onError={() => setProfileFail(false)} alt="profileImg" />
+                        cookies.token && isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}/student/profile/picture/${cookies.user.id}`} onError={() => setProfileFail(false)} alt="profileImg" />
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }
@@ -204,7 +205,7 @@ const ProfileResult = ({ profileId }) => {
                         <li className="font-bold">
                             ประวัติการอยู่หอพัก
                         </li>
-                        {
+                        {/* {
                             student.historyRoom ?
                                 <table className="table-auto">
                                     <thead>
@@ -226,7 +227,7 @@ const ProfileResult = ({ profileId }) => {
                                         }
                                     </tbody>
                                 </table> : ""
-                        }
+                        } */}
                     </div>
                 </ul>
             </div>
@@ -235,6 +236,8 @@ const ProfileResult = ({ profileId }) => {
 }
 
 ProfileResult.getInitialProps = async ({ query }) => {
+    // const student = await axios.get(`${ENDPOINT}:${PORT}/student/profile/${query.profileId}`, { withCredentials: true })
+    // console.log(student.data)
     return {
         profileId: query.profileId,
     }

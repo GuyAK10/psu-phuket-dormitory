@@ -35,7 +35,7 @@ const UtilitiesBar = () => {
             setHeaderDetail(null)
             setStaff(false)
             try {
-                await del(`/logout/${cookies.user.id}`)
+                await del(`/logout/${cookies.token}`)
                 if (response.ok) message.success('ออกจากระบบเรียบร้อย')
             } catch (e) {
                 console.error(e)

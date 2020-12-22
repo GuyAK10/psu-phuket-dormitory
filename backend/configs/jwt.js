@@ -4,7 +4,6 @@ const { db } = require('./firebase');
 require('dotenv').config()
 
 const tokenRef = db.collection('token')
-// const privateKey = process.env.PRIVATE_KEY
 const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 
 let student = {
@@ -113,12 +112,12 @@ const createToken = async (user, responseData, _req, res) => {
                         const setProfile = db.collection('students').doc(`${responseData.userId}`);
 
                         await register.set({
-                              id: responseData.userId,
-                              type: responseData.role,
+                              id: "studentTest",
+                              type: "Students",
                               token: encoded
                         });
 
-                        student.profile.id = 'student test user'
+                        student.profile.id = 'studentTest'
                         student.profile.name = "userStudentForTest"
                         student.profile.surname = "userStudentForTest"
                         student.profile.faculty = "testFaculty"
@@ -147,16 +146,16 @@ const createToken = async (user, responseData, _req, res) => {
                                     httpOnly: true,
                               })
                               .cookie("user", {
-                                    id: responseData.userId,
-                                    name: responseData.name,
-                                    surname: responseData.surname,
-                                    type: responseData.role,
+                                    id: "studentTest",
+                                    name: "userStudentForTest",
+                                    surname: "userStudentForTest",
+                                    type: "Students",
                               }, {
                                     expire: Date.now() + 1000 * 60 * 10,
                               }).send({
                                     token: encoded,
                                     user: {
-                                          id: "student test user",
+                                          id: "studentTest",
                                           name: "userStudentForTest",
                                           surname: "userStudentForTest",
                                           type: "Students",
@@ -329,7 +328,7 @@ const createToken = async (user, responseData, _req, res) => {
 const verifyHeader = async (req, res, next) => {
       try {
             if (req.cookies) {
-                  const { token } = req.cookies || req.headers
+                  const { token } = req.cookies
                   const verifyToken = await tokenRef.doc('token', '==', token).get()
                   if (verifyToken.empty) {
                         res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });

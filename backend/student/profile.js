@@ -62,7 +62,6 @@ router.get('/student/profile/:studentId', async (req, res) => {
     const profileRef = await docRef.get();
     const myProfile = profileRef.data()
     res.status(200).send(myProfile);
-
   }
   catch (error) {
     console.log(error)

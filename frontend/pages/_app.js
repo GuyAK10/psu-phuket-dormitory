@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { CookiesProvider } from 'react-cookie';
 import useFetch from 'use-http'
 import { useCookies } from 'react-cookie';
+import Router from 'next/router'
 
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
@@ -24,21 +25,42 @@ const MyApp = ({ Component, pageProps }) => {
     const [adminPath, setAdminPath] = useState(false)
     const [headerDetail, setHeaderDetail] = useState(null)
 
-    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+    const { get, post, del, error, loading, response, request } = useFetch(`${ENDPOINT}:${PORT}`, options => {
         options.cachePolicy = "no-cache"
         options.credentials = 'include'
+        // options.timeout = 3000
         return options
     })
 
+    const logout = async () => {
+        if (menuBar === "ออกจากระบบ") {
+            removeCookie("token")
+            removeCookie("user")
+            setMenuBar('ลงชื่อเข้าใช้')
+            setHeaderDetail(null)
+            setStaff(false)
+            Router.push('/')
+        }
+    }
+
+    const verifyLogin = () => {
+        if (!cookies.token) {
+            Router.push('/login')
+        }
+    }
+
     useEffect(() => {
         let dontLeak = false
-        return () => dontLeak = true
+        if (!cookies.token) {
+            logout()
+        } return () => dontLeak = true
     }, [])
 
     return (
         <CookiesProvider>
             <GlobalState.Provider
                 value={{
+                    verifyLogin,
                     adminPath, setAdminPath,
                     showModal, setShowModal,
                     menuBar, setMenuBar,

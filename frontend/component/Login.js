@@ -43,8 +43,8 @@ const Login = ({ children }) => {
             const result = await post(`/login`, form)
             if (response.ok) {
                 setShowModal(false)
-                setCookie("token", result.token, { maxAge: Date.now() + 1000 * 60 * 10 })
-                setCookie("user", result.user, { maxAge: Date.now() + 1000 * 60 * 10 })
+                setCookie("token", result.token, { maxAge: 10 * 60 })
+                setCookie("user", result.user, { maxAge: 10 * 60 })
                 setMenuBar('ออกจากระบบ')
                 const detail = cookies.user || ""
                 setHeaderDetail(detail)
@@ -59,7 +59,7 @@ const Login = ({ children }) => {
                 }
                 message.success('เข้าสู่ระบบแล้ว')
             }
-            else message.warn('ID หรือ รหัสผ่านผิดพลาด')
+            else message.warn(response.data)
         } catch (e) {
             message.warn('ผิดพลาดไม่ทราบสาเหตุ')
             console.log(e)

@@ -25,14 +25,19 @@ const staffPayment = require('./staff/payment')
 const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
-app.use(cors())
+
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}))
+
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 //useStaff
 app.use(accessControl)
-// app.use('/staff', verifyHeader, staffType)
+app.use('/staff', verifyHeader, staffType)
 app.use(staffProfile);
 app.use(staffRoom);
 app.use(staffPayment);
@@ -41,7 +46,7 @@ app.use(staffRepair);
 app.use(staffSupport);
 
 //useStudent
-// app.use('/student', verifyHeader, studentType)
+app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);
@@ -50,7 +55,7 @@ app.use(studentRepair);
 app.use(studentSupport);
 
 //firebase functions
-exports.api = functions.https.onRequest(app);
+// exports.api = functions.https.onRequest(app);
 
 //express
 app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))

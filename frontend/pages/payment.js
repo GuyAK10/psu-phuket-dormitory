@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { GlobalState } from '../utils/context'
 import { message, Skeleton } from 'antd'
 
@@ -6,7 +6,7 @@ const Payment = () => {
     const [bill, setBill] = useState({
         message: "ค้นหาเพื่อแสดงผลข้อมูล"
     })
-    const { get } = useContext(GlobalState)
+    const { get, cookies, verifyLogin } = useContext(GlobalState)
     const [isLoading, setIsLoading] = useState(false)
     const years = () => {
         const fullYear = new Date().getFullYear()
@@ -33,18 +33,22 @@ const Payment = () => {
     }
 
     const getBill = async () => {
-        setIsLoading(true)
-        const data = await get(`/bill/${select.semester}/${select.year}/${select.month}/${JSON.parse(sessionStorage.getItem('token')).id}`)
-        if (data.success) {
-            message.success(data.message)
-            setBill(data)
+        if (cookies.token) {
+            const data = await get(`/bill/${select.semester}/${select.year}/${select.month}/${cookies.user.id}`)
+            if (data.success) {
+                message.success(data.message)
+                setBill(data)
+            }
+            else {
+                message.error(data.message)
+                setBill(data.message)
+            }
         }
-        else {
-            message.error(data.message)
-            setBill(data.message)
-        }
-        setIsLoading(false)
     }
+
+    useEffect(() => {
+        verifyLogin()
+    }, [])
 
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">

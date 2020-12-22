@@ -5,14 +5,125 @@ import { message, Tooltip } from 'antd';
 
 message.config({ maxCount: 1 })
 
-const FocusFloor = ({ modalFloor, selectRoom, removeRoom }) => {
+const FocusFloor = ({ modalFloor, handleFocusModal, setModalFloor }) => {
+    const { cookies, loading, post } = useContext(GlobalState)
+
+    const onSelectedRoom = () => {
+        message.success('จองห้องแล้ว')
+    }
+
+    const onDeletedRoom = () => {
+        message.warn('ยกเลิกการจองแล้ว')
+    }
+
+    const selectRoom = async (item, student) => {
+        try {
+
+            const { name, surname, id } = cookies.user
+
+            const body = {
+                floorId: `floor${item.room[0]}`,
+                roomId: item.room,
+                studentId: id,
+                orderId: student
+            }
+
+            const data = await post(`student/room`, body)
+
+            if (!data.success) {
+                message.error(data.message)
+                if (data.message === "กรุณาบันทึกข้อมูลผู้ใช้ก่อน") {
+                    message.warn("ระบบจะพาคุณไปยังหน้าบันทึกข้อมูล")
+                    Router.push("profile")
+                }
+            }
+
+            if (data.success) {
+                let changeStatusReserve = modalFloor.map(room => {
+                    let temp = room
+                    if (temp.room === item.room) {
+                        temp[`${student}`] = { id: cookies.user.id, name: name, surname: surname }
+                        return temp
+                    } else return temp
+                })
+                onSelectedRoom()
+                setModalFloor(changeStatusReserve)
+                setMyRoom(item)
+                setUpdate(Math.random())
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
+    const removeRoom = async (item, student, isOuterSelect) => {
+        try {
+            const { id } = cookies.user
+            const StudentOrder = () => {
+                if (student.student1) {
+                    if (+student.student1.id == id) {
+                        return "student1"
+                    }
+                }
+                else if (student.student2) {
+                    if (+student.student2.id == id) {
+                        return "student2"
+                    }
+                }
+            }
+
+            let body = {}
+            if (isOuterSelect !== 'outer')
+                body = {
+                    floorId: `floor${item.room[0]}`,
+                    roomId: item.room,
+                    studentId: id,
+                    orderId: student
+                }
+            else {
+                body = {
+                    floorId: `floor${item[0]}`,
+                    roomId: item.room,
+                    studentId: id,
+                    orderId: StudentOrder()
+                }
+            }
+
+            const data = await post(`student/room/remove`, body)
+
+            if (!data.success) {
+                message.error(data.message)
+            }
+
+            if (data.success) {
+                if (modalFloor) {
+                    let changeStatusReserve = modalFloor.map(room => {
+                        let temp = room
+                        if (temp.room == item.room) {
+                            temp[`${student}`] = undefined
+                            return temp
+                        } else return temp
+                    })
+                    setModalFloor(changeStatusReserve)
+                }
+                else handleSelectFloor(showbuilding)
+                setMyRoom(null)
+                onDeletedRoom()
+                setUpdate(Math.random())
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
 
     const styleStd1 = (room) => {
         if (!room.available) {
             return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
         }
         else if (room.student1) {
-            if (room.student1.id == myId) {
+            if (room.student1.id == cookies.user.id) {
                 return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
             }
             return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
@@ -25,7 +136,7 @@ const FocusFloor = ({ modalFloor, selectRoom, removeRoom }) => {
             return { filter: "invert(0%) sepia(83%) saturate(7431%) hue-rotate(51deg) brightness(109%) contrast(114%)" }
         }
         else if (room.student2) {
-            if (room.student2.id == myId) {
+            if (room.student2.id == cookies.user.id) {
                 return { filter: "invert(87%) sepia(9%) saturate(7473%) hue-rotate(38deg) brightness(111%) contrast(110%)" }
             }
             return { filter: "invert(14%) sepia(92%) saturate(6821%) hue-rotate(2deg) brightness(96%) contrast(114%)" }
@@ -179,7 +290,7 @@ const FocusFloor = ({ modalFloor, selectRoom, removeRoom }) => {
 }
 
 const reserve = () => {
-    const { get, post, loading, error, cookies } = useContext(GlobalState)
+    const { get, post, loading, error, cookies, verifyLogin } = useContext(GlobalState)
     const [system, setSystem] = useState(false)
     const [showRoomSelect, setShowRoomSelect] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(true)
@@ -195,8 +306,67 @@ const reserve = () => {
         { 4: ["H", "D"] }
     ]
 
-    const [myId, setMyId] = useState(null)
     const [myRoom, setMyRoom] = useState(null)
+    const removeRoom = async (item, student, isOuterSelect) => {
+        try {
+            const { id } = cookies.user
+            const StudentOrder = () => {
+                if (student.student1) {
+                    if (+student.student1.id == id) {
+                        return "student1"
+                    }
+                }
+                else if (student.student2) {
+                    if (+student.student2.id == id) {
+                        return "student2"
+                    }
+                }
+            }
+
+            let body = {}
+            if (isOuterSelect !== 'outer')
+                body = {
+                    floorId: `floor${item.room[0]}`,
+                    roomId: item.room,
+                    studentId: id,
+                    orderId: student
+                }
+            else {
+                body = {
+                    floorId: `floor${item[0]}`,
+                    roomId: item.room,
+                    studentId: id,
+                    orderId: StudentOrder()
+                }
+            }
+
+            const data = await post(`student/room/remove`, body)
+
+            if (!data.success) {
+                message.error(data.message)
+            }
+
+            if (data.success) {
+                if (modalFloor) {
+                    let changeStatusReserve = modalFloor.map(room => {
+                        let temp = room
+                        if (temp.room == item.room) {
+                            temp[`${student}`] = undefined
+                            return temp
+                        } else return temp
+                    })
+                    setModalFloor(changeStatusReserve)
+                }
+                else handleSelectFloor(showbuilding)
+                setMyRoom(null)
+                onDeletedRoom()
+                setUpdate(Math.random())
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
 
     const handleSelectFloor = async floor => {
         setShowBuilding(floor)
@@ -279,120 +449,10 @@ const reserve = () => {
         )
     }
 
-    const onSelectedRoom = () => {
-        message.success('จองห้องแล้ว')
-    }
-
-    const onDeletedRoom = () => {
-        message.warn('ยกเลิกการจองแล้ว')
-    }
-
-    const selectRoom = async (item, student) => {
-        try {
-
-            const { name, surname } = JSON.parse(sessionStorage.getItem('token'))
-
-            const body = {
-                floorId: `floor${item.room[0]}`,
-                roomId: item.room,
-                studentId: myId,
-                orderId: student
-            }
-
-            const data = await post(`/`, body)
-
-            if (!data.success) {
-                message.error(data.message)
-                if (data.message === "กรุณาบันทึกข้อมูลผู้ใช้ก่อน") {
-                    message.warn("ระบบจะพาคุณไปยังหน้าบันทึกข้อมูล")
-                    Router.push("profile")
-                }
-            }
-
-            if (data.success) {
-                let changeStatusReserve = modalFloor.map(room => {
-                    let temp = room
-                    if (temp.room === item.room) {
-                        temp[`${student}`] = { id: myId, name: name, surname: surname }
-                        return temp
-                    } else return temp
-                })
-                onSelectedRoom()
-                setModalFloor(changeStatusReserve)
-                setMyRoom(item)
-                setUpdate(Math.random())
-            }
-        }
-        catch (e) {
-            console.log(e)
-        }
-    }
-
-    const removeRoom = async (item, student, isOuterSelect) => {
-        try {
-            const StudentOrder = () => {
-                const myId = JSON.parse(sessionStorage.getItem('token')).id
-                if (student.student1) {
-                    if (+student.student1.id == myId) {
-                        return "student1"
-                    }
-                }
-                else if (student.student2) {
-                    if (+student.student2.id == myId) {
-                        return "student2"
-                    }
-                }
-            }
-
-            let body = {}
-            if (isOuterSelect !== 'outer')
-                body = {
-                    floorId: `floor${item.room[0]}`,
-                    roomId: item.room,
-                    studentId: myId,
-                    orderId: student
-                }
-            else {
-                body = {
-                    floorId: `floor${item[0]}`,
-                    roomId: item.room,
-                    studentId: myId,
-                    orderId: StudentOrder()
-                }
-            }
-
-            const data = await post(`/remove`, body)
-
-            if (!data.success) {
-                message.error(data.message)
-            }
-
-            if (data.success) {
-                if (modalFloor) {
-                    let changeStatusReserve = modalFloor.map(room => {
-                        let temp = room
-                        if (temp.room == item.room) {
-                            temp[`${student}`] = undefined
-                            return temp
-                        } else return temp
-                    })
-                    setModalFloor(changeStatusReserve)
-                }
-                else handleSelectFloor(showbuilding)
-                setMyRoom(null)
-                onDeletedRoom()
-                setUpdate(Math.random())
-            }
-        }
-        catch (e) {
-            console.log(e)
-        }
-    }
-
     const getMyRoom = async () => {
-        if (sessionStorage.getItem('token')) {
-            const myId = JSON.parse(sessionStorage.getItem('token')).id
-            const myRoomGet = await get(`student/room/myRoom/${myId}`)
+        if (cookies.user) {
+            const { id } = cookies.user
+            const myRoomGet = await get(`student/room/myRoom/${id}`)
             if (myRoomGet.success) {
                 setMyRoom(myRoomGet.data)
                 setUpdate(Math.random())
@@ -410,14 +470,17 @@ const reserve = () => {
     }
 
     const checkIsFillProfile = async () => {
-        const isFill = await get(`student/room/isFill/${cookies.user.id}`)
-        if (!isFill.success) {
-            message.warning(isFill.message)
-            Router.push(`/profile`)
+        if (cookies.token) {
+            const isFill = await get(`student/room/isFill/${cookies.user.id}`)
+            if (!isFill.success) {
+                message.warning(isFill.message)
+                Router.push(`/profile`)
+            }
         }
     }
 
     useEffect(() => {
+        verifyLogin()
         checkSystem()
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
@@ -458,7 +521,7 @@ const reserve = () => {
                 </div>
             </div>
             {Building()}
-            {showRoomSelect && <FocusFloor modalFloor={modalFloor} selectRoom={selectRoom} removeRoom={removeRoom} />}
+            {showRoomSelect && <FocusFloor modalFloor={modalFloor} handleFocusModal={handleFocusModal} setModalFloor={setModalFloor} setMyRoom={setMyRoom} />}
         </div>
     )
 }

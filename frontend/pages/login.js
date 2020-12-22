@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import { message } from 'antd';
 import Router from 'next/router'
 import useFetch from 'use-http'
+
+const ENDPOINT = process.env.ENDPOINT
+const PORT = process.env.PORT
 
 const Login = () => {
     const {
@@ -13,7 +16,8 @@ const Login = () => {
         previousRoute,
         setHeaderDetail,
         cookies,
-        response
+        response,
+        loading
     } = React.useContext(GlobalState)
 
     const { post } = useFetch(`${ENDPOINT}:${PORT}`, options => {
@@ -36,11 +40,13 @@ const Login = () => {
 
     const getAuthen = async () => {
         try {
-            const result = await post(`/login`, form)
+            const result = await post(`login`, form)
+            console.log(result)
             if (response.ok) {
                 setShowModal(false)
-                setCookie("token", result.token, { maxAge: Date.now() + 1000 * 60 * 10 })
-                setCookie("user", result.user, { maxAge: Date.now() + 1000 * 60 * 10 })
+                setCookie("token", result.token, { maxAge: 10 * 60 })
+                setCookie("user", result.user, { maxAge: 10 * 60 })
+                setMenuBar('ออกจากระบบ')
                 const detail = cookies.user || ""
                 setHeaderDetail(detail)
                 if (result.user.type == "Staffs") {
@@ -49,7 +55,6 @@ const Login = () => {
                 else if (result.user.type == "Students") {
                     setStaff(false)
                 }
-                setMenuBar('ออกจากระบบ')
                 if (previousRoute) {
                     Router.push(previousRoute)
                 }
@@ -71,10 +76,12 @@ const Login = () => {
         }
     }
 
-    React.useEffect(() => {
-        setMenuBar("ลงชื่อเข้าใช้")
-        setShowModal(false)
-    }, [])
+    useEffect(() => {
+        if (loading) message.loading('กำลังเข้าสู่ระบบ')
+        return () => {
+            if (!loading) message.destroy()
+        }
+    }, [loading])
 
     return (
         <div className="min-h-screen">

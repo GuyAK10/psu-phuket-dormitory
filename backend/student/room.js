@@ -235,12 +235,14 @@ router.get('/student/room/myRoom/:studentId', async (req, res) => {
 router.post('/student/room/remove', async (req, res) => {
     try {
         const { body: { roomId, studentId, orderId } } = req
+        console.log(req.body)
         const dormotory = db.collection('dormitory')
         const status = await dormotory.doc('status').get()
         const semester = status.data().semester
         const year = status.data().year
         const reserveRef = db.doc(`dormitory/${year}-${semester}-${roomId}`)
         const profileRef = await reserveRef.get()
+        console.log(profileRef.data())
         if (profileRef.data()[orderId].id === studentId) {
             await reserveRef.update({ [orderId]: FieldValue.delete() })
             console.log(`${roomId} ${studentId} was deleted`)

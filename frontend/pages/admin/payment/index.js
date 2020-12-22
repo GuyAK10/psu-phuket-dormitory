@@ -7,7 +7,7 @@ const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
 const Payment = () => {
-    const { get, post, setShowModal, setMenuBar } = React.useContext(GlobalState)
+    const { get, post, setShowModal, setMenuBar, cookies } = React.useContext(GlobalState)
     const [headers, setHeaders] = useState({})
     const [form, setForm] = useState([])
     const [autoSave, setAutoSave] = useState(true)
@@ -61,16 +61,6 @@ const Payment = () => {
         setIsLoading(false)
     }
 
-    const getHeader = () => {
-        if (sessionStorage.getItem('token'))
-            setHeaders({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem("token")).type
-                },
-            })
-    }
-
     const initialRoomName = ["A", "B", "C", "D", "E", "F", "G", "H"]
     const getRoom = (key) => {
         let rooms = []
@@ -112,19 +102,8 @@ const Payment = () => {
             setForm(JSON.parse(localStorage.getItem('adminPayment')))
         }
     }
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
+
     useEffect(() => {
-        getHeader()
-        verifyLogin()
         getRoom(0)
         keepLocalStorage()
     }, [])

@@ -11,7 +11,7 @@ const PORT = process.env.PORT
 const { Step } = Steps;
 
 const profile = () => {
-    const { response, cookies, get } = React.useContext(GlobalState)
+    const { response, cookies, get, post } = React.useContext(GlobalState)
     const [current, setCurrent] = useState(0)
     const [headers, setHeaders] = useState({})
     const [imgUrl, setImgUrl] = useState('')
@@ -200,11 +200,9 @@ const profile = () => {
     }
 
     const postData = async (saveAll) => {
-        const { id } = cookies.user
-
         try {
-            const res = await post(`${ENDPOINT}/student/profile/${cookies.user.id}`, form)
-            if (res.status === 200) {
+            await post(`student/profile/${cookies.user.id}`, form)
+            if (response.ok) {
                 if (saveAll == "saveAll") {
                     message.success('บันทึกข้อมูลเรียบร้อยแล้ว');
                     Router.push(`/profile-result?profileId=${cookies.user.id}`)
@@ -843,14 +841,16 @@ const profile = () => {
     ]
 
     const getInitialProfile = async () => {
-        try {
-            const studentProfile = await get(`/student/profile/${cookies.user.id}`)
-            if (response.ok) {
-                setForm(studentProfile)
+        if (cookies.token) {
+            try {
+                const studentProfile = await get(`/student/profile/${cookies.user.id}`)
+                if (response.ok) {
+                    setForm(studentProfile)
+                }
             }
-        }
-        catch (error) {
-            console.error(error)
+            catch (error) {
+                console.error(error)
+            }
         }
     }
 

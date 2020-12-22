@@ -7,7 +7,7 @@ const SubMenu = ({ menu, route }) => {
     const {
         setSubMenuName,
         setPreviousRoute,
-        subMenuName
+        subMenuName,
     } = useContext(GlobalState)
 
     setPreviousRoute(route)
@@ -28,14 +28,14 @@ const NavigationBar = () => {
         cookies,
         menuName,
         setMenuName,
-        
+
     } = useContext(GlobalState)
 
     const toggleDrop = (menu) => menuName === menu ? setMenuName('') : setMenuName(menu)
 
     const checkIsStaff = () => {
         const { location: { pathname } } = window
-        if (sessionStorage.getItem('token')) {
+        if (cookies.user) {
             const checkAdminPath = cookies.user.type == "Staffs" || pathname.includes('/admin/')
             setAdminPath(checkAdminPath)
             setStaff(checkAdminPath)

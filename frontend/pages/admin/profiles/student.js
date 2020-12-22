@@ -113,30 +113,8 @@ const Profile = ({ profileId }) => {
         const studentFiltered = students.filter(item => item.studentId === profileId)
         setStudent(studentFiltered[0])
     }
-    const getHeader = () => {
-        if (sessionStorage.getItem('token')) {
-            setToken(JSON.parse(sessionStorage.getItem('token')))
-            setHeaders({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem('token')).type
-                }
-            })
-        }
-    }
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
+
     useEffect(() => {
-        getHeader()
-        verifyLogin()
         getStudents()
     }, [])
 

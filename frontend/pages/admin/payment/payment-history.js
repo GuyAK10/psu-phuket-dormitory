@@ -30,16 +30,6 @@ const PaymentHistory = () => {
         year: years()[0]
     })
 
-    const getHeader = () => {
-        if (sessionStorage.getItem('token'))
-            setHeaders({
-                headers: {
-                    authorization: `Bearer ${JSON.parse(sessionStorage.getItem("token")).token}`,
-                    type: JSON.parse(sessionStorage.getItem("token")).type
-                },
-            })
-    }
-
     const getPayments = async () => {
         const data = await get(`${select.semester}/${select.month}/${select.year}`)
         if (data.success) {
@@ -59,21 +49,6 @@ const PaymentHistory = () => {
             }
         })
     }
-    const verifyLogin = () => {
-        const session = sessionStorage.getItem("token")
-        if (!session) {
-            sessionStorage.removeItem('token')
-            setToken(null)
-            setShowModal(false)
-            setMenuBar('ลงชื่อเข้าใช้')
-            Router.push('login')
-        }
-    }
-
-    useEffect(() => {
-        getHeader()
-        verifyLogin()
-    }, [])
 
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
