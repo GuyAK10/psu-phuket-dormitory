@@ -10,7 +10,9 @@ const SubMenu = ({ menu, route }) => {
         subMenuName,
     } = useContext(GlobalState)
 
-    setPreviousRoute(route)
+    useEffect(() => {
+        setPreviousRoute(route)
+    }, [])
 
     return <Link href={route}>
         <a style={{ background: subMenuName === menu ? "#2f80af" : "none" }} onClick={() => setSubMenuName(menu)} className="text-lg cursor-pointer p-3 rounded">

@@ -5,7 +5,7 @@ import { useReactToPrint } from 'react-to-print';
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
 
-const ProfileResult = ({ profileId }) => {
+const ProfileResult = () => {
     const { get, cookies, verifyLogin } = useContext(GlobalState)
     const [isProfileFail, setProfileFail] = useState(true)
     const printRef = useRef();
@@ -121,7 +121,7 @@ const ProfileResult = ({ profileId }) => {
     if (!student) return <>loading</>
 
     return (
-        <div className="container flex flex-col">
+        cookies ? <div className="container flex flex-col">
             <button
                 className="w-32 m-5 self-center bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded self-start"
                 onClick={handlePrint}
@@ -231,16 +231,8 @@ const ProfileResult = ({ profileId }) => {
                     </div>
                 </ul>
             </div>
-        </div>
+        </div> : ""
     )
-}
-
-ProfileResult.getInitialProps = async ({ query }) => {
-    // const student = await axios.get(`${ENDPOINT}:${PORT}/student/profile/${query.profileId}`, { withCredentials: true })
-    // console.log(student.data)
-    return {
-        profileId: query.profileId,
-    }
 }
 
 export default ProfileResult

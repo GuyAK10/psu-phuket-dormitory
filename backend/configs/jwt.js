@@ -8,6 +8,7 @@ const privateKey = fs.readFileSync('./configs/private.pem', 'utf8');
 
 let student = {
       profile: {
+            profileImg: "",
             id: "",
             name: "",
             surname: "",
@@ -46,52 +47,53 @@ let student = {
             drugallergy: ""
       },
       friend: {
-            name: "",
-            surname: "",
-            nickname: "",
-            tel: "",
-            faculty: "",
-            department: ""
+            friendName: "",
+            friendSurname: "",
+            friendNickname: "",
+            friendTel: "",
+            friendFaculty: "",
+            friendDepartment: ""
       },
       family: {
             dad: {
-                  name: "",
-                  surname: "",
-                  age: "",
-                  career: "",
-                  workplace: "",
-                  position: "",
-                  income: "",
-                  tel: "",
-                  network: ""
+                  dadName: "",
+                  dadSurname: "",
+                  dadAge: "",
+                  dadCareer: "",
+                  dadWorkplace: "",
+                  dadPosition: "",
+                  dadIncome: "",
+                  dadTel: "",
+                  dadNetwork: ""
             },
             mom: {
-                  name: "",
-                  surname: "",
-                  age: "",
-                  career: "",
-                  workplace: "",
-                  position: "",
-                  income: "",
-                  tel: "",
-                  network: ""
+                  momName: "",
+                  momSurname: "",
+                  momAge: "",
+                  momCareer: "",
+                  momWorkplace: "",
+                  momPosition: "",
+                  momIncome: "",
+                  momTel: "",
+                  momNetwork: ""
             },
             emergency: {
-                  name: "",
-                  surname: "",
-                  age: "",
-                  concerned: "",
-                  career: "",
-                  tel: "",
-                  network: ""
+                  emergencyName: "",
+                  emergencySurname: "",
+                  emergencyAge: "",
+                  emergencyConcerned: "",
+                  emergencyCareer: "",
+                  emergencyTel: "",
+                  emergencyNetwork: ""
             },
             status: ""
       },
       other: {
-            talent: "",
-            character: "",
-            position: ""
-      }
+            otherTalent: "",
+            otherCharacter: "",
+            otherPosition: ""
+      },
+      agreement: false
 }
 
 const createToken = async (user, responseData, _req, res) => {
@@ -329,11 +331,14 @@ const verifyHeader = async (req, res, next) => {
       try {
             if (req.cookies) {
                   const token = req.cookies && req.cookies.token
-                  const verifyToken = await tokenRef.doc('token', '==', token).get()
-                  if (verifyToken.empty) {
-                        res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
-                  }
-                  else next()
+                  if (token) {
+                        const verifyToken = await tokenRef.doc('token', '==', token).get()
+                        if (verifyToken.empty) {
+                              res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
+                        }
+                        else next()
+                  } 
+                  else res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
             }
       } catch (error) {
             console.log(error)
@@ -345,4 +350,3 @@ module.exports = {
       verifyHeader,
       createToken
 }
- 

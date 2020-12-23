@@ -27,7 +27,7 @@ const Index = () => {
     }, [])
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="index-container flex flex-col items-center min-h-screen">
             {/* <img src="background/index.jpg" alt="index image"/> */}
             <h1 className="text-4xl p-5">จองห้องพัก</h1>
             <p className="text-xl">ระบบนี้สร้างขึ้นมาเพื่อลดปัญหาการจองห้องพักที่ต้องใช้เอกสาร</p>

@@ -869,7 +869,7 @@ const profile = () => {
     }, [])
 
     return (
-        <div className="profile-container h-auto flex flex-col items-center px-4 py-4">
+        <div className="profile-container min-h-screen flex flex-col items-center px-4 py-4">
             <Steps current={current}>
                 {steps.map(item => (
                     <Step key={item.title} title={item.title} />

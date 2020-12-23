@@ -11,7 +11,7 @@ const support = () => {
     })
 
     return (
-        <div className="min-h-screen flex flex-col p-32">
+        <div className="support-user-container min-h-screen flex flex-col p-32">
             <label>แจ้งซ่อม</label>
             <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text"
                 onChange={(e) => setDetail({ ...detail, detail: e.target.value })} />

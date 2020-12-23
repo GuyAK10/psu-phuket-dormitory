@@ -27,7 +27,7 @@ const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 
 app.use(cors({
-    origin: ["http://localhost:3000","http://localhost:5000"],
+    origin: ["http://localhost:3000", "http://localhost:5000", "http://192.168.43.55:3000"],
     credentials: true
 }))
 

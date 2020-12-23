@@ -1,4 +1,4 @@
-import '../styles.css'
+import './css/styles.css'
 import NavigationBar from '../component/NavigationBar'
 import Footer from '../component/Footer'
 import UtilitiesBar from '../component/UtilitiesBar'
@@ -24,12 +24,17 @@ const MyApp = ({ Component, pageProps }) => {
     const [cookies, setCookie, removeCookie] = useCookies(["token", "user"]);
     const [adminPath, setAdminPath] = useState(false)
     const [headerDetail, setHeaderDetail] = useState(null)
+    const [showNav, setShowNav] = useState(false)
 
-    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, options => {
-        options.cachePolicy = "no-cache"
-        options.credentials = 'include'
+    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, {
+        cachePolicy: "no-cache",
+        credentials: 'include',
+        onError: (e) => {
+            console.log(e)
+            logout()
+            Router.replace('login')
+        }
         // options.timeout = 3000
-        return options
     })
 
     const hambuger = useRef()
@@ -52,69 +57,83 @@ const MyApp = ({ Component, pageProps }) => {
         }
     }
 
+    const ressetTimeSession = (e) => {
+        if (cookies.token) {
+            setCookie('token', cookies.token, { maxAge: 10 * 60 })
+            setCookie('user', cookies.user, { maxAge: 10 * 60 })
+        }
+    }
+
     useEffect(() => {
         let dontLeak = false
         if (!cookies.token) {
             logout()
-            console.log('app ret')
-        } return () => {
+        }
+        document.addEventListener('click', ressetTimeSession)
+        return () => {
             dontLeak = true
+            document.removeEventListener('click', ressetTimeSession)
         }
     }, [])
 
-    const hideHambuger = () => {
-        hambuger.current.style.display = "none"
-        navBar.current.style.display = "flex"
-        navBar.current.style.position = "fixed"
-        navBar.current.style.height = "100%"
-    }
-
-    const hideNarBar = () => {
-        navBar.current.style.display = "none"
-        hambuger.current.style.display = "block"
+    const toggleNav = () => {
+        if (showNav == false)
+            navBar.current.style.display = "flex"
+        setShowNav(prev => !prev)
     }
 
     return (
-        <CookiesProvider allCookies={cookies}>
-            <GlobalState.Provider
-                value={{
-                    verifyLogin,
-                    adminPath, setAdminPath,
-                    showModal, setShowModal,
-                    menuBar, setMenuBar,
-                    students, setStudents,
-                    staff, setStaff,
-                    menuName, setMenuName,
-                    subMenuName, setSubMenuName,
-                    cookies, setCookie, removeCookie,
-                    previousRoute, setPreviousRoute,
-                    headerDetail, setHeaderDetail,
-                    get, post, del, error, loading, response
-                }}>
-                <div className="root-container relative grid grid-cols-6 min-w-screen">
-                    <img ref={hambuger} onClick={hideHambuger} className="hambuger" src="icon/menu.svg" alt="hambuger" />
-                    <div ref={navBar} className="nav-bar-container flex flex-col justify-center">
-                        <div onClick={hideNarBar} className="arrow-left p-2 bg-blue-500 flex justify-center">
-                            <img className="w-4" src="icon/left-arrow.svg" alt="left-arrow" />
-                        </div>
-                        <NavigationBar />
-                    </div>
-                    <div className="body-container">
-                        <UtilitiesBar />
-                        <LoginModal>
-                            <Component {...pageProps} />
-                            <Footer />
-                        </LoginModal >
-                    </div>
-                </div>
-            </GlobalState.Provider>
-            <style jsx global>{`
-                html, body{
-                    margin: 0;
-                    padding: 0;
+        <GlobalState.Provider
+            value={{
+                verifyLogin,
+                adminPath, setAdminPath,
+                showModal, setShowModal,
+                menuBar, setMenuBar,
+                students, setStudents,
+                staff, setStaff,
+                menuName, setMenuName,
+                subMenuName, setSubMenuName,
+                cookies, setCookie, removeCookie,
+                previousRoute, setPreviousRoute,
+                headerDetail, setHeaderDetail,
+                get, post, del, error, loading, response
+            }}>
+            <div className="root-container relative grid grid-cols-6 min-w-screen">
+                {
+                    !showNav &&
+                    <img ref={hambuger} onClick={toggleNav} className="hambuger" src="icon/menu.svg" alt="hambuger" />
                 }
-            `}</style>
-        </CookiesProvider>
+                <div ref={navBar} className="nav-bar-container flex flex-col justify-center">
+                    {
+                        showNav && <>
+                            <div onClick={toggleNav} className="arrow-left p-2 bg-blue-500 flex justify-center">
+                                <img className="w-4" src="icon/left-arrow.svg" alt="left-arrow" />
+                            </div>
+                            <NavigationBar />
+                        </>
+                    }
+                </div>
+                <div className="desktop-nav-bar-container flex flex-col justify-center">
+                    <div className="arrow-left p-2 bg-blue-500 flex justify-center">
+                        <img className="w-4" src="icon/left-arrow.svg" alt="left-arrow" />
+                    </div>
+                    <NavigationBar />
+                </div>
+                <div className="body-container">
+                    <UtilitiesBar />
+                    <LoginModal>
+                        <Component {...pageProps} />
+                        <Footer />
+                    </LoginModal >
+                </div>
+            </div>
+            <style jsx global>{`
+                    html, body{
+                        margin: 0;
+                        padding: 0;
+                    }
+                `}</style>
+        </GlobalState.Provider>
     )
 }
 

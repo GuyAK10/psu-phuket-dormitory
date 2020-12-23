@@ -6,6 +6,9 @@ const checkType = {
             if (type === "Students") {
                 next();
             }
+            else {
+                res.status(403).send({ code: 403, success: false, messagge: "session หมดอายุ" });
+            }
         } catch (error) {
             console.log("คุณไม่ใช่นักศึกษา")
             res.status(403).send({ code: 403, success: false, messagge: "เฉพาะนักศึกษาที่สถานะกำลังศึกษาดท่านั้นที่ใช้งานระบบนี้ได้" });
@@ -16,6 +19,9 @@ const checkType = {
         try {
             if (type === "Staffs") {
                 next();
+            }
+            else {
+                res.status(403).send({ code: 403, success: false, messagge: "session หมดอายุ" });
             }
         } catch (error) {
             console.log("คุณไม่ใช่เจ้าหน้าที่/อาจารย์")
