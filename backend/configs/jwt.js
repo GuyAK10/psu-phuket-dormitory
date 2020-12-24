@@ -106,7 +106,7 @@ const createToken = async (user, responseData, _req, res) => {
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
-                              exp: Date.now() + (1000 * 60 * 60)
+                              exp: Math.floor(Date.now() / 1000) + (60 * 10)
                         }
 
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
@@ -119,27 +119,25 @@ const createToken = async (user, responseData, _req, res) => {
                               token: encoded
                         });
 
-                        student.profile.id = 'studentTest'
+                        student.profile.id = responseData.userId
                         student.profile.name = "userStudentForTest"
                         student.profile.surname = "userStudentForTest"
                         student.profile.faculty = "testFaculty"
                         student.profile.department = "testDepartment"
                         student.contact.email = "test@test.com"
 
-                        if (user.username === "student") {
-                              const doc = await setProfile.get()
-                              if (!doc.exists) {
-                                    await setProfile.set(student)
-                              } else {
-                                    await setProfile.update({
-                                          'profile.id ': "studentTest",
-                                          'profile.name': "userStudentForTest",
-                                          'profile.surname': "userStudentForTest",
-                                          'profile.faculty': "testFaculty",
-                                          'profile.department': "testDepartment",
-                                          'contact.email': "test@test.com"
-                                    })
-                              }
+                        const doc = await setProfile.get()
+                        if (!doc.exists) {
+                              await setProfile.set(student)
+                        } else {
+                              await setProfile.update({
+                                    'profile.id ': responseData.userId,
+                                    'profile.name': "userStudentForTest",
+                                    'profile.surname': "userStudentForTest",
+                                    'profile.faculty': "testFaculty",
+                                    'profile.department': "testDepartment",
+                                    'contact.email': "test@test.com"
+                              })
                         }
 
                         res.status(200).
@@ -148,7 +146,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     httpOnly: true,
                               })
                               .cookie("user", {
-                                    id: "studentTest",
+                                    id: responseData.userId,
                                     name: "userStudentForTest",
                                     surname: "userStudentForTest",
                                     type: "Students",
@@ -157,7 +155,7 @@ const createToken = async (user, responseData, _req, res) => {
                               }).send({
                                     token: encoded,
                                     user: {
-                                          id: "studentTest",
+                                          id: responseData.userId,
                                           name: "userStudentForTest",
                                           surname: "userStudentForTest",
                                           type: "Students",
@@ -169,7 +167,7 @@ const createToken = async (user, responseData, _req, res) => {
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
-                              exp: Date.now() + (1000 * 60 * 60)
+                              exp: Math.floor(Date.now() / 1000) + (60 * 10)
                         }
 
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
@@ -182,27 +180,25 @@ const createToken = async (user, responseData, _req, res) => {
                               token: encoded
                         });
 
-                        student.profile.id = 'staffTest'
+                        student.profile.id = responseData.userId
                         student.profile.name = "userStaffForTest"
                         student.profile.surname = "userStaffForTest"
                         student.profile.faculty = "testFaculty"
                         student.profile.department = "testDepartment"
                         student.contact.email = "test@test.com"
 
-                        if (user.username === "staff") {
-                              const doc = await setProfile.get()
-                              if (!doc.exists) {
-                                    await setProfile.set(student)
-                              } else {
-                                    await setProfile.update({
-                                          'profile.id ': "staffTest",
-                                          'profile.name': "userStaffForTest",
-                                          'profile.surname': "userStaffForTest",
-                                          'profile.faculty': "testFaculty",
-                                          'profile.department': "testDepartment",
-                                          'contact.email': "test@test.com"
-                                    })
-                              }
+                        const doc = await setProfile.get()
+                        if (!doc.exists) {
+                              await setProfile.set(student)
+                        } else {
+                              await setProfile.update({
+                                    'profile.id ': responseData.userId,
+                                    'profile.name': "userStaffForTest",
+                                    'profile.surname': "userStaffForTest",
+                                    'profile.faculty': "testFaculty",
+                                    'profile.department': "testDepartment",
+                                    'contact.email': "test@test.com"
+                              })
                         }
 
                         res.status(200).
@@ -220,7 +216,7 @@ const createToken = async (user, responseData, _req, res) => {
                               }).send({
                                     token: encoded,
                                     user: {
-                                          id: "staffTest",
+                                          id: responseData.userId,
                                           name: "userStaffForTest",
                                           surname: "userStaffForTest",
                                           type: "Staffs",
@@ -233,7 +229,7 @@ const createToken = async (user, responseData, _req, res) => {
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
-                              exp: Date.now() + (1000 * 60 * 60)
+                              exp: Math.floor(Date.now() / 1000) + (60 * 10)
                         }
 
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
@@ -337,7 +333,7 @@ const verifyHeader = async (req, res, next) => {
                               res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
                         }
                         else next()
-                  } 
+                  }
                   else res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
             }
       } catch (error) {

@@ -26,6 +26,8 @@ const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 
+require('./cron');
+
 app.use(cors({
     origin: ["http://localhost:3000", "http://localhost:5000", "http://192.168.43.55:3000"],
     credentials: true
@@ -46,7 +48,7 @@ app.use(staffRepair);
 app.use(staffSupport);
 
 //useStudent
-app.use('/student', verifyHeader, studentType)
+// app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);

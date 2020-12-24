@@ -37,7 +37,7 @@ router.post('/login', (req, res) => {
             const mockRequestStaff = { headers: { type: "Staffs" } }
             const mockRequestStudent = { headers: { type: "Students" } }
             if (username == "staff") {
-                createToken({ username, password: "any", type: "Staffs" }, { userId: "staff test User", role: "Staffs" }, mockRequestStaff, res)
+                createToken({ username, password: "any", type: "Staffs" }, { userId: "staff test user", role: "Staffs" }, mockRequestStaff, res)
             }
             //test user student
             else if (username == "student") {

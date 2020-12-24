@@ -39,20 +39,16 @@ const myRoom = async (studentId) => {
     }
 }
 
-const reserveInfomation = async (profileData) => {
+const reserveInfomation = async (profileData, year, semester) => {
     try {
         const orderId = [
             "student1",
             "student2"
         ]
         let booked = false;
-        const dormitory = db.collection("dormitory")
-        const status = await dormitory.doc("status").get()
-        const semester = status.data().semester
-        const year = status.data().year
         for (i in orderId) {
             var student = orderId[i]
-            const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where(`${student}.id`, "==", profileData.profile.id).get()
+            const reserveRef = await db.collection('dormitory').where("year", "==", year).where("semester", "==", semester).where(`${student}.id`, "==", profileData.profile.id).get()
             if (!reserveRef.empty) {
                 booked = true
                 return booked
@@ -66,21 +62,17 @@ const reserveInfomation = async (profileData) => {
     }
 }
 
-const bookingRoom = async (bookRoom, roomId, orderId, res) => {
+const bookingRoom = async (bookRoom, roomId, orderId, year, semester, res) => {
     try {
         const studentRef = db.collection('students').doc(`${bookRoom.id}`)
-        const dormitory = db.collection('dormitory')
-        const status = await dormitory.doc('status').get()
-        const semester = status.data().semester
-        const year = status.data().year
-        const bookRef = dormitory.doc(`${year}-${semester}-${roomId}`)
+        const bookRef = db.collection('dormitory').doc(`${year}-${semester}-${roomId}`)
         const available = (await bookRef.get()).data().available
         if (!available) {
             res.status(200).send({ code: 200, success: false, message: "ไม่สามารถจองห้องได้เนื่องจากห้องนี้ปิดการจองโดยเจ้าหน้าที่" });
         }
-        else if (orderId == "student1") {
+        else if (orderId == "student1" || orderId == "student2") {
             await bookRef.set({
-                student1: bookRoom
+                [orderId]: bookRoom
             }, { merge: true })
             if (semester == 1) {
                 await studentRef.update({
@@ -103,33 +95,6 @@ const bookingRoom = async (bookRoom, roomId, orderId, res) => {
                 })
             }
             console.log("booking student1 success")
-            res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
-        }
-        else if (orderId == "student2") {
-            await bookRef.set({
-                student2: bookRoom
-            }, { merge: true })
-            if (semester == 1) {
-                await studentRef.update({
-                    historyRoom: FieldValue.delete()
-                })
-                await studentRef.update({
-                    historyRoom: FieldValue.arrayUnion({
-                        year: year,
-                        semester: semester,
-                        room: roomId
-                    })
-                })
-            } else {
-                await studentRef.update({
-                    historyRoom: FieldValue.arrayUnion({
-                        year: year,
-                        semester: semester,
-                        room: roomId
-                    })
-                })
-            }
-            console.log("booking student2 success")
             res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else {
@@ -159,11 +124,14 @@ router.post('/student/room', async (req, res) => {
                 nickname: profileData.profile.nickname,
                 tel: profileData.contact.tel
             }
-            const isBooked = await reserveInfomation(profileData)
+            const status = await db.collection("dormitory").doc("status").get()
+            const semester = status.data().semester
+            const year = status.data().year
+            const isBooked = await reserveInfomation(profileData, year, semester)
             if (isBooked) {
                 res.status(200).send({ code: 200, success: false, message: "ผู้ใช้จองแล้ว กรุณายกเลิกการจองห้องครั้งก่อน แล้วทำการจองอีกครั้ง" })
             } else if (!isBooked) {
-                await bookingRoom(bookRoom, roomId, orderId, res)
+                await bookingRoom(bookRoom, roomId, orderId, year, semester, res)
             }
         }
     } catch (error) {
