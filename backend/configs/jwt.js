@@ -142,7 +142,7 @@ const createToken = async (user, responseData, _req, res) => {
 
                         res.status(200).
                               cookie("token", encoded, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
                                     httpOnly: true,
                               })
                               .cookie("user", {
@@ -151,7 +151,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     surname: "userStudentForTest",
                                     type: "Students",
                               }, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
                               }).send({
                                     token: encoded,
                                     user: {
@@ -203,7 +203,7 @@ const createToken = async (user, responseData, _req, res) => {
 
                         res.status(200).
                               cookie("token", encoded, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
                                     httpOnly: true,
                               })
                               .cookie("user", {
@@ -212,7 +212,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     surname: responseData.surname,
                                     type: responseData.role,
                               }, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
                               }).send({
                                     token: encoded,
                                     user: {
@@ -265,7 +265,7 @@ const createToken = async (user, responseData, _req, res) => {
                               }
                               res.status(200)
                                     .cookie("token", encoded, {
-                                          expire: Date.now() + 1000 * 60 * 10,
+                                          expire: Math.floor(Date.now() / 1000) + (60 * 10),
                                           httpOnly: true,
                                     })
                                     .cookie("user", {
@@ -274,7 +274,7 @@ const createToken = async (user, responseData, _req, res) => {
                                           surname: responseData.surname,
                                           type: responseData.role,
                                     }, {
-                                          expire: Date.now() + 1000 * 60 * 10,
+                                          expire: Math.floor(Date.now() / 1000) + (60 * 10),
                                     })
                                     .send({
                                           token: encoded,
@@ -291,7 +291,7 @@ const createToken = async (user, responseData, _req, res) => {
                   else if (responseData.role === "Staff") {
                         res.status(200)
                               .cookie("token", encoded, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
                                     httpOnly: true,
                               })
                               .cookie("user", {
@@ -300,7 +300,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     surname: responseData.surname,
                                     type: responseData.role,
                               }, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
                               })
                               .send({
                                     token: encoded,
