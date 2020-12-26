@@ -9,7 +9,7 @@ const PORT = process.env.PORT
 
 const Login = ({ children }) => {
 
-    const { post, response, loading } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+    const { post, response, loading } = useFetch(`${ENDPOINT}${PORT}`, options => {
         options.cachePolicy = "no-cache"
         return options
     })

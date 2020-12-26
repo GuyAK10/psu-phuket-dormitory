@@ -45,10 +45,6 @@ router.post('/login', (req, res) => {
             }
 
             else {
-                // fail login when too late
-                // let loginFail = setTimeout(() => {
-                //     res.status(401).send("ID หรือ Password ผิด");
-                // }, 5000)
                 client.GetUserDetails({ username, password, type }, (err, response) => {
                     try {
                         const responseData = {
@@ -62,10 +58,6 @@ router.post('/login', (req, res) => {
                         }
 
                         createToken({ username, password, type }, responseData, req, res)
-                        // if (!err) {
-                        //     clearTimeout(loginFail)
-                        //     createToken({ username, password, type }, responseData, req, res)
-                        // }
 
                     } catch (error) {
                         console.log(error)

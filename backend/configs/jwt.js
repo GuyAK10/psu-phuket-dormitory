@@ -334,7 +334,7 @@ const verifyHeader = async (req, res, next) => {
                         }
                         else next()
                   }
-                  else res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
+                  else res.status(401).send({ code: 401, logout: true, message: "กรุณา Login" });
             }
       } catch (error) {
             console.log(error)

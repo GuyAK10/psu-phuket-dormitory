@@ -26,15 +26,13 @@ const MyApp = ({ Component, pageProps }) => {
     const [headerDetail, setHeaderDetail] = useState(null)
     const [showNav, setShowNav] = useState(false)
 
-    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, {
+    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}${PORT}`, {
         cachePolicy: "no-cache",
         credentials: 'include',
         onError: (e) => {
             console.log(e)
-            logout()
-            Router.replace('login')
+            if (e.error.message.logout) logout()
         }
-        // options.timeout = 3000
     })
 
     const hambuger = useRef()

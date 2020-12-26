@@ -224,7 +224,7 @@ const profile = () => {
 
                 <label>รูปภาพ</label>
 
-                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}/student/profile/picture/${cookies.user ? cookies.user.id : ""}?key=${imgUrl}`} onError={() => {
+                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}${PORT}/student/profile/picture/${cookies.user ? cookies.user.id : ""}?key=${imgUrl}`} onError={() => {
                     setProfileFail(false)
                 }} alt="profileImg" />
                     :

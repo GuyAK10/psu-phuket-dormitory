@@ -7,8 +7,14 @@ module.exports = {
         return {
             '/': { page: '/' },
             '/login': { page: '/login' },
+            '/payment': { page: '/payment' },
+            '/payment-history': { page: '/payment/history' },
             '/profile': { page: '/profile' },
+            '/profile-result': { page: '/profile-result' },
+            '/guide': { page: '/guide' },
+            '/support': { page: '/support' },
             '/reserve': { page: '/reserve' },
+            '/reserve-result': { page: '/reserve-result' },
             '/admin/profiles': { page: '/admin/profiles' },
             '/admin/reserve': { page: '/admin/reserve' },
         }

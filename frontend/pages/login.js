@@ -18,7 +18,7 @@ const Login = () => {
         cookies,
     } = React.useContext(GlobalState)
 
-    const { post, loading } = useFetch(`${ENDPOINT}:${PORT}`, options => {
+    const { post, loading } = useFetch(`${ENDPOINT}${PORT}`, options => {
         options.cachePolicy = "no-cache"
         return options
     })
@@ -74,8 +74,15 @@ const Login = () => {
         }
     }
 
+    const checkChookies = () => {
+        if(cookies.user) {
+            Router.push("/")
+        }
+    }
+
     useEffect(() => {
         if (loading) message.loading('กำลังเข้าสู่ระบบ')
+        checkChookies()
         return () => {
             if (!loading) message.destroy()
         }
