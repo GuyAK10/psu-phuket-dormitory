@@ -14,14 +14,13 @@ const UtilitiesBar = () => {
         setMenuBar,
         setStaff,
         setShowModal,
-        removeCookie,
         response,
         headerDetail,
         setHeaderDetail
     } = useContext(GlobalState)
 
     const LoginOrLogout = () => {
-        if (cookies.token) setMenuBar('ออกจากระบบ')
+        if (cookies.user) setMenuBar('ออกจากระบบ')
         else setMenuBar('ลงชื่อเข้าใช้')
         return true
     }
@@ -29,13 +28,11 @@ const UtilitiesBar = () => {
     const handleLogin = async () => {
         if (menuBar === "ลงชื่อเข้าใช้") setShowModal(true)
         if (menuBar === "ออกจากระบบ") {
-            removeCookie("token")
-            removeCookie("user")
             setMenuBar('ลงชื่อเข้าใช้')
             setHeaderDetail(null)
             setStaff(false)
             try {
-                await del(`/logout/${cookies.token}`)
+                await del(`/logout/${cookies.user.id}`)
                 if (response.ok) message.success('ออกจากระบบเรียบร้อย')
             } catch (e) {
                 console.error(e)

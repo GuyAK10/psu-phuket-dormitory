@@ -33,7 +33,7 @@ const Payment = () => {
     }
 
     const getBill = async () => {
-        if (cookies.token) {
+        if (cookies.user) {
             const data = await get(`/bill/${select.semester}/${select.year}/${select.month}/${cookies.user.id}`)
             if (data.success) {
                 message.success(data.message)

@@ -6,6 +6,7 @@ const router = express.Router()
 router.post('/student/support', (req, res) => {
     try {
         const { body: { detail } } = req
+        req.session.detail = detail
         const type = "student"
         supportNotify(detail, type)
     } catch (error) {

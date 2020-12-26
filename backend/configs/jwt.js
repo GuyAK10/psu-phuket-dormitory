@@ -96,13 +96,19 @@ let student = {
       agreement: false
 }
 
-const createToken = async (user, responseData, _req, res) => {
+const createToken = async (user, responseData, req, res) => {
+      const tenMinute = 36000 * 10;
       try {
             if (responseData.userId === null && responseData.role === null) {
-                  res.status(401).send("ID หรือ Password ผิด");
-            } else {
+                  return res.status(401).send("ID หรือ Password ผิด");
+            }
+            else if (!user.username || !user.password) {
+                  return res.status(401).send("กรุณากรอก username และ password");
+            }
+            else {
                   //save test user for profile
                   if (user.username === 'student') {
+                        console.log('student')
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
@@ -110,8 +116,8 @@ const createToken = async (user, responseData, _req, res) => {
                         }
 
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
-                        const register = tokenRef.doc(`${responseData.userId}`)
-                        const setProfile = db.collection('students').doc(`${responseData.userId}`);
+                        const register = tokenRef.doc(`studentTest`)
+                        const setProfile = db.collection('students').doc(`studentTest`);
 
                         await register.set({
                               id: "studentTest",
@@ -144,7 +150,7 @@ const createToken = async (user, responseData, _req, res) => {
 
                         res.status(200).
                               cookie("token", encoded, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    maxAge: tenMinute,
                                     httpOnly: true,
                               })
                               .cookie("user", {
@@ -153,7 +159,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     surname: "userStudentForTest",
                                     type: "Students",
                               }, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    maxAge: tenMinute,
                               }).send({
                                     token: encoded,
                                     user: {
@@ -207,7 +213,7 @@ const createToken = async (user, responseData, _req, res) => {
 
                         res.status(200).
                               cookie("token", encoded, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    maxAge: tenMinute,
                                     httpOnly: true,
                               })
                               .cookie("user", {
@@ -216,7 +222,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     surname: responseData.surname,
                                     type: responseData.role,
                               }, {
-                                    expire: Date.now() + 1000 * 60 * 10,
+                                    maxAge: tenMinute,
                               }).send({
                                     token: encoded,
                                     user: {
@@ -269,7 +275,7 @@ const createToken = async (user, responseData, _req, res) => {
                               }
                               res.status(200)
                                     .cookie("token", encoded, {
-                                          expire: Date.now() + 1000 * 60 * 10,
+                                          maxAge: tenMinute,
                                           httpOnly: true,
                                     })
                                     .cookie("user", {
@@ -278,7 +284,7 @@ const createToken = async (user, responseData, _req, res) => {
                                           surname: responseData.surname,
                                           type: responseData.role,
                                     }, {
-                                          expire: Date.now() + 1000 * 60 * 10,
+                                          maxAge: tenMinute,
                                     })
                                     .send({
                                           token: encoded,
@@ -294,18 +300,24 @@ const createToken = async (user, responseData, _req, res) => {
 
                   else if (responseData.role === "Staff") {
                         res.status(200)
-                              .cookie("token", encoded, {
-                                    expire: Date.now() + 1000 * 60 * 10,
-                                    httpOnly: true,
-                              })
-                              .cookie("user", {
-                                    id: responseData.userId,
-                                    name: responseData.name,
-                                    surname: responseData.surname,
-                                    type: responseData.role,
-                              }, {
-                                    expire: Date.now() + 1000 * 60 * 10,
-                              })
+                              .cookie("token",
+                                    encoded,
+                                    {
+                                          maxAge: 7 * 24 * 3600 * 1000,
+                                          httpOnly: true,
+                                    }
+                              )
+                              .cookie("user",
+                                    {
+                                          id: responseData.userId,
+                                          name: responseData.name,
+                                          surname: responseData.surname,
+                                          type: responseData.role,
+                                    },
+                                    {
+                                          maxAge: 7 * 24 * 3600 * 1000,
+                                    }
+                              )
                               .send({
                                     token: encoded,
                                     user: {
@@ -337,7 +349,7 @@ const verifyHeader = async (req, res, next) => {
                               res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
                         }
                         else next()
-                  } 
+                  }
                   else res.status(401).send({ code: 401, logout: true, message: "session หมดอายุ" });
             }
       } catch (error) {

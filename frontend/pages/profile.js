@@ -224,7 +224,7 @@ const profile = () => {
 
                 <label>รูปภาพ</label>
 
-                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}:${PORT}/student/profile/picture/${cookies.user ? cookies.user.id : ""}?key=${imgUrl}`} onError={() => {
+                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}${PORT}/student/profile/picture/${cookies.user ? cookies.user.id : ""}?key=${imgUrl}`} onError={() => {
                     setProfileFail(false)
                 }} alt="profileImg" />
                     :
@@ -841,7 +841,7 @@ const profile = () => {
     ]
 
     const getInitialProfile = async () => {
-        if (cookies.token) {
+        if (cookies.user) {
             try {
                 const studentProfile = await get(`/student/profile/${cookies.user.id}`)
                 if (response.ok) {

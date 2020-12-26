@@ -2,26 +2,17 @@ import React, { useEffect } from 'react'
 import { GlobalState } from '../utils/context'
 import { message } from 'antd';
 import Router from 'next/router'
-import useFetch from 'use-http'
-
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
 
 const Login = () => {
     const {
-        setCookie,
         setShowModal,
         setMenuBar,
         setStaff,
-        previousRoute,
         setHeaderDetail,
         cookies,
+        post,
+        loading
     } = React.useContext(GlobalState)
-
-    const { post, loading } = useFetch(`${ENDPOINT}:${PORT}`, options => {
-        options.cachePolicy = "no-cache"
-        return options
-    })
 
     const [form, setForm] = React.useState({
         username: "",
@@ -40,10 +31,7 @@ const Login = () => {
         try {
             const result = await post(`/login`, form)
             if (result.token) {
-                Router.back()
                 setShowModal(false)
-                setCookie("token", result.token, { maxAge: 10 * 60 })
-                setCookie("user", result.user, { maxAge: 10 * 60 })
                 setMenuBar('ออกจากระบบ')
                 const detail = cookies.user || ""
                 setHeaderDetail(detail)
@@ -53,10 +41,8 @@ const Login = () => {
                 else if (result.user.type == "Students") {
                     setStaff(false)
                 }
-                if (previousRoute) {
-                    Router.push(previousRoute)
-                }
                 message.success('เข้าสู่ระบบแล้ว')
+                Router.back()
             }
             else {
                 message.warn(result.message)

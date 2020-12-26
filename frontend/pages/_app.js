@@ -5,7 +5,6 @@ import UtilitiesBar from '../component/UtilitiesBar'
 import { GlobalState } from '../utils/context'
 import LoginModal from '../component/Login'
 import React, { useEffect, useState, useRef } from 'react'
-import { CookiesProvider } from 'react-cookie';
 import useFetch from 'use-http'
 import { useCookies } from 'react-cookie';
 import Router from 'next/router'
@@ -26,13 +25,14 @@ const MyApp = ({ Component, pageProps }) => {
     const [headerDetail, setHeaderDetail] = useState(null)
     const [showNav, setShowNav] = useState(false)
 
-    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}:${PORT}`, {
+    const { get, post, del, error, loading, response } = useFetch(`${ENDPOINT}${PORT}`, {
         cachePolicy: "no-cache",
         credentials: 'include',
         onError: (e) => {
             console.log(e)
             logout()
-            Router.replace('login')
+            // logout()
+            // Router.replace('login')
         }
         // options.timeout = 3000
     })
@@ -42,8 +42,8 @@ const MyApp = ({ Component, pageProps }) => {
 
     const logout = async () => {
         if (menuBar === "ออกจากระบบ") {
-            removeCookie("token")
-            removeCookie("user")
+            // removeCookie("token")
+            // removeCookie("user")
             setMenuBar('ลงชื่อเข้าใช้')
             setHeaderDetail(null)
             setStaff(false)
@@ -52,27 +52,21 @@ const MyApp = ({ Component, pageProps }) => {
     }
 
     const verifyLogin = () => {
-        if (!cookies.token) {
+        if (!cookies.user) {
+            console.log('remove cookie')
             Router.replace('/login')
-        }
-    }
-
-    const ressetTimeSession = (e) => {
-        if (cookies.token) {
-            setCookie('token', cookies.token, { maxAge: 10 * 60 })
-            setCookie('user', cookies.user, { maxAge: 10 * 60 })
         }
     }
 
     useEffect(() => {
         let dontLeak = false
-        if (!cookies.token) {
-            logout()
-        }
-        document.addEventListener('click', ressetTimeSession)
+        // if (!cookies.user) {
+        //     logout()
+        // }
+        // document.addEventListener('click', ressetTimeSession)
         return () => {
             dontLeak = true
-            document.removeEventListener('click', ressetTimeSession)
+            // document.removeEventListener('click', ressetTimeSession)
         }
     }, [])
 
@@ -137,29 +131,29 @@ const MyApp = ({ Component, pageProps }) => {
     )
 }
 
-MyApp.getInitialProps = ({ ctx: { req, res } }) => {
+// MyApp.getInitialProps = ({ ctx: { req, res } }) => {
 
-    //server side
-    // if (req) {
-    //     let serverCookie = req.cookies || ""
-    //     if (!serverCookie) {
-    //         if (req.url != '/login' && req.url != '/') {
-    //             console.log('no cookie Redirect')
-    //             res.writeHead(302, { Location: `/login` })
-    //             res.end()
-    //         }
-    //     }
+//     //server side
+//     // if (req) {
+//     //     let serverCookie = req.cookies || ""
+//     //     if (!serverCookie) {
+//     //         if (req.url != '/login' && req.url != '/') {
+//     //             console.log('no cookie Redirect')
+//     //             res.writeHead(302, { Location: `/login` })
+//     //             res.end()
+//     //         }
+//     //     }
 
-    //     return { serverCookie }
-    // }
+//     //     return { serverCookie }
+//     // }
 
-    //client side
-    if (!req) {
-        const clientCookie = document.cookie || ""
-        return { clientCookie }
-    }
+//     //client side
+//     if (!req) {
+//         const clientCookie = document.cookie || ""
+//         return { clientCookie }
+//     }
 
-    return {}
+//     return {}
 
-}
+// }
 export default MyApp

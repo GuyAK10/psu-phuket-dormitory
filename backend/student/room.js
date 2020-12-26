@@ -242,8 +242,8 @@ router.post('/student/room/remove', async (req, res) => {
         const year = status.data().year
         const reserveRef = db.doc(`dormitory/${year}-${semester}-${roomId}`)
         const profileRef = await reserveRef.get()
-        console.log(profileRef.data())
-        if (profileRef.data()[orderId].id === studentId) {
+        const studentDelete = profileRef.data()[orderId]
+        if (studentDelete.id == studentId) {
             await reserveRef.update({ [orderId]: FieldValue.delete() })
             console.log(`${roomId} ${studentId} was deleted`)
             res.status(200).send({ code: 200, success: true, message: "ยกเลิกการจองห้องแล้ว" })

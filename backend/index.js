@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
+const router = express.Router()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
@@ -27,8 +28,8 @@ const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:5000", "http://192.168.43.55:3000"],
-    credentials: true
+    origin: ["http://192.168.43.55:3000", "https://psu-phuket-dormitory.web.app", "https://psu-phuket-dormitory.firebaseapp.com"],
+    credentials: true,
 }))
 
 app.use(cookieParser())
@@ -36,8 +37,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 //useStaff
-app.use(accessControl)
 app.use('/staff', verifyHeader, staffType)
+app.use(accessControl)
 app.use(staffProfile);
 app.use(staffRoom);
 app.use(staffPayment);

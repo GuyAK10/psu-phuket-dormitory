@@ -10,7 +10,7 @@ const PaymentHistory = () => {
     const { get, loading, cookies, verifyLogin } = useContext(GlobalState)
 
     const getBill = async () => {
-        if (cookies.token) {
+        if (cookies.user) {
             const data = await get(`student/payment/bills/${cookies.user.id}`)
             if (data.success) {
                 message.success(data.message)

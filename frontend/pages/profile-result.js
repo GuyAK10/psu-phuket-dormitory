@@ -103,7 +103,7 @@ const ProfileResult = () => {
     })
 
     const getStudents = async () => {
-        if (cookies.token) {
+        if (cookies.user) {
             try {
                 const data = await get(`student/profile/${cookies.user.id}`)
                 setStudent(data)
@@ -137,7 +137,7 @@ const ProfileResult = () => {
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
                 <ul className="list-disc flex flex-col">
                     {
-                        cookies.token && isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}/student/profile/picture/${cookies.user.id}`} onError={() => setProfileFail(false)} alt="profileImg" />
+                        cookies.user && isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}${PORT}/student/profile/picture/${cookies.user.id}`} onError={() => setProfileFail(false)} alt="profileImg" />
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }

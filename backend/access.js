@@ -9,10 +9,10 @@ const { createToken } = require('./configs/jwt')
 const xlsxFile = require('read-excel-file/node');
 
 //remove token
-router.delete('/logout/:token', async (req, res) => {
-    const token = req.params.token
+router.delete('/logout/:userId', async (req, res) => {
+    const userId = req.params.userId
     const docRef = db.collection('token')
-    const find = await docRef.where('token', "==", token).get()
+    const find = await docRef.where('id', "==", userId).get()
     let deleteId = {}
 
     try {
@@ -20,7 +20,10 @@ router.delete('/logout/:token', async (req, res) => {
             find.forEach(res => deleteId = { ...res.data() })
         }
         docRef.doc(deleteId.id).delete()
-        res.status(200).send({ code: 401, status: "Logout", message: "Logout" });
+        res.status(200)
+            .clearCookie('token')
+            .clearCookie('user')
+            .send({ code: 200, status: "Logout", message: "Logout" });
     } catch (e) {
         console.log(e)
         res.sendStatus(500)
@@ -45,10 +48,6 @@ router.post('/login', (req, res) => {
             }
 
             else {
-                // fail login when too late
-                // let loginFail = setTimeout(() => {
-                //     res.status(401).send("ID หรือ Password ผิด");
-                // }, 5000)
                 client.GetUserDetails({ username, password, type }, (err, response) => {
                     try {
                         const responseData = {
@@ -62,10 +61,6 @@ router.post('/login', (req, res) => {
                         }
 
                         createToken({ username, password, type }, responseData, req, res)
-                        // if (!err) {
-                        //     clearTimeout(loginFail)
-                        //     createToken({ username, password, type }, responseData, req, res)
-                        // }
 
                     } catch (error) {
                         console.log(error)
