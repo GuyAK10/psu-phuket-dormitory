@@ -217,7 +217,6 @@ router.post('/student/room/remove', async (req, res) => {
             res.status(200).send({ code: 200, success: true, message: "ยกเลิกการจองห้องแล้ว" })
         }
         else {
-            console.log("ไม่สามารถยกเลิกการจองของผู้อื่นได้")
             res.status(200).send({ code: 200, success: false, message: "ไม่สามารถยกเลิกการจองของผู้อื่นได้" })
         }
     } catch (error) {

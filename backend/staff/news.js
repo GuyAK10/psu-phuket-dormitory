@@ -7,15 +7,19 @@ const router = express.Router()
 const bucket = storage.bucket()
 const uploader = multer();
 
-router.post('/staff/news/upload/:newName/:detail', uploader.single('pdf'), async (req, res) => {
+router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
     try {
         const { params: { newName, detail } } = req
+        const {
+            mimetype,
+            buffer,
+        } = req.files[0]
         const folder = 'news'
         const fileName = req.file.originalname
         const fileUpload = bucket.file(`${folder}/` + fileName);
         const blobStream = fileUpload.createWriteStream({
             metadata: {
-                contentType: req.file.mimetype
+                contentType: mimetype
             }
         });
 
@@ -35,7 +39,7 @@ router.post('/staff/news/upload/:newName/:detail', uploader.single('pdf'), async
             res.status(200).send({ code: 200, success: true, message: `อัพเดทข่าวแล้ว` });
         });
 
-        blobStream.end(req.file.buffer);
+        blobStream.end(buffer);
     } catch (error) {
         console.log(error)
         res.sendStatus(400);

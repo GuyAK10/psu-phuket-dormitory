@@ -284,7 +284,7 @@ const FocusFloor = forwardRef(({ modalFloor, handleFocusModal, setModalFloor, se
 
 const reserve = () => {
     const { get, post, loading, error, cookies, verifyLogin } = useContext(GlobalState)
-    const [system, setSystem] = useState(false)
+    const [system, setSystem] = useState(true)
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState(null)
     const [focusRoomList, setFocusListRoom] = useState([])
@@ -303,12 +303,12 @@ const reserve = () => {
             const { id } = cookies.user
             const StudentOrder = () => {
                 if (student.student1) {
-                    if (+student.student1.id == id) {
+                    if (student.student1.id == id) {
                         return "student1"
                     }
                 }
                 else if (student.student2) {
-                    if (+student.student2.id == id) {
+                    if (student.student2.id == id) {
                         return "student2"
                     }
                 }
@@ -365,10 +365,13 @@ const reserve = () => {
             const floor0 = await get(`student/room/floor${floor[0]}`)
             if (!error)
                 floorDetails[0] = { ...floor0 }
+            else console.log(floor0)
+            console.log(floor0)
 
             const floor1 = await get(`student/room/floor${floor[1]}`)
             if (!error)
                 floorDetails[1] = { ...floor1 }
+            else console.log(floor1)
 
             setFocusListRoom(floorDetails)
         }
@@ -433,7 +436,7 @@ const reserve = () => {
                     if (!loading)
                         handleModalFloor("l-17-24")
                 }}>{left}17 - {left}24</div>
-                <div className="center text-white text-2xl">ชั้นส่วนกลาง</div>
+                <div className="center text-white text-2xl">ทางเข้าด้านหน้า</div>
                 <div className="right text-white text-2xl hover:bg-blue-700" onClick={() => {
                     if (!loading)
                         handleModalFloor("r-1-16")
@@ -466,7 +469,7 @@ const reserve = () => {
     }
 
     const checkIsFillProfile = async () => {
-        if (cookies.token) {
+        if (cookies.user) {
             const isFill = await get(`student/room/isFill/${cookies.user.id}`)
             if (!isFill.success) {
                 message.warning(isFill.message)
@@ -481,7 +484,7 @@ const reserve = () => {
         setShowBuilding(["E", "A"])
         handleSelectFloor(["E", "A"])
         getMyRoom()
-        checkIsFillProfile()
+        // checkIsFillProfile()
     }, [])
 
     if (loading) message.loading('Loading')

@@ -5,7 +5,6 @@ import UtilitiesBar from '../component/UtilitiesBar'
 import { GlobalState } from '../utils/context'
 import LoginModal from '../component/Login'
 import React, { useEffect, useState, useRef } from 'react'
-import { CookiesProvider } from 'react-cookie';
 import useFetch from 'use-http'
 import { useCookies } from 'react-cookie';
 import Router from 'next/router'
@@ -50,13 +49,13 @@ const MyApp = ({ Component, pageProps }) => {
     }
 
     const verifyLogin = () => {
-        if (!cookies.token) {
+        if (!cookies.user) {
             Router.replace('/login')
         }
     }
 
     const ressetTimeSession = (e) => {
-        if (cookies.token) {
+        if (cookies.user) {
             setCookie('token', cookies.token, { maxAge: 10 * 60 })
             setCookie('user', cookies.user, { maxAge: 10 * 60 })
         }
@@ -64,7 +63,7 @@ const MyApp = ({ Component, pageProps }) => {
 
     useEffect(() => {
         let dontLeak = false
-        if (!cookies.token) {
+        if (!cookies.user) {
             logout()
         }
         document.addEventListener('click', ressetTimeSession)
@@ -105,7 +104,7 @@ const MyApp = ({ Component, pageProps }) => {
                     {
                         showNav && <>
                             <div onClick={toggleNav} className="arrow-left p-2 bg-blue-500 flex justify-center">
-                                <img className="w-4" src="icon/left-arrow.svg" alt="left-arrow" />
+                                <img className="w-4 h-4" src="icon/left-arrow.svg" alt="left-arrow" />
                             </div>
                             <NavigationBar />
                         </>

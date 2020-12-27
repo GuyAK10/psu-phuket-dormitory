@@ -229,7 +229,8 @@
         display: none;
     }
     .icon {
-        width: 20%;
+        height: 80%;
+        width: 25%;
     }
     .repair {
         padding: 0 4px 0 4px;
@@ -241,8 +242,12 @@
     .footer-container {
         display: flex;
     }
-    .psu-footer-img {
+    .psu-footer-img-container {
         flex: 1;
+    }
+    .psu-footer-img {
+        height: 80%;
+        width: 60%;
     }
     .social-container {
         flex: 1;
@@ -251,7 +256,7 @@
         justify-content: center;
     }
     .index-container {
-        padding: 0 2px 0 2px;
+        padding: 2px 2px 2px 2px;
     }
     .support-user-container {
         padding: 5px;

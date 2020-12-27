@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 80
 const { verifyHeader } = require("./configs/jwt");
 const { staffType, studentType } = require("./configs/type")
 const accessControl = require('./access')
+const fileMiddleware = require('express-multipart-file-parser')
 const functions = require('firebase-functions')
 
 //studentPath
@@ -25,21 +26,26 @@ const staffPayment = require('./staff/payment')
 const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
-
+const isDev = !!process.env.DEVELOPEMENT
+const origin = isDev ? ["http://localhost:3000", "http://localhost:5000"]
+    : ["https://psu-phuket-dormitory.firebaseapp.com", "https://psu-phuket-dormitory.web.app", "https://dormphuket.web.app", "https://dormphuket.firebaseapp.com"]
 require('./cron');
 
+isDev && console.log("this is development mode")
+!isDev && console.log("this is production mode")
+
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:5000",],
+    origin,
     credentials: true
 }))
-
+app.use(fileMiddleware)
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 //useStaff
 app.use(accessControl)
-app.use('/staff', verifyHeader, staffType)
+// app.use('/staff', verifyHeader, staffType)
 app.use(staffProfile);
 app.use(staffRoom);
 app.use(staffPayment);
@@ -48,7 +54,7 @@ app.use(staffRepair);
 app.use(staffSupport);
 
 //useStudent
-app.use('/student', verifyHeader, studentType)
+// app.use('/student', verifyHeader, studentType)
 app.use(studentProfile);
 app.use(studentRoom);
 app.use(studentPayment);
@@ -57,7 +63,7 @@ app.use(studentRepair);
 app.use(studentSupport);
 
 //firebase functions
-exports.api = functions.https.onRequest(app);
+exports.api = functions.https.onRequest(app)
 
 //express
-app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))
+isDev && app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-import axios from 'axios'
 import { GlobalState } from '../../../utils/context'
 import Router from 'next/router'
 import Loading from '../../../component/Loading'
@@ -39,11 +38,11 @@ const reserve = () => {
         let floorDetails = []
         setIsLoading(false)
         try {
-            const floor0 = await get(`staff/room/floor${floor[0]}`, axiosConfig)
-            if (floor0) floorDetails[0] = { ...res.data }
+            const floor0 = get(`staff/room/floor${floor[0]}`)
+            if (floor0) floorDetails[0] = floor0
 
-            const floor1 = await axios.get(`staff/room/floor${floor[1]}`, axiosConfig)
-            if (floor1) floorDetails[1] = { ...res.data }
+            const floor1 = get(`staff/room/floor${floor[1]}`)
+            if (floor1) floorDetails[1] = floor1
 
             setFocusListRoom(floorDetails)
             setIsLoading(true)

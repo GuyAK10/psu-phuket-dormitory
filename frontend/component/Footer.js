@@ -15,7 +15,9 @@ const Footer = () => {
 
     return (
         <div className="footer-container flex flex-row justify-between items-center bg-gradient-to-r from-blue-700 h-full to-blue-800 min-w-screen shadow-md p-4">
-            <img className="psu-footer-img w-20 h-10" src={adminPath ? `../../icon/psuPhuketLogo.png` : `icon/psuPhuketLogo.png`} alt="psu phuket logo" />
+            <div className="psu-footer-img-container">
+                <img className="psu-footer-img" src={adminPath ? `../../icon/psuPhuketLogo.png` : `icon/psuPhuketLogo.png`} alt="psu phuket logo" />
+            </div>
             <div className="footer-contact flex flex-col justify-center items-center">
                 <p className="address-psu">Prince of Songkla University, Phuket Campus</p>
                 <p className="address-psu block xl:block md:block lg:block sm:hidden">80 Moo 1 Vichitsongkram Road., Kathu, Phuket 83120, Thailand</p>

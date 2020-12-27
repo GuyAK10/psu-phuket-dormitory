@@ -114,7 +114,7 @@ const createToken = async (user, responseData, _req, res) => {
                         const setProfile = db.collection('students').doc(`${responseData.userId}`);
 
                         await register.set({
-                              id: "studentTest",
+                              id: "userStudentForTest",
                               type: "Students",
                               token: encoded
                         });
