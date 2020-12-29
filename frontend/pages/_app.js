@@ -63,13 +63,13 @@ const MyApp = ({ Component, pageProps }) => {
 
     useEffect(() => {
         let dontLeak = false
-        if (!cookies.user) {
-            logout()
-        }
-        document.addEventListener('click', ressetTimeSession)
+        // if (!cookies.user) {
+        //     logout()
+        // }
+        // document.addEventListener('click', ressetTimeSession)
         return () => {
             dontLeak = true
-            document.removeEventListener('click', ressetTimeSession)
+            // document.removeEventListener('click', ressetTimeSession)
         }
     }, [])
 

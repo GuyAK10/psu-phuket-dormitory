@@ -71,4 +71,6 @@ const PaymentHistory = () => {
     )
 }
 
-export default PaymentHistory
+// export default PaymentHistory
+const Close = () => <div className="min-h-screen">ยังไม่เปิดให้บริการ</div>
+export default Close
