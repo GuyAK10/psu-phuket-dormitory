@@ -56,7 +56,7 @@ router.post('/login', (req, res) => {
                             department: userUsecase.getDepartment(response),
                             email: userUsecase.getEmail(response)
                         }
-
+                       
                         createToken({ username, password, type }, responseData, req, res)
 
                     } catch (error) {

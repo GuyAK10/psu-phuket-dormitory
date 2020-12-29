@@ -101,6 +101,7 @@ const createToken = async (user, responseData, _req, res) => {
             if (responseData.userId === null && responseData.role === null) {
                   res.status(401).send("ID หรือ Password ผิด");
             } else {
+                  // console.log(user,responseData)
                   //save test user for profile
                   if (user.username === 'student') {
                         const payload = {
@@ -225,7 +226,7 @@ const createToken = async (user, responseData, _req, res) => {
                   }
 
                   else if (user.type == responseData.role) {
-
+                        console.log(user.type,responseData.role)
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
@@ -285,32 +286,30 @@ const createToken = async (user, responseData, _req, res) => {
                                                 type: responseData.role,
                                           }
                                     })
-                        }
-                  }
-
-                  else if (responseData.role === "Staff") {
-                        res.status(200)
-                              .cookie("token", encoded, {
-                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
-                                    httpOnly: true,
-                              })
-                              .cookie("user", {
-                                    id: responseData.userId,
-                                    name: responseData.name,
-                                    surname: responseData.surname,
-                                    type: responseData.role,
-                              }, {
-                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
-                              })
-                              .send({
-                                    token: encoded,
-                                    user: {
+                        }  else if (responseData.role === "Staffs") {
+                              res.status(200)
+                                    .cookie("token", encoded, {
+                                          expire: Math.floor(Date.now() / 1000) + (60 * 10),
+                                          httpOnly: true,
+                                    })
+                                    .cookie("user", {
                                           id: responseData.userId,
                                           name: responseData.name,
                                           surname: responseData.surname,
                                           type: responseData.role,
-                                    }
-                              })
+                                    }, {
+                                          expire: Math.floor(Date.now() / 1000) + (60 * 10),
+                                    })
+                                    .send({
+                                          token: encoded,
+                                          user: {
+                                                id: responseData.userId,
+                                                name: responseData.name,
+                                                surname: responseData.surname,
+                                                type: responseData.role,
+                                          }
+                                    })
+                        }
                   }
                   else {
                         console.log('สถานะไม่ถูกต้อง')
