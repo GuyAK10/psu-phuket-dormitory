@@ -1,8 +1,7 @@
 require('dotenv').config()
 const admin = require('firebase-admin')
-// const serviceAccount = require('./dormphuket.json')
-const serviceAccount = require('./serviceAccountKey.json')
-// const FIREBASE_CONFIG = JSON.parse(process.env.FIREBASE_CONFIG)
+const serviceAccount = require('./dormphuket.json')
+// const serviceAccount = require('./serviceAccountKey.json')
 const isDevelopment = process.env.DEVELOPMENT || false
 
 // admin.initializeApp({
@@ -14,7 +13,7 @@ const isDevelopment = process.env.DEVELOPMENT || false
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://dormphuket.firebaseio.com',
-  storageBucket: "gs://dormphuket.appspot.com"
+  storageBucket: "gs://dormphuket.appspot.com",
 });
 
 const db = admin.firestore()

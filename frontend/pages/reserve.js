@@ -194,6 +194,10 @@ const FocusFloor = forwardRef(({ modalFloor, handleFocusModal, setModalFloor, se
                 </div>
 
                 <span className="">
+
+                    <span className="flex">
+                        คลิกเพื่อจอง
+                    </span>
                     <span className="flex">
                         <img
                             src="/icon/male.svg" alt="person" className="person cursor-pointer"
@@ -297,6 +301,7 @@ const reserve = () => {
         { 4: ["H", "D"] }
     ]
 
+    const [isLoading, setIsLoading] = useState(true)
     const [myRoom, setMyRoom] = useState(null)
     const removeRoom = async (item, student, isOuterSelect) => {
         try {
@@ -359,21 +364,21 @@ const reserve = () => {
     }
 
     const handleSelectFloor = async floor => {
+        console.log('getInSelectFloor')
         setShowBuilding(floor)
         let floorDetails = []
         try {
+            setIsLoading(true)
             const floor0 = await get(`student/room/floor${floor[0]}`)
             if (!error)
-                floorDetails[0] = { ...floor0 }
-            else console.log(floor0)
-            console.log(floor0)
+                floorDetails[0] = floor0
 
             const floor1 = await get(`student/room/floor${floor[1]}`)
             if (!error)
-                floorDetails[1] = { ...floor1 }
-            else console.log(floor1)
+                floorDetails[1] = floor1
 
             setFocusListRoom(floorDetails)
+            setIsLoading(false)
         }
         catch (e) {
             console.error(e)
@@ -429,20 +434,20 @@ const reserve = () => {
         return (
             <div className="building-container">
                 <div className="left text-white text-2xl hover:bg-blue-700" onClick={() => {
-                    if (!loading)
+                    if (!isLoading)
                         handleModalFloor("l-1-16")
                 }}>{left}01 - {left}16</div>
                 <div className="sleft text-2xl hover:bg-blue-700" onClick={() => {
-                    if (!loading)
+                    if (!isLoading)
                         handleModalFloor("l-17-24")
                 }}>{left}17 - {left}24</div>
                 <div className="center text-white text-2xl">ทางเข้าด้านหน้า</div>
                 <div className="right text-white text-2xl hover:bg-blue-700" onClick={() => {
-                    if (!loading)
+                    if (!isLoading)
                         handleModalFloor("r-1-16")
                 }}>{right}01 - {right}16</div>
                 <div className="sright text-2xl hover:bg-blue-700" onClick={() => {
-                    if (!loading)
+                    if (!isLoading)
                         handleModalFloor("r-17-24")
                 }}>{right}17 - {right}24</div>
             </div>

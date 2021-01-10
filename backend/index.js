@@ -27,8 +27,18 @@ const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 const isDev = !!process.env.DEVELOPEMENT
-const origin = isDev ? ["http://localhost:3000", "http://localhost:5000"]
-    : ["https://psu-phuket-dormitory.firebaseapp.com", "https://psu-phuket-dormitory.web.app", "https://dormphuket.web.app", "https://dormphuket.firebaseapp.com"]
+const origin = isDev
+    ? [
+        "http://localhost:3000",
+        "http://localhost:5000"
+    ]
+    : [
+        "https://psu-phuket-dormitory.firebaseapp.com",
+        "https://psu-phuket-dormitory.web.app",
+        "https://dormphuket.web.app",
+        "https://dormphuket.firebaseapp.com"
+    ]
+    
 require('./cron');
 
 isDev && console.log("this is development mode")

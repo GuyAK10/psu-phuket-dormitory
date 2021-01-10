@@ -1,11 +1,9 @@
 const express = require('express');
-const multer = require('multer');
 const { db, storage } = require('../configs/firebase');
 const { newsNotify } = require('../configs/line')
 
 const router = express.Router()
 const bucket = storage.bucket()
-const uploader = multer();
 
 router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
     try {
@@ -15,8 +13,7 @@ router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
             buffer,
         } = req.files[0]
         const folder = 'news'
-        const fileName = req.file.originalname
-        const fileUpload = bucket.file(`${folder}/` + fileName);
+        const fileUpload = bucket.file(`${folder}/` + newName);
         const blobStream = fileUpload.createWriteStream({
             metadata: {
                 contentType: mimetype
@@ -32,7 +29,7 @@ router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
             await newsNotify(newName)
             const newsRef = db.collection("news").doc(`${decodeURI(newName)}`)
             await newsRef.set({
-                newsName: fileName,
+                newsName: newName,
                 detail,
                 title: newName
             })
