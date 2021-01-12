@@ -6,7 +6,6 @@ const url = 'https://passport.psu.ac.th/authentication/authentication.asmx?wsdl'
 const router = express.Router()
 const { db, admin } = require('./configs/firebase')
 const { createToken } = require('./configs/jwt')
-const xlsxFile = require('read-excel-file/node');
 
 //remove token
 router.delete('/logout/:token', async (req, res) => {
