@@ -165,4 +165,6 @@ const Payment = () => {
     )
 }
 
-export default Payment
+// export default Payment
+const Close = () => <div className="min-h-screen">ยังไม่เปิดให้บริการ</div>
+export default Close

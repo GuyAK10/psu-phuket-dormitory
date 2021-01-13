@@ -32,8 +32,8 @@ const Index = () => {
             {/* <h1 className="text-4xl p-5">จองห้องพัก</h1> */}
             {/* <p className="text-xl">ระบบนี้สร้างขึ้นมาเพื่อลดปัญหาการจองห้องพักที่ต้องใช้เอกสาร</p> */}
             <p className="text-center text-xl text-red-400">ระบบอยู่ในขั้นตอนการพัฒนา หากพบปัญหาขออภัยในความไม่สะดวก</p>
-            <p className="text-center text-xl text-yellow-400">ขั้นตอนไหนพบข้อผิดพลาด ให้ทำการ Refresh หน้านั้น</p>
-            <p className="text-center text-xl text-green-400">ระบบเปิดให้ทำการกรอกข้อมูลและจองห้องพักเท่านั้น บริการอื่น ๆ กำลังพัฒนา</p>
+            <p className="text-center text-xl text-yellow-400">ระบบเปิดให้ทำการกรอกข้อมูลและจองห้องพักเท่านั้น บริการอื่น ๆ ยังไม่เปิดให้บริการ</p>
+            <p className="text-center text-xl text-green-400">หากมีปัญหาขั้นตอนใดติดต่อได้ที่ s5835512091@phuket.psu.ac.th</p>
             {/* <p className="text-xl">เหลือเพียงแค่การเลือกห้องไม่กี่ขั้นตอนเท่านั้น</p> */}
 
             <h1 className="text-3xl text-center">ข่าวสาร</h1>
