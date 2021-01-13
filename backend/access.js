@@ -6,7 +6,6 @@ const url = 'https://passport.psu.ac.th/authentication/authentication.asmx?wsdl'
 const router = express.Router()
 const { db, admin } = require('./configs/firebase')
 const { createToken } = require('./configs/jwt')
-const xlsxFile = require('read-excel-file/node');
 
 //remove token
 router.delete('/logout/:token', async (req, res) => {
@@ -56,7 +55,7 @@ router.post('/login', (req, res) => {
                             department: userUsecase.getDepartment(response),
                             email: userUsecase.getEmail(response)
                         }
-
+                       
                         createToken({ username, password, type }, responseData, req, res)
 
                     } catch (error) {
@@ -71,21 +70,5 @@ router.post('/login', (req, res) => {
     }
 })
 
-router.post('/test', (req, res) => {
-    let listFloor = ["A", "B", "C", "D", "E", "F", "G", "H"]
-    listFloor.forEach(async (floor) => {
-        await xlsxFile('./ค่าไฟหอพักนักศึกษา ชั้น A-H ปี 2564 ใช้งาน.xlsx', { sheet: `ชั้น${floor}01-${floor}24ต.ค63` }).then((rows) => {
-
-            let excelData = rows[1][0].split(" ")
-            month = excelData[1]
-            let year = excelData[2]
-            console.log("ค่าน้ำค่าไฟประจำเดือน", month, year)
-            for (i = 5; i < 52;) {
-                console.log("ห้อง", rows[i][0], "ยูนิตเดือนก่อน", rows[i][2], "ยูนิตเดือนนี้", rows[i][3], "ราคาต่อหน่วย", rows[i][5], "ค่าน้ำ", rows[i][8])
-                i += 2
-            }
-        })
-    })
-});
 
 module.exports = router;
