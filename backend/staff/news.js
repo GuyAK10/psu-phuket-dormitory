@@ -43,6 +43,18 @@ router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
     }
 });
 
+router.post('/staff/news/delete/:newName', (req, res) => {
+    try {
+        const { params: { newName} } = req
+    const folder = 'news'
+    bucket.file(`${folder}/` + newName).delete();
+    res.status(200).send({ code: 200, success: true, message: `ลบข่าว${newName}แล้ว` });
+    } catch (error) {
+        res.sendStatus(400);
+    }
+    
+});
+
 router.get('/staff/news/', (req, res) => {
     try {
         const { body: { newName } } = req

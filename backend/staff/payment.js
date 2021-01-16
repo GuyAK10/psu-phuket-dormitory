@@ -5,7 +5,35 @@ const xlsxFile = require('xlsx');
 const router = express.Router();
 const bucket = storage.bucket()
 
+const setPayment = async (name, workbook) => {
+    try {
+        for (i = 6; i <= 52;) {
+            const month = workbook.Sheets[name].A2.v.slice(11, 17)
+            const year = workbook.Sheets[name].A2.v.slice(18, 22)
+            const roomId = workbook.Sheets[name][`A${i}`].v
+            const oldUnit = workbook.Sheets[name][`C${i}`].v
+            const newUnit = workbook.Sheets[name][`D${i}`].v
+            const unitPrice = workbook.Sheets[name][`F${i}`].v
+            const water = workbook.Sheets[name][`I${i}`].v
+            console.log("ห้อง", roomId, "ยูนิตเก่า", oldUnit, "ยูนิตใหม่", newUnit, "ค่าไฟต่อหน่วย", unitPrice, "ค่าน้ำ", water)
+            const paymentRef = db.collection(`payment`).doc(`${year}-${month}-${roomId}`)
+            await paymentRef.set({
+                year: +year,
+                month: month,
+                roomId: roomId,
+                water: +water,
+                oldUnit: +oldUnit,
+                newUnit: +newUnit,
+                unitPrice: +unitPrice,
+                status: "ค้างชำระ"
+            })
+            i += 2
+        }
+    } catch (error) {
+        throw error
+    }
 
+}
 
 router.post('/staff/payment', async (req, res) => {
     try {
@@ -14,37 +42,19 @@ router.post('/staff/payment', async (req, res) => {
 
         var workbook = xlsxFile.read(buffer, { type: "buffer" });
         let sheetName = workbook.SheetNames
-
+        let sheet = []
         sheetName.map(async (name) => {
             let result = name
             result = name.slice(0, 4)
             let checkMonth = name.slice(11, 14)
             let checkYear = name.slice(14, 16)
-
             if (result === "ชั้น" && checkMonth === abbMonth && checkYear === abbYear) {
-                
-                for (i = 6; i <= 52;) {
-                    const month =  workbook.Sheets[name].A2.v.slice(11,17)
-                    const year =  workbook.Sheets[name].A2.v.slice(18,22)
-                    const roomId = workbook.Sheets[name][`A${i}`].v
-                    const oldUnit = workbook.Sheets[name][`C${i}`].v
-                    const newUnit = workbook.Sheets[name][`D${i}`].v
-                    const unitPrice = workbook.Sheets[name][`F${i}`].v
-                    const water = workbook.Sheets[name][`I${i}`].v
-                    const paymentRef = db.collection(`payment`).doc(`${roomId}-${month}-${year}`)
-                    await paymentRef.set({
-                        year: +year,
-                        month: month,
-                        roomId: roomId,
-                        water: +water,
-                        oldUnit: +oldUnit,
-                        newUnit: +newUnit,
-                        unitPrice: +unitPrice,
-                        status: "ค้างชำระ"
-                    })
-                    i += 2
-                }
+                sheet.push(name)
             }
+        })
+
+        sheet.map(async (name) => {
+            await setPayment(name, workbook)
         })
         res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลค่าน้ำค่าไฟเรียบร้อย" });
     } catch (error) {
