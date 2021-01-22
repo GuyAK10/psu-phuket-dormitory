@@ -9,7 +9,7 @@ router.get('/news/listname', async (req, res) => {
         const newsRef = db.collection("news");
         const listName = await newsRef.get()
         let newNameset = []
-        listName.forEach(newsName => {
+        await Promise.all(  listName.forEach(newsName => {
             let dataList = {
                 newsId: '',
             }
@@ -18,7 +18,8 @@ router.get('/news/listname', async (req, res) => {
             Object.assign(dataList, newsName.data())
             newNameset.push(dataList)
 
-        })
+        }))
+      
         res.status(200).send({ code: 200, success: true, data: newNameset });
     } catch (error) {
         console.log(error)
