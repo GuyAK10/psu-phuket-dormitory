@@ -43,6 +43,18 @@ router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
     }
 });
 
+router.post('/staff/news/delete/:newName', (req, res) => {
+    try {
+        const { params: { newName} } = req
+    const folder = 'news'
+    bucket.file(`${folder}/` + newName).delete();
+    res.status(200).send({ code: 200, success: true, message: `ลบข่าว${newName}แล้ว` });
+    } catch (error) {
+        res.sendStatus(400);
+    }
+    
+});
+
 router.get('/staff/news/', (req, res) => {
     try {
         const { body: { newName } } = req
@@ -63,7 +75,7 @@ router.get('/staff/news/listname', async (req, res) => {
         const newsRef = db.collection("news");
         const listName = await newsRef.get()
         let newNameset = []
-        listName.forEach(newsName => {
+        await Promise.all(listName.forEach(newsName => {
             let dataList = {
                 newsId: '',
             }
@@ -72,7 +84,8 @@ router.get('/staff/news/listname', async (req, res) => {
             Object.assign(dataList, newsName.data())
             newNameset.push(decodeURI(dataList))
 
-        })
+        }))
+        
         res.status(200).send({ code: 200, success: true, data: newNameset });
     } catch (error) {
         console.log(error)

@@ -6,7 +6,7 @@ const FieldValue = firestore.FieldValue
 
 const myRoom = async (studentId) => {
     try {
-        const orderId = [
+        const order = [
             "student1",
             "student2"
         ]
@@ -15,14 +15,12 @@ const myRoom = async (studentId) => {
         const status = await dormitory.doc("status").get()
         const semester = status.data().semester
         const year = status.data().year
-        for (i in orderId) {
-            var student = orderId[i]
-            const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where(`${student}.id`, "==", studentId).get()
+        await Promise.all(order.map(async (orderId) => {
+            const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where(`${orderId}.id`, "==", studentId).get()
             if (!reserveRef.empty) {
                 reserveRef.forEach((room) => {
                     const roomData = {
                         docID: '',
-
                     }
                     roomData.docID = room.id
                     Object.assign(roomData, room.data())
@@ -30,7 +28,7 @@ const myRoom = async (studentId) => {
                     return booked
                 })
             }
-        }
+        }))
         return booked
     }
     catch (error) {
@@ -41,19 +39,18 @@ const myRoom = async (studentId) => {
 
 const reserveInfomation = async (profileData, year, semester) => {
     try {
-        const orderId = [
+        const order = [
             "student1",
             "student2"
         ]
         let booked = false;
-        for (i in orderId) {
-            var student = orderId[i]
-            const reserveRef = await db.collection('dormitory').where("year", "==", year).where("semester", "==", semester).where(`${student}.id`, "==", profileData.profile.id).get()
+        await Promise.all(order.map(async (orderId) => {
+            const reserveRef = await db.collection('dormitory').where("year", "==", year).where("semester", "==", semester).where(`${orderId}.id`, "==", profileData.profile.id).get()
             if (!reserveRef.empty) {
                 booked = true
                 return booked
             }
-        }
+        }))
         return booked
     }
     catch (error) {
@@ -176,9 +173,9 @@ router.get('/student/room/:floorId', async (req, res) => {
         const year = status.data().year
         const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where("floor", "==", floorId).get()
         let floorInformation = []
-        reserveRef.forEach(async (floor) => {
+        await Promise.all(reserveRef.forEach(async (floor) => {
             floorInformation.push(floor.data())
-        })
+        }))
         res.status(200).send(floorInformation);
     } catch (error) {
         console.error(error)
@@ -191,7 +188,7 @@ router.get('/student/room/myRoom/:studentId', async (req, res) => {
         const { params: { studentId } } = req
         const roomInformation = await myRoom(studentId)
         if (roomInformation == false) {
-            res.status(200).send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
+            res.send({ code: 200, success: false, message: "ไม่มีการจองห้องพักในระบบ" })
         } else {
             res.send({ code: 200, success: true, message: "ท่านได้จองห้องแล้ว", data: roomInformation })
         }
@@ -203,17 +200,14 @@ router.get('/student/room/myRoom/:studentId', async (req, res) => {
 router.post('/student/room/remove', async (req, res) => {
     try {
         const { body: { roomId, studentId, orderId } } = req
-        console.log(req.body)
         const dormotory = db.collection('dormitory')
         const status = await dormotory.doc('status').get()
         const semester = status.data().semester
         const year = status.data().year
         const reserveRef = db.doc(`dormitory/${year}-${semester}-${roomId}`)
         const profileRef = await reserveRef.get()
-        console.log(profileRef.data())
         if (profileRef.data()[orderId].id === studentId) {
             await reserveRef.update({ [orderId]: FieldValue.delete() })
-            console.log(`${roomId} ${studentId} was deleted`)
             res.status(200).send({ code: 200, success: true, message: "ยกเลิกการจองห้องแล้ว" })
         }
         else {
