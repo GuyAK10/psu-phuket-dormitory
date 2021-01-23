@@ -70,7 +70,6 @@ router.get('/staff/payment/:month/:year', async (req, res) => {
     }
 });
 
-
 router.get('/staff/payment/reciept', async (req, res) => {
     try {
         const { body: { month, year, roomId } } = req
