@@ -11,7 +11,7 @@ const Payment = () => {
     const years = () => {
         const fullYear = new Date().getFullYear()
         const years = []
-        for (let i = fullYear; i >= fullYear - 130; i--) {
+        for (let i = fullYear; i >= fullYear - 10; i--) {
             years.push(i)
         }
         return years.map(item => item + 543)
