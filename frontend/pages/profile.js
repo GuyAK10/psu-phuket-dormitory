@@ -285,6 +285,7 @@ const profile = () => {
                 <label>วัน/เดือน/ปีเกิด</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="birthday"
+                    type="date"
                     defaultValue={form.profile.birthday}
                     ref={register({ required: true })}
                 />

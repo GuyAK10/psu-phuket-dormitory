@@ -1,7 +1,7 @@
 require('dotenv').config()
 const admin = require('firebase-admin')
-const serviceAccount = require('./dormphuket.json')
-// const serviceAccount = require('./serviceAccountKey.json')
+// const serviceAccount = require('./dormphuket.json')
+const serviceAccount = require('./serviceAccountKey.json')
 const isDevelopment = process.env.DEVELOPMENT || false
 
 // admin.initializeApp({

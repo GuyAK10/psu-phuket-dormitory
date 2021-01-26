@@ -144,7 +144,7 @@ const NavigationBar = () => {
                         </span>
                         {menuName === "แจ้งซ่อมแซม" ?
                             <div className="flex flex-col">
-                                <SubMenu menu="ประวัติการแจ้งซ่อมแซม" route="/admin/support" />
+                                <SubMenu menu="ประวัติการแจ้งซ่อมแซม" route="/admin/repair" />
                             </div> : null
                         }
                     </div>
@@ -155,7 +155,7 @@ const NavigationBar = () => {
                         </span>
                         {menuName === "แจ้งซ่อมแซม" ?
                             <div className="flex flex-col">
-                                <SubMenu menu="เพิ่มรายละเอียด" route="/support" />
+                                <SubMenu menu="เพิ่มรายละเอียด" route="/repair" />
                             </div> : null
                         }
                     </div>

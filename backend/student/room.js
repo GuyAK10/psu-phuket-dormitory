@@ -91,7 +91,7 @@ const bookingRoom = async (bookRoom, roomId, orderId, year, semester, res) => {
                     })
                 })
             }
-            console.log("booking student1 success")
+
             res.status(200).send({ code: 200, success: true, message: "จองห้องสำเร็จ" });
         }
         else {
@@ -107,10 +107,13 @@ const bookingRoom = async (bookRoom, roomId, orderId, year, semester, res) => {
 router.post('/student/room', async (req, res) => {
     try {
         const { body: { roomId, studentId, orderId } } = req
-        const profileRef = db.collection('students').doc(`${studentId}`)
-        const studentRef = await profileRef.get()
+
+        const studentRef = await db.collection('students').doc(`${studentId}`).get()
         if (!studentRef.exists) {
             res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใช้ก่อน" })
+        }
+        else if (!studentRef.data().agreement) {
+            res.status(200).send({ code: 200, success: false, message: "กรุณาบันทึกข้อมูลผู้ใช้ให้ครบถ้วนก่อน" })
         }
         else {
             const profileData = studentRef.data()
