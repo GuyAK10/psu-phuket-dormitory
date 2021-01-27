@@ -9,7 +9,7 @@ router.get('/news/listname', async (req, res) => {
         const newsRef = db.collection("news");
         const listName = await newsRef.get()
         let newNameset = []
-        await Promise.all(  listName.forEach(newsName => {
+        await Promise.all(listName.docs.map(async newsName => {
             let dataList = {
                 newsId: '',
             }
@@ -17,9 +17,7 @@ router.get('/news/listname', async (req, res) => {
             dataList.newsId = newsName.id
             Object.assign(dataList, newsName.data())
             newNameset.push(dataList)
-
         }))
-      
         res.status(200).send({ code: 200, success: true, data: newNameset });
     } catch (error) {
         console.log(error)
@@ -37,7 +35,7 @@ router.get('/news/:newsName', async (req, res) => {
         if (download != 'true') res.redirect(getUrl)
 
         else if (download == "true")
-            file.download().then(downloadResponse => {
+            await file.download().then(downloadResponse => {
                 res.status(200).send(downloadResponse[0]);
             });
 

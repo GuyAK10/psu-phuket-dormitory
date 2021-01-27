@@ -9,14 +9,14 @@ router.get('/staff/profile/', async (req, res) => {
     let studentList = []
     const studentRef = db.collection('students')
     const profile = await studentRef.get();
-    profile.forEach(async (list) => {
+    await Promise.all(profile.docs.map(async (list) => {
       let studentData = {
         studentId: '',
       }
       studentData.studentId = list.id
       Object.assign(studentData, list.data())
       studentList.push(studentData)
-    })
+    }))
 
     res.status(200).send(studentList);
   }
@@ -26,12 +26,12 @@ router.get('/staff/profile/', async (req, res) => {
   }
 });
 
-router.get('/staff/profile/picture/:studentId', (req, res) => {
+router.get('/staff/profile/picture/:studentId', async (req, res) => {
   try {
 
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
-    file.download().then(downloadResponse => {
+    await file.download().then(downloadResponse => {
       res.status(200).send(downloadResponse[0]
       );
     });

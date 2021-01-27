@@ -176,7 +176,7 @@ router.get('/student/room/:floorId', async (req, res) => {
         const year = status.data().year
         const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where("floor", "==", floorId).get()
         let floorInformation = []
-        await Promise.all(reserveRef.forEach(async (floor) => {
+        await Promise.all(reserveRef.docs.map((floor) => {
             floorInformation.push(floor.data())
         }))
         res.status(200).send(floorInformation);

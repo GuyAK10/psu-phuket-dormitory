@@ -54,9 +54,9 @@ router.get('/staff/room/:floorId', async (req, res) => {
             const year = status.data().year
             const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where("floor", "==", floorId).get()
             let floorInformation = []
-            reserveRef.forEach(async (floor) => {
+            await Promise.all(reserveRef.docs.map((floor) => {
                   floorInformation.push(floor.data())
-            })
+            }))
             res.status(200).send(floorInformation);
       } catch (error) {
             console.error(error)

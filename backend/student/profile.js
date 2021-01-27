@@ -56,8 +56,7 @@ router.get('/student/profile/:studentId', async (req, res) => {
   try {
     const studentId = req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
-    const profileRef = await docRef.get();
-    const myProfile = profileRef.data()
+    const myProfile = (await docRef.get()).data();
     res.status(200).send(myProfile);
   }
   catch (error) {

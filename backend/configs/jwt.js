@@ -132,7 +132,7 @@ const createToken = async (user, responseData, _req, res) => {
                               await setProfile.set(student)
                         } else {
                               await setProfile.update({
-                                    'profile.id ': responseData.userId,
+                                    'profile.id': responseData.userId,
                                     'profile.name': "userStudentForTest",
                                     'profile.surname': "userStudentForTest",
                                     'profile.faculty': "testFaculty",
@@ -193,7 +193,7 @@ const createToken = async (user, responseData, _req, res) => {
                               await setProfile.set(student)
                         } else {
                               await setProfile.update({
-                                    'profile.id ': responseData.userId,
+                                    'profile.id': responseData.userId,
                                     'profile.name': "userStaffForTest",
                                     'profile.surname': "userStaffForTest",
                                     'profile.faculty': "testFaculty",
@@ -226,7 +226,6 @@ const createToken = async (user, responseData, _req, res) => {
                   }
 
                   else if (user.type == responseData.role) {
-                        console.log(user.type,responseData.role)
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
@@ -256,7 +255,7 @@ const createToken = async (user, responseData, _req, res) => {
                                     await setProfile.set(student)
                               } else {
                                     await setProfile.update({
-                                          'profile.id ': responseData.userId,
+                                          'profile.id': responseData.userId,
                                           'profile.name': responseData.name,
                                           'profile.surname': responseData.surname,
                                           'profile.faculty': responseData.faculty,

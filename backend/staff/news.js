@@ -43,23 +43,23 @@ router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
     }
 });
 
-router.post('/staff/news/delete/:newName', (req, res) => {
+router.post('/staff/news/delete/:newName',async (req, res) => {
     try {
-        const { params: { newName} } = req
-    const folder = 'news'
-    bucket.file(`${folder}/` + newName).delete();
-    res.status(200).send({ code: 200, success: true, message: `ลบข่าว${newName}แล้ว` });
+        const { params: { newName } } = req
+        const folder = 'news'
+        await bucket.file(`${folder}/` + newName).delete();
+        res.status(200).send({ code: 200, success: true, message: `ลบข่าว${newName}แล้ว` });
     } catch (error) {
         res.sendStatus(400);
     }
-    
+
 });
 
-router.get('/staff/news/', (req, res) => {
+router.get('/staff/news/',async (req, res) => {
     try {
         const { body: { newName } } = req
         const file = bucket.file(`news/${newName}`);
-        file.download().then(downloadResponse => {
+        await file.download().then(downloadResponse => {
             const fileNews = downloadResponse[0]
             res.setHeader('Content-Type', 'application/pdf');
             res.status(200).send(fileNews);
@@ -75,18 +75,18 @@ router.get('/staff/news/listname', async (req, res) => {
         const newsRef = db.collection("news");
         const listName = await newsRef.get()
         let newNameset = []
-        await Promise.all(listName.forEach(newsName => {
+        await Promise.all(listName.docs.map(newsName => {
             let dataList = {
                 newsId: '',
             }
 
             dataList.newsId = newsName.id
             Object.assign(dataList, newsName.data())
-            newNameset.push(decodeURI(dataList))
+            newNameset.push(dataList)
 
         }))
-        
-        res.status(200).send({ code: 200, success: true, data: newNameset });
+
+        res.status(200).send({ code: 200, success: true, data: data });
     } catch (error) {
         console.log(error)
     }
