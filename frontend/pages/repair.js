@@ -3,34 +3,45 @@ import { message } from 'antd'
 import { GlobalState } from '../utils/context'
 
 const repair = () => {
-    const { verifyLogin, post, response,cookies } = useContext(GlobalState)
-    const [title,setTitle] = useState("แจ้งซ่อมน้ำประปา")
+    const { verifyLogin, post, response, cookies } = useContext(GlobalState)
+    const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
 
-    const handleTitle =(event)=>{
+    const handleTitle = (event) => {
         console.log(event.target.value)
         setTitle(event.target.value)
     }
-    const submit = async() =>{
-        await post("student/repair", {studentId:cookies.user.id,title,description})
-        if (response.ok) message.success("แจ้งซ่อมแล้ว")
+    const submit = async () => {
+        const data = await post("student/repair", { studentId: `${cookies.user.id}`, title, description })
+        if (!data.success) {
+            message.error(data.message)
+            if (data.message==="กรุณาจองห้องพักก่อนทำการแจ้งซ่อม") {
+                message.warn("ระบบจะพาคุณไปยังหน้าบันทึกข้อมูล")
+                Router.push("reserve")
+            }  
+        } else {
+            message.success(data.message)
+        }
+        
     }
-    
+
     useEffect(() => {
         verifyLogin()
     })
+
     return (
-        <div className="support-user-container min-h-screen flex flex-col p-16">
-            <label>แจ้งซ่อม</label>
-            <select name = "title" className="shadow border rounded h-10 ml-16 mr-16 mt-8" onChange =  {handleTitle}>
+        <div className="repair-user-container">
+            <label className = "repairtext">แจ้งซ่อม</label>
+            <select name="title" className=" repairtitle" value = {title}  onChange={handleTitle}>
+                <option  disabled value="" >เลือกหัวข้อปัญหา</option>
                 <option value="water">แจ้งซ่อมน้ำประปา</option>
                 <option value="electric">แจ้งซ่อมระบบไฟ</option>
                 <option value="air">แจ้งซ่อมแอร์</option>
                 <option value="other">แจ้งซ่อมอื่่นๆ</option>
             </select>
-            <textarea className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-16 ml-16 mt-8" type="text"
-                onChange={(e) => setDescription( e.target.value )} />
-            <button className="cursor-pointer mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            <textarea className="repairinput" type="text" placeholder="Description"
+                onChange={(e) => setDescription(e.target.value)} />
+            <button className="repairbutton"
                 onClick={submit}>ส่งเรื่องแจ้งซ่อม</button>
         </div>
     )

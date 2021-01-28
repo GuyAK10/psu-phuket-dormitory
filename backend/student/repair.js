@@ -42,9 +42,8 @@ router.post('/student/repair', async (req, res) => {
     const { body: { title, description, studentId } } = req
     console.log(req.body)
     const {room} = await myRoom(studentId)
-    if (room == false) {
-      res.status(200).send({ code: 200, success: true, message: "กรุณาจองห้องพักก่อนทำการแจ้งซ่อม" });
-    } else {
+    console.log(room)
+    if (room) {
       const date = new Date()
       const day = date.getDate()
       const month = date.getMonth() + 1
@@ -68,6 +67,9 @@ router.post('/student/repair', async (req, res) => {
       },{merge:true})
       // repairNotify()
       res.status(200).send({ code: 200, success: true, message: "แจ้งซ่อมสำเร็จ" });
+      
+    } else {
+      res.status(200).send({ code: 200, success: true, message: "กรุณาจองห้องพักก่อนทำการแจ้งซ่อม" });
     }
   } catch (error) {
     console.log(error)

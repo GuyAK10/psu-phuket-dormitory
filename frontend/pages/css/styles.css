@@ -345,3 +345,54 @@
 ::placeholder {
     color: red;
 }
+
+/* repair */
+.repair-user-container{
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    align-content: center;
+    min-height: 80vh;
+    padding-top:4rem;
+    
+}
+
+.repairtext{
+    margin-bottom: 2rem;
+}
+
+.repairtitle{
+    margin-bottom: 2rem;
+    height: 2rem;
+    width: 10rem;
+    text-align-last:center;
+    margin-left: 4rem;
+    margin-right: 4rem;
+}
+
+.repairinput {
+    margin-bottom: 2rem;
+    appearance: none;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    min-height: 275px;
+    min-width: 500px;
+    margin-left: 4rem;
+    margin-right: 4rem;
+    margin-top: 1rem;
+    border-width: 0.1rem;
+    color: rgba(55, 65, 81);
+}
+
+.repairbutton{
+    background-color: rgba(59, 130, 246);
+    color: rgba(255, 255, 255);
+    cursor: pointer;
+    font-weight: 700;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-top: 1.5rem;
+}
