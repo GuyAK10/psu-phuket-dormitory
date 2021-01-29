@@ -11,8 +11,7 @@ const myRoom = async (studentId) => {
       "student2"
     ]
     let booked = false;
-    const dormitory = db.collection("dormitory")
-    const status = await dormitory.doc("status").get()
+    const status = await db.collection("dormitory").doc("status").get()
     const semester = status.data().semester
     const year = status.data().year
     await Promise.all(order.map(async (orderId) => {
@@ -40,9 +39,7 @@ const myRoom = async (studentId) => {
 router.post('/student/repair', async (req, res) => {
   try {
     const { body: { title, description, studentId } } = req
-    console.log(req.body)
     const {room} = await myRoom(studentId)
-    console.log(room)
     if (room) {
       const date = new Date()
       const day = date.getDate()
@@ -54,11 +51,16 @@ router.post('/student/repair', async (req, res) => {
         minute = `0${minute}`
       }
       const time = hour + ":" + minute
+      const status = await db.collection("dormitory").doc("status").get()
+      const semester = status.data().semester
+      const university_year = status.data().year
       await db.collection('repair').doc(`${day}-${month}-${year}-${room}`).set({
         year: year,
         month: month,
         day: day,
         room: room,
+        university_year:university_year,
+        semester:semester,
         [title]: {
           description,
           time,
@@ -77,4 +79,21 @@ router.post('/student/repair', async (req, res) => {
   }
 });
 
+router.get('/student/myRepair/:studentId',async (req, res) => {
+  const { params: { studentId } } = req
+  const {historyRoom} = (await db.collection('students').doc(`${studentId}`).get()).data()
+  if (historyRoom) {
+    let repairList = []
+    await Promise.all(historyRoom.map(async(data)=>{
+      const repairRef = await db.collection('repair').where('room','==',`${data.room}`).where('university_year','==',`${data.year}`).where('semester','==',`${data.semester}`).get()
+      await Promise.all(repairRef.docs.map((repair)=>{
+        repairList.push(repair.data())
+      }))
+    }))
+    res.status(200).send({ code: 200, success: true, data: repairList });
+  } else {
+    res.status(200).send({ code: 200, success: true, message: "ยังไม่มีประวัติการแจ้งซ่อม" });
+  }
+ 
+});
 module.exports = router;

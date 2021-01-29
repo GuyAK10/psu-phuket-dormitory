@@ -39,7 +39,7 @@ const origin = isDev
         "https://dormphuket.firebaseapp.com"
     ]
     
-require('./cron');
+// require('./cron');
 
 isDev && console.log("this is development mode")
 !isDev && console.log("this is production mode")
