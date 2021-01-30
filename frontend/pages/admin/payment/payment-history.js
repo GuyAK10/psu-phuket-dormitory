@@ -36,7 +36,6 @@ const PaymentHistory = () => {
     }
 
     const handleChange = (e) => {
-        localStorage.removeItem('adminPayment')
         setSelect(prev => {
             return {
                 ...prev,
@@ -47,7 +46,6 @@ const PaymentHistory = () => {
 
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
-
 
             <div className="flex flex-col relative">
                 <label htmlFor="month">เดือน</label>

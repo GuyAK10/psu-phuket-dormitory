@@ -4,10 +4,10 @@ import { GlobalState } from '../utils/context'
 
 const Login = ({ children }) => {
 
-    const { post, response, loading } = useFetch(`${ENDPOINT}${PORT}`, options => {
-        options.cachePolicy = "no-cache"
-        return options
-    })
+    // const { post, response, loading } = useFetch(`${ENDPOINT}${PORT}`, options => {
+    //     options.cachePolicy = "no-cache"
+    //     return options
+    // })
 
     const {
         showModal,

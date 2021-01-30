@@ -9,6 +9,7 @@ const PORT = process.env.PORT
 
 const Payment = () => {
     const { get, post, cookies } = React.useContext(GlobalState)
+    const [file, setFile] = useState()
     const { register, handleSubmit, getValues, errors } = useForm()
 
     const years = () => {
@@ -28,35 +29,17 @@ const Payment = () => {
 
     const onSubmit = (values) => {
         console.log(values)
-        const save = post("staff/payment", values)
+        let formData = new FormData()
+        formData.append('file', values.file[0])
+        const save = post(`staff/payment/${values.abbMonth}/${values.abbYear}`, formData)
         if (save.success) {
             message.success(save.message)
             Router.pathname('/admin/payment-history')
         }
-        console.log(save)
     }
 
-    // const getBill = async () => {
-    //     setIsLoading(true)
-    //     const data = await get(`staff/payment/${select.semester}/${select.month}/${select.year}`)
-    //     if (data.success) {
-    //         message.success(data.message)
-    //         let tempChange = []
-    //         for (let change in form)
-    //             if (form[change].roomId == data.data[change].roomId)
-    //                 tempChange[change] = data.data[change]
-    //             else
-    //                 tempChange[change] = form[change]
-    //         if (tempChange.length) setForm(tempChange)
-    //     }
-    //     else {
-    //         message.error(data.message)
-    //     }
-    //     setIsLoading(false)
-    // }
-
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
+        <form onSubmit={e => e.preventDefault()} method="post" className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
 
             <div className="flex flex-col relative">
                 <label htmlFor="month">เดือน</label>
@@ -116,11 +99,8 @@ const Payment = () => {
             </div>
 
             <button
-                type="submit"
                 className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={() => {
-                    console.log(getValues())
-                }}
+                onClick={() => onSubmit(getValues())}
             >
                 อัพโหลดไฟล์
             </button>
