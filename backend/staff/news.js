@@ -27,7 +27,7 @@ router.post('/staff/news/upload/:newName/:detail', async (req, res) => {
 
         blobStream.on('finish', async () => {
             await newsNotify(newName)
-            const newsRef = db.collection("news").doc(`${decodeURI(newName)}`)
+            const newsRef = db.collection("news").doc(`${newName}`)
             await newsRef.set({
                 newsName: newName,
                 detail,

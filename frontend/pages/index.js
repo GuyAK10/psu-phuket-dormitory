@@ -41,7 +41,6 @@ const Index = () => {
                 {news ? news.data.map((item, key) => (
                     <div className="news-border border-blue-400 rounded" key={key}>
                         <h1 className="text-center">{`${item.title}`}</h1>
-                        <iframe seamless="seamless" scrolling="no" className="rounded" frameBorder="0" src={`${ENDPOINT}${PORT}/news/${item.newsName}`} type="application/pdf" />
                         <p className="text-center">{item.detail}</p>
                         <div className="flex flex-row justify-center mt-2">
                             <a className="font-medium text-lg text-black bg-blue-200 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" target="_blank" href={`http://localhost/news/${item.newsName}`}>อ่านเพิ่มเติม</a>

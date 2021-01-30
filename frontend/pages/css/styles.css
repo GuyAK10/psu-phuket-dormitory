@@ -349,13 +349,21 @@
 /* repair */
 .repair-user-container{
     display: flex;
+    flex: 1;
     flex-flow: column nowrap;
-    align-items: center;
-    align-content: center;
-    min-height:76vh;
-    padding-top:4rem;
-    background-color:aliceblue;
-    
+    align-items: stretch;
+    min-height:calc(100vh-200px);
+    padding-top:1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background-color:#e6e9e7;
+}
+
+.repair-box{
+    display: flex;
+    flex-flow: column nowrap;
+    background-color: white;
+    padding-bottom: 1rem;
 }
 
 .repairtext{
@@ -364,27 +372,18 @@
     padding-bottom: 0.5rem;
     padding-left: 13rem;
     padding-right: 13rem;
-    border:2px solid #3A536B;
+    text-align: center;
     border-radius:5px ;
-    background-color: white;
-}
-
-.repair-box{
-    display: flex;
-    flex-flow: column nowrap;
-    border:2px solid #3A536B;
-    border-radius:5px ;
-    background-color: white;
 }
 
 .repairtitle{
-    margin-top: 2rem;
+    margin-top: 1rem;
     margin-bottom: 2rem;
     height: 2rem;
     width: 10rem;
-    text-align-last:center;
     margin-left: 4rem;
     margin-right: 4rem;
+    text-indent: 17%;
     border-width: 0.1rem;
     border-color: black;
 }
@@ -405,7 +404,6 @@
 }
 
 .repairbutton{
-    background-color: rgba(59, 130, 246);
     color: rgba(255, 255, 255);
     cursor: pointer;
     font-weight: 700;
@@ -413,7 +411,68 @@
     padding-bottom: 0.5rem;
     padding-left: 1rem;
     padding-right: 1rem;
-    margin-top: 2.5rem;
+    margin-top: 1rem;
+    width: 12rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
     border-radius: 10px;
+    background: rgb(12,228,214);
+background: linear-gradient(196deg, rgba(12,228,214,1) 48%, rgba(0,10,255,0.5945728633250176) 76%);
 }
 
+.repairhistory{
+    display: flex;
+    flex: 1;
+    flex-flow: column nowrap;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    background-color: white;
+    margin-bottom: 1rem;
+    height: 10px;
+}
+
+.repairhistorytext{
+    text-align: center;
+}
+
+.semestertitle{
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    height: 2rem;
+    width: 13rem;
+    margin-left: 4rem;
+    margin-right: 4rem;
+    text-indent: 16%;
+    border-width: 0.1rem;
+    border-color: black;
+}
+
+.repairdetail{
+    margin-top: 1rem;
+    background-color: white;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.repairdetail>div{
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.a{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+/* .b{
+    flex:1;
+}
+.c{
+    flex:2;
+}
+.d{
+    flex:1;
+} */

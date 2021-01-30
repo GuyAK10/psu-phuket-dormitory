@@ -11,7 +11,8 @@ const myRoom = async (studentId) => {
       "student2"
     ]
     let booked = false;
-    const status = await db.collection("dormitory").doc("status").get()
+    const dormitory = db.collection("dormitory")
+    const status = await dormitory.doc("status").get()
     const semester = status.data().semester
     const year = status.data().year
     await Promise.all(order.map(async (orderId) => {
@@ -39,7 +40,7 @@ const myRoom = async (studentId) => {
 router.post('/student/repair', async (req, res) => {
   try {
     const { body: { title, description, studentId } } = req
-    const {room} = await myRoom(studentId)
+    const { room } = await myRoom(studentId)
     if (room) {
       const date = new Date()
       const day = date.getDate()
@@ -59,17 +60,17 @@ router.post('/student/repair', async (req, res) => {
         month: month,
         day: day,
         room: room,
-        university_year:university_year,
-        semester:semester,
+        university_year: university_year,
+        semester: semester,
         [title]: {
           description,
           time,
         }
-  
-      },{merge:true})
+
+      }, { merge: true })
       // repairNotify()
       res.status(200).send({ code: 200, success: true, message: "แจ้งซ่อมสำเร็จ" });
-      
+
     } else {
       res.status(200).send({ code: 200, success: true, message: "กรุณาจองห้องพักก่อนทำการแจ้งซ่อม" });
     }
@@ -79,21 +80,29 @@ router.post('/student/repair', async (req, res) => {
   }
 });
 
-router.get('/student/myRepair/:studentId',async (req, res) => {
-  const { params: { studentId } } = req
-  const {historyRoom} = (await db.collection('students').doc(`${studentId}`).get()).data()
+router.get('/student/myRepair/:studentId/:semester/:universityYear', async (req, res) => {
+  const { params: { studentId, semester, universityYear } } = req
+  const { historyRoom } = (await db.collection('students').doc(`${studentId}`).get()).data()
   if (historyRoom) {
     let repairList = []
-    await Promise.all(historyRoom.map(async(data)=>{
-      const repairRef = await db.collection('repair').where('room','==',`${data.room}`).where('university_year','==',`${data.year}`).where('semester','==',`${data.semester}`).get()
-      await Promise.all(repairRef.docs.map((repair)=>{
-        repairList.push(repair.data())
-      }))
+    await Promise.all(historyRoom.map(async (data) => {
+      if (+semester == data.semester && +universityYear == data.year) {
+        const repairRef = await db.collection('repair').where('room', '==', `${data.room}`).where('university_year', '==', data.year).where('semester', '==', data.semester).get()
+        await Promise.all(repairRef.docs.map((repair) => {
+          repairList.push(repair.data())
+        }))
+      }
     }))
     res.status(200).send({ code: 200, success: true, data: repairList });
   } else {
     res.status(200).send({ code: 200, success: true, message: "ยังไม่มีประวัติการแจ้งซ่อม" });
   }
- 
+
+});
+
+router.get('/universityYear', async (req, res) => {
+  const status = await db.collection("dormitory").doc("status").get()
+  const university_year = status.data().year
+  res.status(200).send({ code: 200, success: true, data: university_year });
 });
 module.exports = router;
