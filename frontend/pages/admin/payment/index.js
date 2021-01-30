@@ -31,7 +31,7 @@ const Payment = () => {
         console.log(values)
         let formData = new FormData()
         formData.append('file', values.file[0])
-        const save = post(`staff/payment/${values.abbMonth}/${values.abbYear}`, formData)
+        const save = post(`/staff/payment/${values.abbMonth}/${values.abbYear}`, formData)
         if (save.success) {
             message.success(save.message)
             Router.push('/admin/payment-history', { abbMonth: values.abbMonth, abbYear: values.abbYear })

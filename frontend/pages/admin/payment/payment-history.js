@@ -24,7 +24,7 @@ const PaymentHistory = () => {
     })
 
     const getPayments = async () => {
-        const data = await get(`staff/payment/${select.month}/${select.year}`)
+        const data = await get(`/staff/payment/${select.month}/${select.year}`)
         if (data.success) {
             message.success(data.message)
             setPayments(data.data)
@@ -35,7 +35,7 @@ const PaymentHistory = () => {
 
     const initialState = async () => {
         if (abbMonth && abbYear) {
-            const data = await get(`staff/payment/${abbMonth}/${abbYear}`)
+            const data = await get(`/staff/payment/${abbMonth}/${abbYear}`)
             if (data.success) {
                 message.success(data.message)
                 setPayments(data.data)

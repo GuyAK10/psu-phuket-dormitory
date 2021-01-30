@@ -4,7 +4,7 @@ const xlsxFile = require('xlsx');
 
 const router = express.Router();
 const bucket = storage.bucket()
-const toThaiDateString = async (abbMonth) => {
+const toAbbMonth = async (abbMonth) => {
     switch (abbMonth) {
       case "january":
         return "ม.ค"
@@ -33,11 +33,40 @@ const toThaiDateString = async (abbMonth) => {
     }
   }
 
+  const toThaiMonth = async (month) => {
+    switch (month) {
+      case "january":
+        return "มกราคม"
+      case "febuary":
+        return "กุมภาพันธ์"
+      case "march":
+        return "มีนาคม"
+      case "april":
+        return "เมษายน"
+      case "may":
+        return "พฤษภาคม"
+      case "june":
+        return "มิถุนายน"
+      case "july":
+        return "กรกฎาคม"
+      case "august":
+        return "สิงหาคม"
+      case "september":
+        return "กันยายน"
+      case "october":
+        return "ตุลาคม"
+      case "november":
+        return "พฤศจิกายน"
+      case "december":
+        return "ธันวาคม"
+    }
+  }
+
 router.post('/staff/payment/:abbMonth/:abbYear', async (req, res) => {
     try {
         const { buffer } = req.files[0]
         const { params: { abbMonth, abbYear } } = req
-        const shortMonth = await toThaiDateString(abbMonth)
+        const shortMonth = await toAbbMonth(abbMonth)
         const shortYear = abbYear.slice(2)
         var workbook = xlsxFile.read(buffer, { type: "buffer" });
         let sheetName = workbook.SheetNames
@@ -81,7 +110,8 @@ router.get('/staff/payment/:month/:year', async (req, res) => {
     try {
 
         const { params: { year, month } } = req
-        const billRef = await db.collection('payment').where("year", "==", +year).where("month", "==", month).get()
+        const thaiMonth = await toThaiMonth(month)
+        const billRef = await db.collection('payment').where("year", "==", +year).where("month", "==", thaiMonth).get()
         if (billRef.empty)
             res.status(200).send({ code: 200, success: false, message: "ไม่พบค่าน้ำค่าไฟในระบบ" });
         else {
