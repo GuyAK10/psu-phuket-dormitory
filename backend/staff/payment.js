@@ -4,12 +4,41 @@ const xlsxFile = require('xlsx');
 
 const router = express.Router();
 const bucket = storage.bucket()
+const toThaiDateString = async (abbMonth) => {
+    switch (abbMonth) {
+      case "january":
+        return "ม.ค"
+      case "febuary":
+        return "ก.พ"
+      case "march":
+        return "มี.ค"
+      case "april":
+        return "เม.ย"
+      case "may":
+        return "พ.ค"
+      case "june":
+        return "มิ.ย"
+      case "july":
+        return "ก.ค"
+      case "august":
+        return "ส.ค"
+      case "september":
+        return "ก.ย"
+      case "october":
+        return "ต.ค"
+      case "november":
+        return "พ.ย"
+      case "december":
+        return "ธ.ค"
+    }
+  }
 
 router.post('/staff/payment/:abbMonth/:abbYear', async (req, res) => {
     try {
         const { buffer } = req.files[0]
         const { params: { abbMonth, abbYear } } = req
-        console.log(abbMonth,abbYear)
+        const shortMonth = await toThaiDateString(abbMonth)
+        const shortYear = abbYear.slice(2)
         var workbook = xlsxFile.read(buffer, { type: "buffer" });
         let sheetName = workbook.SheetNames
 
@@ -17,7 +46,7 @@ router.post('/staff/payment/:abbMonth/:abbYear', async (req, res) => {
             let result = name.slice(0, 4)
             let checkMonth = name.slice(11, 14)
             let checkYear = name.slice(14, 16)
-            if (result === "ชั้น" && checkMonth === abbMonth && checkYear === abbYear) {
+            if (result === "ชั้น" && checkMonth === shortMonth && checkYear === shortYear) {
                 let i = 6
                 for (i = 6; i <= 52;) {
                     const month = workbook.Sheets[name].A2.v.slice(11, 17)
