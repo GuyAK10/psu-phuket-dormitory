@@ -21,6 +21,7 @@ const reserve = () => {
     const [modalFloor, setModalFloor] = useState([])
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
     const [system, setSystem] = useState(false)
+    const [update, setUpdate] = useState(0)
     const [select, setSelect] = useState({
         system: false,
         semester: 2,
@@ -239,6 +240,7 @@ const reserve = () => {
                 })
                 setModalFloor(keepTempModal)
                 message.success(`ปิดการจองห้อง ${room.room} แล้ว`)
+                setUpdate(Math.random())
             }
         }
 
@@ -252,7 +254,7 @@ const reserve = () => {
                             return <div className="room-container" key={key}>
                                 <span className="even-room-item">
                                     {
-                                        room
+                                        room.available
                                             ?
                                             <button onClick={() => setStatusRoom(room, false)} className="shadow bg-red-500 hover:bg-red-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">ปิดการจองห้องนี้</button>
                                             :
@@ -337,7 +339,7 @@ const reserve = () => {
                             return <div className="room-container" key={key} >
                                 <span className="odd-room-item">
                                     {
-                                        room
+                                        room.available
                                             ?
                                             <button onClick={() => setStatusRoom(room, false)} className="shadow bg-red-500 hover:bg-red-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">ปิดการจองห้องนี้</button>
                                             :
