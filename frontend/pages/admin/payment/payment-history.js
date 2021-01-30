@@ -24,7 +24,7 @@ const PaymentHistory = () => {
     })
 
     const getPayments = async () => {
-        const data = await get(`staff/payment/history/${select.month}/${select.year}`)
+        const data = await get(`staff/payment/${select.month}/${select.year}`)
         if (data.success) {
             message.success(data.message)
             setPayments(data.data)
@@ -35,7 +35,7 @@ const PaymentHistory = () => {
 
     const initialState = async () => {
         if (abbMonth && abbYear) {
-            const data = await get(`staff/payment/history/${abbMonth}/${abbYear}`)
+            const data = await get(`staff/payment/${abbMonth}/${abbYear}`)
             if (data.success) {
                 message.success(data.message)
                 setPayments(data.data)
@@ -73,6 +73,7 @@ const PaymentHistory = () => {
                     <option value="july" name="month">กรกฎาคม</option>
                     <option value="august" name="month">สิงหาคม</option>
                     <option value="september" name="month">กันยายน</option>
+                    <option value="october" name="month">ตุลาคม</option>
                     <option value="november" name="month">พฤษจิกายน</option>
                     <option value="december" name="month">ธันวาคม</option>
                 </select>
