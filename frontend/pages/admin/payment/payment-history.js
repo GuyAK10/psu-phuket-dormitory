@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { GlobalState } from '../../../utils/context'
-import Router from 'next/router'
-import useFetch from 'use-http'
-import { message, Skeleton } from 'antd'
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
+import { useRouter } from 'next/router'
+import { message } from 'antd'
 
 const PaymentHistory = () => {
     const [payments, setPayments] = useState([])
     const { get } = React.useContext(GlobalState)
+    const { abbMonth, abbYear } = useRouter()
 
     const years = () => {
         const fullYear = new Date().getFullYear()
@@ -26,13 +24,25 @@ const PaymentHistory = () => {
     })
 
     const getPayments = async () => {
-        const data = await get(`staff/payment/history/${select.semester}/${select.month}/${select.year}`)
+        const data = await get(`staff/payment/history/${select.month}/${select.year}`)
         if (data.success) {
             message.success(data.message)
             setPayments(data.data)
         }
         else
             message.error(data.message)
+    }
+
+    const initialState = async () => {
+        if (abbMonth && abbYear) {
+            const data = await get(`staff/payment/history/${abbMonth}/${abbYear}`)
+            if (data.success) {
+                message.success(data.message)
+                setPayments(data.data)
+            }
+            else
+                message.error(data.message)
+        }
     }
 
     const handleChange = (e) => {
@@ -43,6 +53,10 @@ const PaymentHistory = () => {
             }
         })
     }
+
+    useEffect(() => {
+        initialState()
+    }, [])
 
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
@@ -62,8 +76,8 @@ const PaymentHistory = () => {
                     <option value="november" name="month">พฤษจิกายน</option>
                     <option value="december" name="month">ธันวาคม</option>
                 </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                 </div>
             </div>
 
@@ -74,8 +88,8 @@ const PaymentHistory = () => {
                         years().map((item, key) => <option key={key} value={item} name={item}>{item}</option>)
                     }
                 </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                 </div>
             </div>
 
@@ -96,8 +110,11 @@ const PaymentHistory = () => {
                             <th className="px-4 py-2">สถานะ</th>
                         </tr>
                     </thead>
-
                     {
+                        JSON.stringify(payments)
+                    }
+
+                    {/* {
                         payments.map((item, key) => {
                             return <tbody key={key}>
                                 <tr>
@@ -124,7 +141,7 @@ const PaymentHistory = () => {
                                 </tr>
                             </tbody>
                         })
-                    }
+                    } */}
 
                 </table>
             </div>

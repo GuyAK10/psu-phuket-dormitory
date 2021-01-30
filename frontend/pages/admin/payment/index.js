@@ -34,7 +34,7 @@ const Payment = () => {
         const save = post(`staff/payment/${values.abbMonth}/${values.abbYear}`, formData)
         if (save.success) {
             message.success(save.message)
-            Router.pathname('/admin/payment-history')
+            Router.push('/admin/payment-history', { abbMonth: values.abbMonth, abbYear: values.abbYear })
         }
     }
 
