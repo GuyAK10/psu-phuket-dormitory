@@ -27,6 +27,8 @@ const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
 
+require('./cron');
+
 app.use(cors({
     origin: ["http://192.168.43.55:3000", "https://psu-phuket-dormitory.web.app", "https://psu-phuket-dormitory.firebaseapp.com"],
     credentials: true,

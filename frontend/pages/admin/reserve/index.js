@@ -4,9 +4,6 @@ import { GlobalState } from '../../../utils/context'
 import Router from 'next/router'
 import Loading from '../../../component/Loading'
 import { message, Tooltip, Switch, Modal as studentModal } from 'antd';
-import useFetch from 'use-http'
-const ENDPOINT = process.env.ENDPOINT
-const PORT = process.env.PORT
 
 const years = () => {
     const fullYear = new Date().getFullYear()
@@ -23,9 +20,7 @@ const reserve = () => {
     const [isLoading, setIsLoading] = React.useState(false)
     const [showbuilding, setShowBuilding] = useState([])
     const [modalFloor, setModalFloor] = useState([])
-    const [header, setHeader] = useState({})
     const [focusRoomList, setFocusListRoom] = useState([[{ floorId: "E01" }], [{ floorId: "A01" }]])
-    const [update, setUpdate] = useState(0)
     const [system, setSystem] = useState(false)
     const [select, setSelect] = useState({
         system: false,
@@ -55,7 +50,6 @@ const reserve = () => {
         }
         catch (e) {
             console.error(e)
-            Logout()
         }
     }
 
@@ -210,22 +204,6 @@ const reserve = () => {
 
     const FocusFloor = () => {
 
-        const onSelectedRoom = () => {
-            message.success('จองห้องแล้ว')
-        }
-
-        const onSelecteRoom = () => {
-            message.warning('กำลังจองห้อง')
-        }
-
-        const onDeletedRoom = () => {
-            message.warn('ยกเลิกการจองแล้ว')
-        }
-
-        const onDeleteRoom = () => {
-            message.warning('กำลังยกเลิกการจอง')
-        }
-
         const oddRoom = modalFloor.filter((_item, key) => key % 2 !== 0)
         const evenRoom = modalFloor.filter((_item, key) => key % 2 === 0)
 
@@ -262,7 +240,6 @@ const reserve = () => {
                 setModalFloor(keepTempModal)
                 message.success(`ปิดการจองห้อง ${room.room} แล้ว`)
             }
-            setUpdate(Math.random())
         }
 
         return (

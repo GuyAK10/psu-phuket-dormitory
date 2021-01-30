@@ -158,7 +158,7 @@ const Profile = ({ profileId }) => {
                 <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
                 <ul className="list-disc flex flex-col">
                     {
-                        student.profile.profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}:${PORT}${student.profile.profileImg}`} alt="profileImg" />
+                        student.profile.profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}${PORT}${student.profile.profileImg}`} alt="profileImg" />
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }

@@ -30,11 +30,8 @@ const MyApp = ({ Component, pageProps }) => {
         credentials: 'include',
         onError: (e) => {
             console.log(e)
-            logout()
-            // logout()
-            // Router.replace('login')
+            if (e.error.message.logout) logout()
         }
-        // options.timeout = 3000
     })
 
     const hambuger = useRef()
@@ -131,29 +128,4 @@ const MyApp = ({ Component, pageProps }) => {
     )
 }
 
-// MyApp.getInitialProps = ({ ctx: { req, res } }) => {
-
-//     //server side
-//     // if (req) {
-//     //     let serverCookie = req.cookies || ""
-//     //     if (!serverCookie) {
-//     //         if (req.url != '/login' && req.url != '/') {
-//     //             console.log('no cookie Redirect')
-//     //             res.writeHead(302, { Location: `/login` })
-//     //             res.end()
-//     //         }
-//     //     }
-
-//     //     return { serverCookie }
-//     // }
-
-//     //client side
-//     if (!req) {
-//         const clientCookie = document.cookie || ""
-//         return { clientCookie }
-//     }
-
-//     return {}
-
-// }
 export default MyApp
