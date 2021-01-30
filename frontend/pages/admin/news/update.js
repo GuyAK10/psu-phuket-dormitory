@@ -28,7 +28,7 @@ const UpdateNews = () => {
     const handleSubmit = async () => {
         let data = new FormData()
         data.append('pdf', file)
-        const resPdf = await post(`upload/${fileName.name}/${fileName.detail}`, data)
+        const resPdf = await post(`staff/news/upload/${fileName.name}/${fileName.detail}`, data)
         if (resPdf.success) message.success(resPdf.message)
     }
 

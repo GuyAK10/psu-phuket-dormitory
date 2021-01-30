@@ -82,8 +82,8 @@ const createRoomDb = async (year, semester) => {
                     roomRef.set({
                         floor: floorName,
                         room: roomId,
-                        year: year,
-                        semester: semester,
+                        year: +year,
+                        semester: +semester,
                         available: true
                     })
                 }

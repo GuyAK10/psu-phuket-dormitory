@@ -8,7 +8,7 @@ module.exports = {
             '/': { page: '/' },
             '/login': { page: '/login' },
             '/payment': { page: '/payment' },
-            '/payment-history': { page: '/payment/history' },
+            '/payment-history': { page: '/payment-history' },
             '/profile': { page: '/profile' },
             '/profile-result': { page: '/profile-result' },
             '/guide': { page: '/guide' },

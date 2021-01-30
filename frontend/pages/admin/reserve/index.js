@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-import axios from 'axios'
 import { GlobalState } from '../../../utils/context'
 import Router from 'next/router'
 import Loading from '../../../component/Loading'
@@ -39,12 +38,13 @@ const reserve = () => {
         let floorDetails = []
         setIsLoading(false)
         try {
-            const floor0 = await get(`staff/room/floor${floor[0]}`, axiosConfig)
-            if (floor0) floorDetails[0] = { ...res.data }
+            const floor0 = await get(`staff/room/floor${floor[0]}`)
+            floorDetails[0] = floor0
 
-            const floor1 = await axios.get(`staff/room/floor${floor[1]}`, axiosConfig)
-            if (floor1) floorDetails[1] = { ...res.data }
+            const floor1 = await get(`staff/room/floor${floor[1]}`)
+            floorDetails[1] = floor1
 
+            console.log(floorDetails)
             setFocusListRoom(floorDetails)
             setIsLoading(true)
         }
@@ -252,7 +252,7 @@ const reserve = () => {
                             return <div className="room-container" key={key}>
                                 <span className="even-room-item">
                                     {
-                                        room.available
+                                        room
                                             ?
                                             <button onClick={() => setStatusRoom(room, false)} className="shadow bg-red-500 hover:bg-red-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">ปิดการจองห้องนี้</button>
                                             :
@@ -337,7 +337,7 @@ const reserve = () => {
                             return <div className="room-container" key={key} >
                                 <span className="odd-room-item">
                                     {
-                                        room.available
+                                        room
                                             ?
                                             <button onClick={() => setStatusRoom(room, false)} className="shadow bg-red-500 hover:bg-red-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">ปิดการจองห้องนี้</button>
                                             :

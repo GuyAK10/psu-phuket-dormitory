@@ -9,7 +9,8 @@
       "components/**",
       "pages/**",
       "public/**",
-      "readme.md"
+      "readme.md",
+      ".env"
     ]
   }
 }

@@ -29,9 +29,28 @@ const Index = () => {
     return (
         <div className="index-container flex flex-col items-center min-h-screen">
             {/* <img src="background/index.jpg" alt="index image"/> */}
-            <h1 className="text-4xl p-5">จองห้องพัก</h1>
-            <p className="text-xl">ระบบนี้สร้างขึ้นมาเพื่อลดปัญหาการจองห้องพักที่ต้องใช้เอกสาร</p>
-            <p className="text-xl">เหลือเพียงแค่การเลือกห้องไม่กี่ขั้นตอนเท่านั้น</p>
+            {/* <h1 className="text-4xl p-5">จองห้องพัก</h1> */}
+            {/* <p className="text-xl">ระบบนี้สร้างขึ้นมาเพื่อลดปัญหาการจองห้องพักที่ต้องใช้เอกสาร</p> */}
+            <p className="text-center text-xl text-red-400">ระบบอยู่ในขั้นตอนการพัฒนา หากพบปัญหาขออภัยในความไม่สะดวก</p>
+            <p className="text-center text-xl text-yellow-400">ระบบเปิดให้ทำการกรอกข้อมูลและจองห้องพักเท่านั้น บริการอื่น ๆ ยังไม่เปิดให้บริการ</p>
+            <p className="text-center text-xl text-green-400">หากมีปัญหาขั้นตอนใดติดต่อได้ที่ s5835512091@phuket.psu.ac.th</p>
+            {/* <p className="text-xl">เหลือเพียงแค่การเลือกห้องไม่กี่ขั้นตอนเท่านั้น</p> */}
+
+            <h1 className="text-3xl text-center">ข่าวสาร</h1>
+            <div className="news-container flex flex-row flex-wrap px-4 justify-center">
+                {news ? news.data.map((item, key) => (
+                    <div className="news-border border-blue-400 rounded" key={key}>
+                        <h1 className="text-center">{`${item.title}`}</h1>
+                        <iframe seamless="seamless" scrolling="no" className="rounded" frameBorder="0" src={`${ENDPOINT}${PORT}/news/${item.newsName}`} type="application/pdf" />
+                        <p className="text-center">{item.detail}</p>
+                        <div className="flex flex-row justify-center mt-2">
+                            <a className="font-medium text-lg text-black bg-blue-200 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" target="_blank" href={`http://localhost/news/${item.newsName}`}>อ่านเพิ่มเติม</a>
+                            <a className="font-medium text-lg text-black bg-blue-200 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" href={`http://localhost/news/${item.newsName}?download=true`}>ดาวน์โหลดไฟล์</a>
+                        </div>
+                    </div>
+                )) : ""}
+            </div>
+
             <div className="repair flex flex-row flex-wrap p-10">
                 <Card>
                     <img className="h-10 w-10 mb-3 self-center" src="icon/booking.svg" alt="book" />
@@ -52,21 +71,6 @@ const Index = () => {
                     <div className="flex flex-row"><img className="w-5 h-5" src="icon/check.svg" alt="check" /><p>แจ้งชำระผ่านระบบ</p></div>
                     <div className="flex flex-row"><img className="w-5 h-5" src="icon/check.svg" alt="check" /><p>แจ้งผลผ่าน Line</p></div>
                 </Card>
-            </div>
-
-            <h1 className="text-3xl text-center">ข่าวสาร</h1>
-            <div className="news-container flex flex-row flex-wrap px-4 justify-center">
-                {news !== null ? news.data.map((item, key) => (
-                    <div className="news-border border-blue-400 rounded" key={key}>
-                        <h1 className="text-center">{`${item.title}`}</h1>
-                        <iframe seamless="seamless" scrolling="no" className="rounded" frameBorder="0" src={`${ENDPOINT}${PORT}/news/${item.newsName}`} type="application/pdf" />
-                        <p className="text-center">{item.detail}</p>
-                        <div className="flex flex-row justify-center mt-2">
-                            <a className="font-medium text-lg text-black bg-blue-200 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" target="_blank" href={`http://localhost/news/${item.newsName}`}>อ่านเพิ่มเติม</a>
-                            <a className="font-medium text-lg text-black bg-blue-200 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" href={`http://localhost/news/${item.newsName}?download=true`}>ดาวน์โหลดไฟล์</a>
-                        </div>
-                    </div>
-                )) : ""}
             </div>
         </div>
     )

@@ -11,7 +11,7 @@ const Payment = () => {
     const years = () => {
         const fullYear = new Date().getFullYear()
         const years = []
-        for (let i = fullYear; i >= fullYear - 130; i--) {
+        for (let i = fullYear; i >= fullYear - 10; i--) {
             years.push(i)
         }
         return years.map(item => item + 543)
@@ -52,7 +52,7 @@ const Payment = () => {
 
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
-
+            <p className="text-yellow-500">หน้านี้ยังไม่พร้อมให้บริการ</p>
             <div className="flex flex-col relative">
                 <label htmlFor="semester">เทอม</label>
                 <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state" name="semester" id="semester" onChange={handleChange} value={select.semester}>
@@ -165,4 +165,6 @@ const Payment = () => {
     )
 }
 
-export default Payment
+// export default Payment
+const Close = () => <div className="min-h-screen">ยังไม่เปิดให้บริการ</div>
+export default Close

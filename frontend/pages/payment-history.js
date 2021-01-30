@@ -38,6 +38,7 @@ const PaymentHistory = () => {
                 bills.message === "พบประวัติ"
                     ?
                     <table class="table-auto">
+                        <p className="text-yellow-500">หน้านี้ยังไม่พร้อมให้บริการ</p>
                         <thead>
                             <tr>
                                 <th class="px-4 py-2">ห้อง</th>
@@ -70,4 +71,6 @@ const PaymentHistory = () => {
     )
 }
 
-export default PaymentHistory
+// export default PaymentHistory
+const Close = () => <div className="min-h-screen">ยังไม่เปิดให้บริการ</div>
+export default Close

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { GlobalState } from '../utils/context'
-import axios from 'axios'
 import { message, Steps, } from 'antd';
 import Router from 'next/router';
 import { useForm } from "react-hook-form";
-import useFetch from 'use-http'
 
 const ENDPOINT = process.env.ENDPOINT
 const PORT = process.env.PORT
@@ -17,6 +15,7 @@ const profile = () => {
     const [imgUrl, setImgUrl] = useState('')
     const { register, handleSubmit, errors } = useForm();
     const [isProfileFail, setProfileFail] = useState(true)
+    const [initialId, setInitialId] = useState('')
     const [form, setForm] = React.useState({
         profile: {
             profileImg: "",
@@ -222,13 +221,15 @@ const profile = () => {
             content: form ? <form onSubmit={handleSubmit(handleFormProfile)} className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2>ข้อมูลเบื้องต้น</h2>
 
-                <label>รูปภาพ</label>
+                <label>รูปนักศึกษา <p className="text-red-500">***(รูปชุดนักศึกษาเท่านั้น)</p></label>
 
-                {isProfileFail ? <img className="w-20 h-20" src={`${ENDPOINT}${PORT}/student/profile/picture/${cookies.user ? cookies.user.id : ""}?key=${imgUrl}`} onError={() => {
-                    setProfileFail(false)
-                }} alt="profileImg" />
-                    :
-                    <img className="w-20 h-20" src="icon/mockProfile.png" alt="mock profile" />}
+                {
+                    isProfileFail ? <img key={imgUrl} className="w-20 h-24" src={`${ENDPOINT}${PORT}/student/profile/picture/${initialId}?key=${imgUrl}`} onError={() => {
+                        setProfileFail(false)
+                    }} alt="profileImg" />
+                        :
+                        <img className="w-20 h-20" src="icon/mockProfile.png" alt="mock profile" />
+                }
 
                 <input type="file" accept="image/*" name="file" onChange={(e) => handleFile(e.target.files[0])} />
 
@@ -284,6 +285,7 @@ const profile = () => {
                 <label>วัน/เดือน/ปีเกิด</label>
                 <input className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="birthday"
+                    type="date"
                     defaultValue={form.profile.birthday}
                     ref={register({ required: true })}
                 />
@@ -806,7 +808,16 @@ const profile = () => {
             title: "กฎระเบียบการใช้งานหอพัก",
             content: form ? <div className="flex flex-col h-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <div className="md:flex md:items-center mb-6">
-                    <div className="md:w-1/3"></div>
+                    <div className="md:w-1/3">
+                        <p className="text-center">ข้าพเจ้ารับรองว่า
+                        ข้อมูลที่ระบุในทะเบียนประวัตินักศึกษาหอพักนักศึกษาชาย
+                        เป็นความจริงทุกประการ ทราบและพร้อมปฏิบัติตามระเบียบ/
+                        ประกาศมหาวิทยาลัยสงขลานครินทร์ ว่าด้วยหอพักนักศึกษาชาย
+                        วิทยาเขตภูเก็ต อีกทั้งข้อปฏิบัติและข้อห้ามเกี่ยวกับหอพักนักศึกษา
+                        ชาย หากตัวข้าพเจ้ากระทำผิด ข้าพเจ้ายินยอมให้งานหอพักนักศึกษา
+                        ดำเนินทางวินัยนักศึกษาตามระเบียบหอพักและวินัยนักศึกษาของ
+	                    มหาวิทยาลัยสงขลานครินทร์วิทยาเขตภูเก็ต</p>
+                    </div>
                     <label className="md:w-2/3 block text-gray-500 font-bold">
                         <input
                             className="mr-2 leading-tight"
@@ -814,7 +825,7 @@ const profile = () => {
                             checked={form.agreement}
                             onChange={e => setForm({ ...form, agreement: e.target.checked })}
                         />
-                        <span className="text-sm">
+                        <span className="text-sm font-red-500 mt-4">
                             ยอมรับข้อตกลงหอพัก
                         </span>
                     </label>
@@ -860,11 +871,16 @@ const profile = () => {
         const resImg = await post(`/student/profile/upload/${cookies.user.id}`, data)
         if (resImg.success) {
             setImgUrl(resImg.message)
+            console.log(resImg.message)
         }
     }
 
+    const getInitialId = () => {
+        setInitialId(cookies.user.id)
+    }
     useEffect(() => {
         verifyLogin()
+        getInitialId()
         getInitialProfile()
     }, [])
 

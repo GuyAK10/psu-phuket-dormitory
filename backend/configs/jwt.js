@@ -100,12 +100,9 @@ const createToken = async (user, responseData, req, res) => {
       const tenMinute = 36000 * 10;
       try {
             if (responseData.userId === null && responseData.role === null) {
-                  return res.status(401).send("ID หรือ Password ผิด");
-            }
-            else if (!user.username || !user.password) {
-                  return res.status(401).send("กรุณากรอก username และ password");
-            }
-            else {
+                  res.status(401).send("ID หรือ Password ผิด");
+            } else {
+                  // console.log(user,responseData)
                   //save test user for profile
                   if (user.username === 'student') {
                         console.log('student')
@@ -120,7 +117,7 @@ const createToken = async (user, responseData, req, res) => {
                         const setProfile = db.collection('students').doc(`studentTest`);
 
                         await register.set({
-                              id: "studentTest",
+                              id: "userStudentForTest",
                               type: "Students",
                               token: encoded
                         });
@@ -137,7 +134,7 @@ const createToken = async (user, responseData, req, res) => {
                               await setProfile.set(student)
                         } else {
                               await setProfile.update({
-                                    'profile.id ': responseData.userId,
+                                    'profile.id': responseData.userId,
                                     'profile.name': "userStudentForTest",
                                     'profile.surname': "userStudentForTest",
                                     'profile.faculty': "testFaculty",
@@ -198,7 +195,7 @@ const createToken = async (user, responseData, req, res) => {
                               await setProfile.set(student)
                         } else {
                               await setProfile.update({
-                                    'profile.id ': responseData.userId,
+                                    'profile.id': responseData.userId,
                                     'profile.name': "userStaffForTest",
                                     'profile.surname': "userStaffForTest",
                                     'profile.faculty': "testFaculty",
@@ -231,7 +228,6 @@ const createToken = async (user, responseData, req, res) => {
                   }
 
                   else if (user.type == responseData.role) {
-
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
@@ -261,7 +257,7 @@ const createToken = async (user, responseData, req, res) => {
                                     await setProfile.set(student)
                               } else {
                                     await setProfile.update({
-                                          'profile.id ': responseData.userId,
+                                          'profile.id': responseData.userId,
                                           'profile.name': responseData.name,
                                           'profile.surname': responseData.surname,
                                           'profile.faculty': responseData.faculty,
@@ -291,32 +287,30 @@ const createToken = async (user, responseData, req, res) => {
                                                 type: responseData.role,
                                           }
                                     })
-                        }
-                  }
-
-                  else if (responseData.role === "Staff") {
-                        res.status(200)
-                              .cookie("token", encoded, {
-                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
-                                    httpOnly: true,
-                              })
-                              .cookie("user", {
-                                    id: responseData.userId,
-                                    name: responseData.name,
-                                    surname: responseData.surname,
-                                    type: responseData.role,
-                              }, {
-                                    expire: Math.floor(Date.now() / 1000) + (60 * 10),
-                              })
-                              .send({
-                                    token: encoded,
-                                    user: {
+                        }  else if (responseData.role === "Staffs") {
+                              res.status(200)
+                                    .cookie("token", encoded, {
+                                          expire: Math.floor(Date.now() / 1000) + (60 * 10),
+                                          httpOnly: true,
+                                    })
+                                    .cookie("user", {
                                           id: responseData.userId,
                                           name: responseData.name,
                                           surname: responseData.surname,
                                           type: responseData.role,
-                                    }
-                              })
+                                    }, {
+                                          expire: Math.floor(Date.now() / 1000) + (60 * 10),
+                                    })
+                                    .send({
+                                          token: encoded,
+                                          user: {
+                                                id: responseData.userId,
+                                                name: responseData.name,
+                                                surname: responseData.surname,
+                                                type: responseData.role,
+                                          }
+                                    })
+                        }
                   }
                   else {
                         console.log('สถานะไม่ถูกต้อง')

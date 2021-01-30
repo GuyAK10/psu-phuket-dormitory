@@ -36,10 +36,10 @@ const lineNotify = {
         }
 
     },
-    receiptNotify: async (semester, year, month, roomId) => {
+    receiptNotify: async ( year, month, roomId) => {
         try {
 
-            var message = `ห้อง ${roomId} ทำการชำระค่าน้ำค่าไฟเทอม ${semester} ปีการศึกษา ${year} เดือน ${month} เรียบร้อยแล้ว`;
+            var message = `ห้อง ${roomId} ทำการชำระค่าน้ำค่าไฟ ปี ${year} เดือน ${month} เรียบร้อยแล้ว`;
 
             request({
                 method: 'POST',

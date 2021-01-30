@@ -98,7 +98,7 @@ const MyApp = ({ Component, pageProps }) => {
                     {
                         showNav && <>
                             <div onClick={toggleNav} className="arrow-left p-2 bg-blue-500 flex justify-center">
-                                <img className="w-4" src="icon/left-arrow.svg" alt="left-arrow" />
+                                <img className="w-4 h-4" src="icon/left-arrow.svg" alt="left-arrow" />
                             </div>
                             <NavigationBar />
                         </>

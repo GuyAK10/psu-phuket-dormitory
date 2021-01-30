@@ -12,102 +12,57 @@ const uploader = multer({
   }
 });
 
-const bookInfomation = async (studentId) => {
+const myRoom = async (studentId) => {
   try {
-    //   const floors = [
-    //     "floorA",
-    //     "floorB",
-    //     "floorC",
-    //     "floorD",
-    //     "floorE",
-    //     "floorF",
-    //     "floorG",
-    //     "floorH"
-    //   ]
-
-    //   const orderId = [
-    //     "student1",
-    //     "student2"
-    //   ]
-
-    //   let booked = false;
-
-    //   for (var a in floors) {
-    //     var b = floors[a];
-    //     const roomRef = db.collection(b)
-    //     for (c in orderId) {
-    //       var d = orderId[c]
-    //       const result = await roomRef.where(`${d}.id`, "==", profileData.profile.id).get()
-
-    //       if (!result.empty && checkCase === "reserve") {
-    //         result.forEach((room) => {
-    //           booked = room.id
-    //           return booked
-    //         })
-    //       }
-    //       else if (!result.empty && checkCase === "count") {
-    //         result.forEach((room) => {
-    //           const checkStudent = room.data()
-    //           if (checkStudent.student1 && checkStudent.student2 !== undefined) {
-    //             booked = 2
-    //             return booked
-    //           } else {
-    //             booked = 1
-    //             return booked
-    //           }
-    //         })
-    //       }
-
-    //     }
-    //   }
-    //   return booked
-
-    let roomList = []
-    const findCollectFloor = await db.listCollections()
-    findCollectFloor.forEach(async database => database.id.startsWith('floor') ? roomList.push(database.id) : "")
-
-    let students = []
-    for (let i in roomList) {
-      const student = await db.collection(roomList[i]).get()
-      student.forEach(data => {
-        if (data.data().student1 || data.data().student2) students.push({ ...data.data(), room: data.id })
-      })
-    }
-
-    const stdAndRoom = await students.find(item => {
-      if (item.student1 !== undefined) {
-        if (item.student1.id == studentId) return true
-      }
-      if (item.student2 !== undefined) {
-        if (item.student2.id == studentId) return true
-      }
-    })
-    if (stdAndRoom !== undefined) return stdAndRoom
-    else return { room: false }
+      const order = [
+          "student1",
+          "student2"
+      ]
+      let booked = false;
+      const dormitory = db.collection("dormitory")
+      const status = await dormitory.doc("status").get()
+      const semester = status.data().semester
+      const year = status.data().year
+      await Promise.all(order.map(async (orderId) => {
+          const reserveRef = await dormitory.where("year", "==", year).where("semester", "==", semester).where(`${orderId}.id`, "==", studentId).get()
+          if (!reserveRef.empty) {
+              reserveRef.forEach((room) => {
+                  const roomData = {
+                      docID: '',
+                  }
+                  roomData.docID = room.id
+                  Object.assign(roomData, room.data())
+                  booked = roomData
+                  return booked
+              })
+          }
+      }))
+      return booked
   }
   catch (error) {
-    console.log(error)
-    throw error
+      console.log(error)
+      throw error
   }
 }
 
-router.get('/student/payment/bills/:studentId', async (req, res) => {
-  const { params: { studentId } } = req
-  const billRef = await db.collection(`payment`).where("students", "array-contains", { studentId: studentId }).get()
-  let bills = []
-  billRef.forEach(res =>
-    bills.push(res.data())
-  )
-  res.status(200).send({ code: 200, success: true, message: "พบประวัติ", data: bills })
-})
+// ประวัติค่าไฟของเราทั้งหมดที่เคยอยู่มา ***รอแก้ คิดไม่ออก
+// router.get('/student/payment/bills/:studentId', async (req, res) => {
+//   const { params: { studentId } } = req
+//   const billRef = await db.collection(`payment`).where("students", "array-contains", { studentId: studentId }).get()
+//   let bills = []
+//   await Promise.all(  billRef.forEach(res =>
+//     bills.push(res.data())
+//   ))
+//   res.status(200).send({ code: 200, success: true, message: "พบประวัติ", data: bills })
+// })
 
-router.get('/student/payment/bill/:semester/:year/:month/:studentId', async (req, res) => {
+router.get('/student/payment/bill/:year/:month/:studentId', async (req, res) => {
   try {
 
-    const { params: { semester, year, month, studentId } } = req
-    const { room } = await bookInfomation(studentId)
+    const { params: { year, month, studentId } } = req
+    const { room } = await myRoom(studentId)
     if (room) {
-      const billRef = (await db.doc(`payment/${room}-${month}-${semester}-${year}`).get()).data()
+      const billRef = (await db.doc(`payment/${year}-${month}-${room}`).get()).data()
       if (billRef)
         res.status(200).send({ code: 200, success: true, message: 'พบรายการชำระเงิน', data: billRef })
       else
@@ -125,9 +80,9 @@ router.get('/student/payment/bill/:semester/:year/:month/:studentId', async (req
 
 router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
   try {
-    const { body: { semester, year, month, roomId } } = req
+    const { body: {year, month, roomId } } = req
     const folder = 'receipt'
-    const fileUpload = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
+    const fileUpload = bucket.file(`${folder}/${year}/${month}/${roomId}`);
     const blobStream = fileUpload.createWriteStream({
       metadata: {
         contentType: req.file.mimetype
@@ -140,8 +95,8 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
     });
 
     blobStream.on('finish', async () => {
-      await receiptNotify(semester, year, month, roomId)
-      const receiptRef = db.collection(`payment/`).doc(`${roomId}-${month}-${semester}-${year}`)
+      await receiptNotify( year, month, roomId)
+      const receiptRef = db.collection(`payment/`).doc(`${year}-${month}-${roomId}`)
       await receiptRef.set({
         status: "รอการยืนยัน"
       }, { merge: true })
@@ -159,12 +114,11 @@ router.post('/student/payment/receipt', uploader.single('img'), (req, res) => {
 
 router.get('/student/payment/reciept', async (req, res) => {
   try {
-    const { body: { month, semester, year, roomId } } = req
+    const { body: { month, year, roomId } } = req
     const folder = 'receipt'
-    const file = bucket.file(`${folder}/${semester}-${year}/${month}/${roomId}`);
-    file.download().then(downloadResponse => {
-      res.status(200).send(downloadResponse[0]);
-    });
+    const file = bucket.file(`${folder}/${year}/${month}/${roomId}`);
+    const [recieptPictureUrl] = await file.getSignedUrl({ action: "read", expires: Date.now() + 60 * 60 * 10 })
+    res.redirect(recieptPictureUrl)
 
   } catch (error) {
     console.log(error)

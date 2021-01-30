@@ -1,25 +1,22 @@
 const express = require('express');
 const { db, storage } = require('../configs/firebase')
-const multer = require('multer');
 
 const router = express.Router()
 const bucket = storage.bucket()
-const uploader = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024
-  }
-});
 
-router.post('/student/profile/upload/:studentId', uploader.single('img'), async (req, res) => {
+router.post('/student/profile/upload/:studentId', async (req, res) => {
   try {
+    const {
+      mimetype,
+      buffer,
+    } = req.files[0]
     const id = req.params.studentId
     const folder = 'profile'
     const fileName = `${id}`
     const fileUpload = bucket.file(`${folder}/${fileName}`);
     const blobStream = fileUpload.createWriteStream({
       metadata: {
-        contentType: req.file.mimetype
+        contentType: mimetype
       },
     });
 
@@ -35,7 +32,7 @@ router.post('/student/profile/upload/:studentId', uploader.single('img'), async 
         message: `${Math.random()}`
       });
     });
-    blobStream.end(req.file.buffer);
+    blobStream.end(buffer);
 
   } catch (error) {
     console.error(error)
@@ -59,8 +56,7 @@ router.get('/student/profile/:studentId', async (req, res) => {
   try {
     const studentId = req.params.studentId
     const docRef = db.collection('students').doc(`${studentId}`);
-    const profileRef = await docRef.get();
-    const myProfile = profileRef.data()
+    const myProfile = (await docRef.get()).data();
     res.status(200).send(myProfile);
   }
   catch (error) {

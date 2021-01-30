@@ -9,8 +9,8 @@ const Guide = () => {
     })
 
     return (
-        <div>
-
+        <div className="min-h-screen">
+            ยังไม่เปิดให้บริการ
         </div>
     )
 }

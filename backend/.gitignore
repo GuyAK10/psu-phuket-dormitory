@@ -1,5 +1,6 @@
 node_modules
+/configs/dormphuket.json
 /configs/private.pem
 /configs/serviceAccountKey.json
-.env
+*.env
 *.http
