@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
+const router = express.Router()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
@@ -26,7 +27,7 @@ const staffPayment = require('./staff/payment')
 const staffNew = require('./staff/news')
 const staffRepair = require('./staff/repair')
 const staffSupport = require('./staff/support')
-const isDev = !!process.env.DEVELOPEMENT
+const isDev = !!process.env.DEVELOPEMENT || false
 const origin = isDev
     ? [
         "http://localhost:3000",
@@ -38,7 +39,7 @@ const origin = isDev
         "https://dormphuket.web.app",
         "https://dormphuket.firebaseapp.com"
     ]
-    
+
 // require('./cron');
 
 isDev && console.log("this is development mode")
@@ -73,7 +74,7 @@ app.use(studentRepair);
 app.use(studentSupport);
 
 //firebase functions
-exports.api = functions.https.onRequest(app)
+// exports.api = functions.https.onRequest(app)
 
 //express
 isDev && app.listen(PORT, () => console.log(`Server is ready! => ${PORT}`))

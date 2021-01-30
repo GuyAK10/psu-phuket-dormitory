@@ -103,7 +103,7 @@ const ProfileResult = () => {
     })
 
     const getStudents = async () => {
-        if (cookies.token) {
+        if (cookies.user) {
             try {
                 const data = await get(`student/profile/${cookies.user.id}`)
                 setStudent(data)

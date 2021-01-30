@@ -852,7 +852,7 @@ const profile = () => {
     ]
 
     const getInitialProfile = async () => {
-        if (cookies.token) {
+        if (cookies.user) {
             try {
                 const studentProfile = await get(`/student/profile/${cookies.user.id}`)
                 if (response.ok) {

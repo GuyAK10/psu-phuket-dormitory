@@ -96,7 +96,8 @@ let student = {
       agreement: false
 }
 
-const createToken = async (user, responseData, _req, res) => {
+const createToken = async (user, responseData, req, res) => {
+      const tenMinute = 36000 * 10;
       try {
             if (responseData.userId === null && responseData.role === null) {
                   res.status(401).send("ID หรือ Password ผิด");
@@ -104,6 +105,7 @@ const createToken = async (user, responseData, _req, res) => {
                   // console.log(user,responseData)
                   //save test user for profile
                   if (user.username === 'student') {
+                        console.log('student')
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
@@ -111,8 +113,8 @@ const createToken = async (user, responseData, _req, res) => {
                         }
 
                         let encoded = jwt.sign(payload, privateKey, { algorithm: 'HS256' });
-                        const register = tokenRef.doc(`${responseData.userId}`)
-                        const setProfile = db.collection('students').doc(`${responseData.userId}`);
+                        const register = tokenRef.doc(`studentTest`)
+                        const setProfile = db.collection('students').doc(`studentTest`);
 
                         await register.set({
                               id: "userStudentForTest",

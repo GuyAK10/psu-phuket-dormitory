@@ -5,15 +5,15 @@ const xlsxFile = require('xlsx');
 const router = express.Router();
 const bucket = storage.bucket()
 
-router.post('/staff/payment', async (req, res) => {
+router.post('/staff/payment/:abbMonth/:abbYear', async (req, res) => {
     try {
         const { buffer } = req.files[0]
-        const { body: { abbMonth, abbYear } } = req
+        const { params: { abbMonth, abbYear } } = req
 
         var workbook = xlsxFile.read(buffer, { type: "buffer" });
         let sheetName = workbook.SheetNames
-        
-        await Promise.all(sheetName.map(async(name)=>{
+
+        await Promise.all(sheetName.map(async (name) => {
             let result = name.slice(0, 4)
             let checkMonth = name.slice(11, 14)
             let checkYear = name.slice(14, 16)
@@ -39,8 +39,8 @@ router.post('/staff/payment', async (req, res) => {
                     })
                     i += 2
                 }
-            } 
-        })) 
+            }
+        }))
         res.status(200).send({ code: 200, success: true, message: "บันทึกข้อมูลค่าน้ำค่าไฟเรียบร้อย" });
     } catch (error) {
         console.log(error)
@@ -51,7 +51,7 @@ router.post('/staff/payment', async (req, res) => {
 router.get('/staff/payment/:month/:year', async (req, res) => {
     try {
 
-        const { params: {  year, month } } = req
+        const { params: { year, month } } = req
         const billRef = await db.collection('payment').where("year", "==", +year).where("month", "==", month).get()
         if (billRef.empty)
             res.status(200).send({ code: 200, success: false, message: "ไม่พบค่าน้ำค่าไฟในระบบ" });
@@ -60,7 +60,7 @@ router.get('/staff/payment/:month/:year', async (req, res) => {
             await Promise.all(billRef.docs.map((bill) => {
                 billList.push(bill.data())
             }))
-            
+
             res.status(200).send({ code: 200, success: true, message: "พบค่าน้ำค่าไฟในระบบ", data: billList });
         }
 

@@ -1,7 +1,7 @@
-let i = 0
 const checkType = {
     studentType: (req, res, next) => {
-        const type = JSON.parse(req.cookies.user).type
+        // console.log(req.cookies)
+        const type = req.cookies.user.type
         try {
             if (type === "Students") {
                 next();

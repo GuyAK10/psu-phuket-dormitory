@@ -39,8 +39,8 @@ const MyApp = ({ Component, pageProps }) => {
 
     const logout = async () => {
         if (menuBar === "ออกจากระบบ") {
-            removeCookie("token")
-            removeCookie("user")
+            // removeCookie("token")
+            // removeCookie("user")
             setMenuBar('ลงชื่อเข้าใช้')
             setHeaderDetail(null)
             setStaff(false)
@@ -50,14 +50,8 @@ const MyApp = ({ Component, pageProps }) => {
 
     const verifyLogin = () => {
         if (!cookies.user) {
+            console.log('remove cookie')
             Router.replace('/login')
-        }
-    }
-
-    const ressetTimeSession = (e) => {
-        if (cookies.user) {
-            setCookie('token', cookies.token, { maxAge: 10 * 60 })
-            setCookie('user', cookies.user, { maxAge: 10 * 60 })
         }
     }
 
@@ -134,29 +128,4 @@ const MyApp = ({ Component, pageProps }) => {
     )
 }
 
-MyApp.getInitialProps = ({ ctx: { req, res } }) => {
-
-    //server side
-    // if (req) {
-    //     let serverCookie = req.cookies || ""
-    //     if (!serverCookie) {
-    //         if (req.url != '/login' && req.url != '/') {
-    //             console.log('no cookie Redirect')
-    //             res.writeHead(302, { Location: `/login` })
-    //             res.end()
-    //         }
-    //     }
-
-    //     return { serverCookie }
-    // }
-
-    //client side
-    if (!req) {
-        const clientCookie = document.cookie || ""
-        return { clientCookie }
-    }
-
-    return {}
-
-}
 export default MyApp
