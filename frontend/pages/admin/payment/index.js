@@ -57,6 +57,7 @@ const Payment = () => {
                     <option value="july" name="month">กรกฎาคม</option>
                     <option value="august" name="month">สิงหาคม</option>
                     <option value="september" name="month">กันยายน</option>
+                    <option value="october" name="month">ตุลาคม</option>
                     <option value="november" name="month">พฤษจิกายน</option>
                     <option value="december" name="month">ธันวาคม</option>
                 </select>

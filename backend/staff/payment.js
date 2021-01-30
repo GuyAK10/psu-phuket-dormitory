@@ -9,7 +9,7 @@ router.post('/staff/payment/:abbMonth/:abbYear', async (req, res) => {
     try {
         const { buffer } = req.files[0]
         const { params: { abbMonth, abbYear } } = req
-
+        console.log(abbMonth,abbYear)
         var workbook = xlsxFile.read(buffer, { type: "buffer" });
         let sheetName = workbook.SheetNames
 
