@@ -115,7 +115,7 @@ const NavigationBar = () => {
                         </span>
                         {menuName === "จองห้องพัก" ?
                             <div className="flex flex-col">
-                                <SubMenu menu="ตารางรายชื่อ" route="/admin/reserve" />
+                                <SubMenu menu="ตารางรายชื่อ" route="/admin/reserve/summary" />
                                 <SubMenu menu="จองห้อง/แผนผังการจอง" route="/admin/reserve" />
                             </div> : null
                         }

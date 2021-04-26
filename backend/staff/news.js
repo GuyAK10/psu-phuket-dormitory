@@ -86,7 +86,7 @@ router.get('/staff/news/listname', async (req, res) => {
 
         }))
 
-        res.status(200).send({ code: 200, success: true, data: data });
+        res.status(200).send({ code: 200, success: true, data: newNameset });
     } catch (error) {
         console.log(error)
     }

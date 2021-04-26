@@ -10,6 +10,7 @@ const UtilitiesBar = () => {
         setAdminPath,
         del,
         cookies,
+        removeCookie,
         menuBar,
         setMenuBar,
         setStaff,
@@ -20,16 +21,23 @@ const UtilitiesBar = () => {
     } = useContext(GlobalState)
 
     const LoginOrLogout = () => {
-        if (cookies.user) setMenuBar('ออกจากระบบ')
+        if (cookies.user) {
+            setMenuBar('ออกจากระบบ')
+        }
+           
         else setMenuBar('ลงชื่อเข้าใช้')
         return true
     }
 
     const handleLogin = async () => {
-        if (menuBar === "ลงชื่อเข้าใช้") setShowModal(true)
+        if (menuBar === "ลงชื่อเข้าใช้") {
+            setShowModal(true)
+        }
         if (menuBar === "ออกจากระบบ") {
             setMenuBar('ลงชื่อเข้าใช้')
             setHeaderDetail(null)
+            removeCookie("token")
+            removeCookie("user")
             setStaff(false)
             try {
                 await del(`/logout/${cookies.user.id}`)

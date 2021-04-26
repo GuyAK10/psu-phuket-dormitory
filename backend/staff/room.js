@@ -64,6 +64,24 @@ router.get('/staff/room/:floorId', async (req, res) => {
       }
 })
 
+router.get('/staff/room/:floorId/:semester', async (req, res) => {
+      try {
+            const { params: { floorId ,semester} } = req
+            const dormitory = db.collection('dormitory')
+            const status = await dormitory.doc('status').get()
+            const year = status.data().year
+            const reserveRef = await dormitory.where("year", "==", +year).where("semester", "==", +semester).where("floor", "==", floorId).get()
+            let floorInformation = []
+            await Promise.all(reserveRef.docs.map((floor) => {
+                  floorInformation.push(floor.data())
+            }))
+            res.status(200).send(floorInformation);
+      } catch (error) {
+            console.error(error)
+            res.sendStatus(400);
+      }
+})
+
 //remove Student from room by staff
 router.post('/staff/room/remove', async (req, res) => {
       try {

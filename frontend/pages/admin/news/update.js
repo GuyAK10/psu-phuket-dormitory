@@ -33,7 +33,7 @@ const UpdateNews = () => {
     }
 
     return (
-        <div className="flex flex-col justify-center px-32 py-4">
+        <div className="flex flex-col justify-center px-32 py-4 h-screen">
             <label>ชื่อเรื่อง</label>
             <input className="rounded border-2 border-blue-500" type="text" onChange={e => handleName(e.target.value)} name="newsName" />
             <input type="file" accept="application/pdf" name="file" onChange={(e) => handleFile(e.target.files[0])} />

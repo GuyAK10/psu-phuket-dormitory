@@ -14,11 +14,6 @@ const Login = () => {
         loading
     } = React.useContext(GlobalState)
 
-    const { post, loading } = useFetch(`${ENDPOINT}${PORT}`, options => {
-        options.cachePolicy = "no-cache"
-        return options
-    })
-
     const [form, setForm] = React.useState({
         username: "",
         password: "",
@@ -47,7 +42,7 @@ const Login = () => {
                     setStaff(false)
                 }
                 message.success('เข้าสู่ระบบแล้ว')
-                Router.back()
+                window.location.href = '/'
             }
             else {
                 message.warn(result.message)

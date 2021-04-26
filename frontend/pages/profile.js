@@ -103,6 +103,7 @@ const profile = () => {
             otherCharacter: "",
             otherPosition: ""
         },
+        historyRoom:[],
         agreement: false
     })
 
@@ -198,6 +199,22 @@ const profile = () => {
         })
     }
 
+    const getInitialProfile = async () => {
+        if (cookies.user) {
+            try {
+                console.log(cookies.user.id)
+                const studentProfile = await get(`/student/profile/${cookies.user.id}`)
+                console.log(studentProfile)
+                if (response.ok) {
+                    setForm(studentProfile)
+                }
+            }
+            catch (error) {
+                console.error(error)
+            }
+        }
+    }
+
     const postData = async (saveAll) => {
         try {
             await post(`student/profile/${cookies.user.id}`, form)
@@ -214,6 +231,21 @@ const profile = () => {
         }
     }
 
+    const handleFile = async (file) => {
+        let data = new FormData()
+        data.append('img', file)
+        const resImg = await post(`/student/profile/upload/${cookies.user.id}`, data)
+        if (resImg.success) {
+            setImgUrl(resImg.message)
+            console.log(resImg.message)
+        }
+    }
+
+    const getInitialId = () => {
+        if (cookies.user) {
+            setInitialId(cookies.user.id)
+        }
+    }
     const steps = [
         {
             key: 0,
@@ -851,33 +883,6 @@ const profile = () => {
         }
     ]
 
-    const getInitialProfile = async () => {
-        if (cookies.user) {
-            try {
-                const studentProfile = await get(`/student/profile/${cookies.user.id}`)
-                if (response.ok) {
-                    setForm(studentProfile)
-                }
-            }
-            catch (error) {
-                console.error(error)
-            }
-        }
-    }
-
-    const handleFile = async (file) => {
-        let data = new FormData()
-        data.append('img', file)
-        const resImg = await post(`/student/profile/upload/${cookies.user.id}`, data)
-        if (resImg.success) {
-            setImgUrl(resImg.message)
-            console.log(resImg.message)
-        }
-    }
-
-    const getInitialId = () => {
-        setInitialId(cookies.user.id)
-    }
     useEffect(() => {
         verifyLogin()
         getInitialId()

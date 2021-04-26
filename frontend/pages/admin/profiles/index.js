@@ -3,7 +3,7 @@ import { GlobalState } from '../../../utils/context'
 import Router from 'next/router'
 
 const profile = () => {
-    const { students, setStudents } = useContext(GlobalState)
+    const { students, setStudents ,get} = useContext(GlobalState)
 
     React.useEffect(() => {
         getStudent()
@@ -12,6 +12,7 @@ const profile = () => {
     const getStudent = async () => {
         try {
             const result = await get(`staff/profile`)
+            console.log(result)
             setStudents(result)
         } catch (e) {
             console.error(e)

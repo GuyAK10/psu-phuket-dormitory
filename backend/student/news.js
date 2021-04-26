@@ -31,7 +31,6 @@ router.get('/news/:newsName', async (req, res) => {
         const file = bucket.file(`news/${fileName}`);
 
         const [getUrl] = await file.getSignedUrl({ action: "read", expires: Date.now() + 1000 * 60 * 60 })
-        // if (download != 'true') res.status(200).send({ code: 200, success: true, message: "พบไฟล์", data: getUrl })
         if (download != 'true') res.redirect(getUrl)
 
         else if (download == "true")

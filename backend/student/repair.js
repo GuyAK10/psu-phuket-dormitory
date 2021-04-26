@@ -87,7 +87,10 @@ router.get('/student/myRepair/:studentId/:semester/:universityYear', async (req,
     let repairList = []
     await Promise.all(historyRoom.map(async (data) => {
       if (+semester == data.semester && +universityYear == data.year) {
-        const repairRef = await db.collection('repair').where('room', '==', `${data.room}`).where('university_year', '==', data.year).where('semester', '==', data.semester).get()
+        const repairRef = await db.collection('repair')
+          .where('room', '==', `${data.room}`)
+          .where('university_year', '==', data.year)
+          .where('semester', '==', data.semester).get()
         await Promise.all(repairRef.docs.map((repair) => {
           repairList.push(repair.data())
         }))

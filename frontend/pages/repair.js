@@ -85,11 +85,6 @@ const repair = () => {
                         <div className="repairdetail-title"><label >ปัญหาอื่น ๆ:</label>{item.other?<p>{item.other.description}</p>:""}</div>
                     </div>
                 ):""}
-                <div className="a">
-                    {/* <div className="b">1</div> */}
-                    <div className="c">2</div>
-                    {/* <div className="d">3</div> */}
-                </div>
         </div>
     )
 }

@@ -39,8 +39,6 @@ const MyApp = ({ Component, pageProps }) => {
 
     const logout = async () => {
         if (menuBar === "ออกจากระบบ") {
-            // removeCookie("token")
-            // removeCookie("user")
             setMenuBar('ลงชื่อเข้าใช้')
             setHeaderDetail(null)
             setStaff(false)

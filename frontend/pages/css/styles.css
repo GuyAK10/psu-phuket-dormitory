@@ -462,17 +462,192 @@ background: linear-gradient(196deg, rgba(12,228,214,1) 48%, rgba(0,10,255,0.5945
     flex-flow: row nowrap;
 }
 
-.a{
+.table{
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.table-payment-title{
+    border-top:1px solid black;
+    border-left:1px solid black;
+    border-right:1px solid black;
+}
+
+.table-payment{
     display: flex;
     flex-flow: row nowrap;
+}
+
+.table-payment-name{
+    border-top:1px solid black;
+    border-left:1px solid black;
+    border-right:1px solid black;
+}
+
+.payment-title-room{
+    border-right:1px solid black;
+    width: 4.1vh;
+}
+
+.payment-title-name{
+    border-right:1px solid black;
+    width: 10.1vh;
+}
+
+.payment-title-number{
+    border-right:1px solid black;
+    border-bottom:1px solid black;
+}
+
+.payment-title-old{
+    border-right:1px solid black;
+    width: 4vh;
+}
+
+.payment-title-new{
+    border-right:1px solid black;
+    width: 4vh;
+}
+
+.payment-title-elec{
+    border-right:1px solid black;
+    border-bottom:1px solid black;
+}
+
+.payment-title-unit{
+    border-right:1px solid black;
+    width: 7.1vh;
+}
+
+.payment-title-price{
+    border-right:1px solid black;
+    width: 7.1vh;
+}
+
+.payment-title-amout{
+    width: 7.1vh;
+}
+
+.payment-title-myelec{
+    border-right:1px solid black;
+    width: 7.1vh;
+}
+
+.payment-title-water{
+    border-right:1px solid black;
+    width: 7.1vh;
+}
+
+.payment-title-sum{
+    width: 7.1vh;
+    border-right:1px solid black;
+}
+.payment-title-status{
+    width: 6vh;
+}
+
+.payment-std1{
+    border-left:1px solid black;
+    border-bottom:1px solid black;
+    width: 19.4vh;
+    height: 2vh;
+}
+
+.payment-std2{
+    border-bottom:1px solid black;
+    width: 19.4vh;
+    height: 2vh;
+}
+.payment-room{
+    width: 7.7vh;
+    border-bottom:1px solid black;
+}
+
+.table-payment-detail{
+    border-top:1px solid black;
+    border-right:1px solid black;
+}
+
+.payment-price{
+    border-bottom:1px solid black;
+}
+
+.payment-price-old{
+    height: 2vh;
+    width: 7.8vh;
+    border-right:1px solid black;
+}
+
+.payment-price-new{
+    height: 2vh;
+    width: 7.7vh;
+    border-right:1px solid black;
+}
+
+.payment-price-diff{
+    height: 2vh;
+    width: 13.4vh;
+    border-right:1px solid black;
+}
+
+.payment-price-unit{
+    height: 2vh;
+    width: 13.5vh;
+    border-right:1px solid black;
+}
+
+.payment-price-price{
+    height: 2vh;
+    width: 13.6vh;
+    border-right:1px solid black;
+}
+
+.payment-price-myprice{
+    height: 2vh;
+    width: 13.5vh;
+    border-right:1px solid black;
+}
+
+.payment-price-water{
+    height: 2vh;
+    width: 13.5vh;
+    border-right:1px solid black;
+}
+
+.payment-price-sum{
+    width: 13.5vh;
+    border-right:1px solid black;
+}
+
+.payment-price-status{
+    width: 11.5vh;
+}
+
+.reserve-result{
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 1rem 15rem;
+}
+
+.reserve-select{
+    margin: 1rem 0 2rem 0;
+}
+
+.table-floor{
+    display: flex;
+    flex-flow: column nowrap;
     justify-content: center;
+    padding-top: 1rem;
 }
-/* .b{
-    flex:1;
+
+.table-floor-detail tr{
+    border: 1px solid black;
+    
 }
-.c{
-    flex:2;
+
+.table-floor-detail th{
+    border: 1px solid black;
+    height: 30px;
+    padding-left: 25px;
+    padding-right: -10px;
 }
-.d{
-    flex:1;
-} */

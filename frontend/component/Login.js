@@ -16,6 +16,7 @@ const Login = ({ children }) => {
         setStaff,
         setHeaderDetail,
         cookies,
+        setCookies,
         post,
         response,
         loading
@@ -49,6 +50,7 @@ const Login = ({ children }) => {
                     setStaff(false)
                 }
                 message.success('เข้าสู่ระบบแล้ว')
+                window.location.href = '/'
             }
             else message.warn(response.data)
         } catch (e) {

@@ -1,17 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { GlobalState } from '../utils/context'
-import { message, Skeleton } from 'antd'
+import { message, Skeleton, Button } from 'antd'
 
 const Payment = () => {
     const [bill, setBill] = useState({
         message: "ค้นหาเพื่อแสดงผลข้อมูล"
     })
-    const { get, cookies, verifyLogin } = useContext(GlobalState)
+    const { get, post, cookies, verifyLogin } = useContext(GlobalState)
     const [isLoading, setIsLoading] = useState(false)
+    const [file, setFile] = useState({})
     const years = () => {
         const fullYear = new Date().getFullYear()
         const years = []
-        for (let i = fullYear; i >= fullYear - 10; i--) {
+        for (let i = fullYear; i >= fullYear - 5; i--) {
             years.push(i)
         }
         return years.map(item => item + 543)
@@ -34,7 +35,7 @@ const Payment = () => {
 
     const getBill = async () => {
         if (cookies.user) {
-            const data = await get(`/bill/${select.semester}/${select.year}/${select.month}/${cookies.user.id}`)
+            const data = await get(`/student/payment/bill/${select.year}/${select.month}/${cookies.user.id}`)
             if (data.success) {
                 message.success(data.message)
                 setBill(data)
@@ -45,21 +46,28 @@ const Payment = () => {
             }
         }
     }
+    const handleFile = async (file) => {
+        setFile(file)
+    }
 
+    const handleSubmit = async () => {
+        let data = new FormData()
+        data.append('img', file)
+        const resPdf = await post(`/student/payment/receipt/${select.year}/${select.month}/${bill.data.roomId}/${cookies.user.id}`, data)
+        if (resPdf.success) {
+            console.log(resPdf.message)
+            message.success(resPdf.message)
+            getBill()
+            setFile(null)
+        }
+    }
     useEffect(() => {
         verifyLogin()
     }, [])
 
     return (
         <div className="flex flex-col min-h-screen pl-32 pr-32 pt-10">
-            <p className="text-yellow-500">หน้านี้ยังไม่พร้อมให้บริการ</p>
             <div className="flex flex-col relative">
-                <label htmlFor="semester">เทอม</label>
-                <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state" name="semester" id="semester" onChange={handleChange} value={select.semester}>
-                    <option value="1" name="semester">1</option>
-                    <option value="2" name="semester">2</option>
-                    <option value="3" name="semester">3</option>
-                </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                 </div>
@@ -77,6 +85,7 @@ const Payment = () => {
                     <option value="july" name="month">กรกฎาคม</option>
                     <option value="august" name="month">สิงหาคม</option>
                     <option value="september" name="month">กันยายน</option>
+                    <option value="october" name="month">ตุลาคม</option>
                     <option value="november" name="month">พฤษจิกายน</option>
                     <option value="december" name="month">ธันวาคม</option>
                 </select>
@@ -114,7 +123,6 @@ const Payment = () => {
                         <thead>
                             <tr>
                                 <th className="px-4 py-2">ห้อง</th>
-                                <th className="px-4 py-2">เทอม</th>
                                 <th className="px-4 py-2">เดือน</th>
                                 <th className="px-4 py-2">ปี</th>
                                 <th className="px-4 py-2">ค่าไฟ</th>
@@ -126,13 +134,13 @@ const Payment = () => {
                         <tbody>
                             <tr>
                                 <td className="border px-4 py-2">{bill.data.roomId}</td>
-                                <td className="border px-4 py-2">{bill.data.semester}</td>
                                 <td className="border px-4 py-2">{bill.data.month}</td>
                                 <td className="border px-4 py-2">{bill.data.year}</td>
-                                <td className="border px-4 py-2">{bill.data.electric}</td>
+                                <td className="border px-4 py-2">{(bill.data.newUnit - bill.data.oldUnit) * bill.data.unitPrice} บาท</td>
                                 <td className="border px-4 py-2">{bill.data.water}</td>
-                                <td className="border px-4 py-2">{+bill.data.water + +bill.data.electric}</td>
-                                <td className="border px-4 py-2">{bill.data.status}</td>
+                                <td className="border px-4 py-2">{+bill.data.water + (bill.data.newUnit - bill.data.oldUnit) * bill.data.unitPrice} บาท</td>
+                                {bill.status === "student1" ? <td className="border px-4 py-2">{bill.data.student1}</td>
+                                    : <td className="border px-4 py-2">{bill.data.student2}</td>}
                             </tr>
                         </tbody>
                     </table>
@@ -156,7 +164,8 @@ const Payment = () => {
                         </div>
 
                         <label htmlFor="file">อัพโหลดใบเสร็จ</label>
-                        <input type="file" id="img" />
+                        <input type="file" id="img"   onChange={(e) => handleFile(e.target.files[0])} />
+                        <Button className="mt-2" type="primary" onClick={(e) => handleSubmit()}>Upload</Button>
                     </div>
                     :
                     null
@@ -165,6 +174,4 @@ const Payment = () => {
     )
 }
 
-// export default Payment
-const Close = () => <div className="min-h-screen">ยังไม่เปิดให้บริการ</div>
-export default Close
+export default Payment

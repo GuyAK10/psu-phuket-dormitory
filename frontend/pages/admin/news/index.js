@@ -57,7 +57,6 @@ const news = () => {
                 {news !== null ? news.data.map((item, key) => (
                     <div className="p-4 border-4 border-blue-400 rounded m-2" key={key}>
                         <h1 className="text-center">{`${item.title}`}</h1>
-                        <embed className="rounded m-4" src={`${ENDPOINT}${PORT}/news/${item.newsName}`} type="application/pdf" />
                         <p className="text-center">{item.detail}</p>
                         <div className="flex flex-row justify-center mt-2">
                             <a className="m-1 font-medium text-lg text-black bg-blue-200 px-2 py-2 border-2 border-blue-300 rounded hover:bg-transparent hover:text-blue-400" target="_blank" href={`http://localhost/news/${item.newsName}`}>อ่านเพิ่มเติม</a>

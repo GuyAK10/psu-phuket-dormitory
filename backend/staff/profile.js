@@ -28,13 +28,10 @@ router.get('/staff/profile/', async (req, res) => {
 
 router.get('/staff/profile/picture/:studentId', async (req, res) => {
   try {
-
     const studentId = req.params.studentId
     const file = bucket.file(`profile/${studentId}`);
-    await file.download().then(downloadResponse => {
-      res.status(200).send(downloadResponse[0]
-      );
-    });
+    const [profilePictureUrl] = await file.getSignedUrl({ action: "read", expires: Date.now() + 60 * 60 * 10 })
+    res.redirect(profilePictureUrl)
   } catch (error) {
     console.log(error)
     res.sendStatus(400);

@@ -99,7 +99,7 @@ const Profile = ({ profileId }) => {
             position: ""
         }
     })
-
+    const [isProfileFail, setProfileFail] = useState(true)
     const getStudents = async () => {
         try {
             const data = await get(`staff/profile`)
@@ -155,10 +155,10 @@ const Profile = ({ profileId }) => {
 
                 <p className="text-center m-2">สำนักงานหอพักนักศึกษาชาย มหาวิทยาลัยสงขลานครินทร์ วิทยาเขตภูเก็ต</p>
 
-                <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย</div>
+                <div className="text-center border-2 p-2 m-2">ทะเบียนประวัตินักศึกษาชาย}</div>
                 <ul className="list-disc flex flex-col">
-                    {
-                        student.profile.profileImg ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}${PORT}${student.profile.profileImg}`} alt="profileImg" />
+                {
+                        isProfileFail ? <img className="w-24 h-32 self-center" src={`${ENDPOINT}${PORT}/staff/profile/picture/${student.profile.id}`} onError={() => setProfileFail(false)} alt="profileImg" />
                             :
                             <img className="w-24 h-32 self-center" src="icon/mockProfile.png" alt="error loading profile image" />
                     }

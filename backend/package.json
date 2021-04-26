@@ -43,5 +43,8 @@
   "scripts": {
     "start": "nodemon index.js",
     "dev": "cross-env DEVELOPMENT=true nodemon index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }

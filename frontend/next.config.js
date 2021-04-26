@@ -12,9 +12,12 @@ module.exports = {
             '/profile': { page: '/profile' },
             '/profile-result': { page: '/profile-result' },
             '/guide': { page: '/guide' },
-            '/support': { page: '/support' },
+            '/repair': { page: '/repair' },
             '/reserve': { page: '/reserve' },
             '/reserve-result': { page: '/reserve-result' },
+            '/admin/news': { page: '/admin/news' },
+            '/admin/news/update': { page: '/admin/news/update' },
+            '/admin/news': { page: '/admin/news' },
             '/admin/profiles': { page: '/admin/profiles' },
             '/admin/reserve': { page: '/admin/reserve' },
         }

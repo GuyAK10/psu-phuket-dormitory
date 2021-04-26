@@ -105,7 +105,6 @@ const createToken = async (user, responseData, req, res) => {
                   // console.log(user,responseData)
                   //save test user for profile
                   if (user.username === 'student') {
-                        console.log('student')
                         const payload = {
                               id: responseData.userId,
                               type: responseData.role,
